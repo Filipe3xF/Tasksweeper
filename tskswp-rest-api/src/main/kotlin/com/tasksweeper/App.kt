@@ -38,7 +38,7 @@ fun Application.installExceptionHandling() = install(StatusPages) {
 }
 
 fun Application.installAuthentication() = install(Authentication) {
-
+    TODO("Authentication yet to be done after the model creation.")
 }
 
 fun Application.installContentNegotiation() = install(ContentNegotiation) { gson {} }
