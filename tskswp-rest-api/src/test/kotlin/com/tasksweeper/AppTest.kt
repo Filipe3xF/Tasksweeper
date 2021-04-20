@@ -9,7 +9,7 @@ import kotlin.test.Test
 
 class AppTest {
     @Test
-    fun testRoot() {
+    fun `hello world endpoint is working`() {
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Get, "/").apply {
                 response.status() shouldBe HttpStatusCode.OK
