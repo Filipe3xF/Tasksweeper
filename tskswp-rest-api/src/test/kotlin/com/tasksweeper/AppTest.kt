@@ -1,10 +1,11 @@
 package com.tasksweeper
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import org.koin.ktor.ext.get
 import kotlin.test.Test
 
 class AppTest {
@@ -13,7 +14,9 @@ class AppTest {
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Get, "/").apply {
                 response.status() shouldBe HttpStatusCode.OK
-                Gson().fromJson(response.content, HelloWorldMessage::class.java).message shouldBe "Hello, World!"
+
+                val objectMapper: ObjectMapper = get()
+                objectMapper.readValue(response.content, HelloWorldMessage::class.java)
             }
         }
     }

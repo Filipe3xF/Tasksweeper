@@ -6,11 +6,13 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object DatabaseFactory {
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
+    private val logger = KotlinLogging.logger { }
 
     fun init() {
         Database.connect(hikari())
@@ -22,14 +24,21 @@ object DatabaseFactory {
         username = appConfig.property("db.dbUser").getString()
         password = appConfig.property("db.dbPassword").getString()
         maximumPoolSize = 3
-        isAutoCommit = false
+        isAutoCommit = true
         transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         validate()
     }.let {
         HikariDataSource(it)
     }
-}
 
-suspend fun <T> transaction(block: () -> T): Unit = withContext(Dispatchers.IO) {
-    transaction { block() }
+    suspend fun <T> transaction(block: () -> T): T = withContext(Dispatchers.IO) {
+        org.jetbrains.exposed.sql.transactions.transaction {
+            try {
+                block()
+            } catch(exception: ExposedSQLException) {
+                logger.error(exception) { "Transaction failed due to the following exception:" }
+                throw exception
+            }
+        }
+    }
 }
