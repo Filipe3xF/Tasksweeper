@@ -35,7 +35,10 @@ object DatabaseFactory {
         org.jetbrains.exposed.sql.transactions.transaction {
             try {
                 block()
-            } catch(exception: ExposedSQLException) {
+            } catch (exception: ExposedSQLException) {
+                logger.error(exception) { "Transaction failed due to the following exception:" }
+                throw exception
+            } catch (exception: NoSuchElementException) {
                 logger.error(exception) { "Transaction failed due to the following exception:" }
                 throw exception
             }

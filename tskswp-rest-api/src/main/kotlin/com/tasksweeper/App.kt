@@ -66,6 +66,9 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<ExposedSQLException> { cause ->
         call.respond(HttpStatusCode.Conflict, mapOf("error" to cause.message))
     }
+    exception<NoSuchElementException> { cause ->
+        call.respond(HttpStatusCode.NotFound, mapOf("error" to cause.message))
+    }
 }
 
 fun Application.installAuthentication() = install(Authentication) {
