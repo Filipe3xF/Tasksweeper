@@ -29,4 +29,199 @@
                      schemaName="tskswp"/>
         <renameColumn schemaName="tskswp" tableName="account" oldColumnName="e-mail" newColumnName="email"/>
     </changeSet>
+    <changeSet id="4" author="sebas">
+        <createTable tableName="status" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="5" author="sebas">
+        <addColumn tableName="account" schemaName="tskswp">
+            <column name="level" type="int"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="6" author="sebas">
+        <createTable tableName="account_status" schemaName="tskswp">
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="status_name" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="value" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="7" author="sebas">
+        <addForeignKeyConstraint baseTableName="account_status" baseColumnNames="username" constraintName="fk_account" referencedTableName="account"
+                                 referencedColumnNames="username" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="account_status" baseColumnNames="status_name" constraintName="fk_status" referencedTableName="status"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="8" author="sebas">
+        <createTable tableName="consumable" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="price" type="int"/>
+            <column name="description" type="varchar(256)"/>
+        </createTable>
+        <createTable tableName="equipment" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="price" type="int"/>
+            <column name="description" type="varchar(256)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="9" author="sebas">
+        <createTable tableName="account_consumable" schemaName="tskswp">
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="consumable_name" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="quantity" type="int"/>
+        </createTable>
+        <createTable tableName="account_equipment" schemaName="tskswp">
+            <column name="username" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="equipment_name" type="varchar(256)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="quantity" type="int"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="10" author="sebas">
+        <addForeignKeyConstraint baseTableName="account_consumable" baseColumnNames="username" constraintName="fk_account" referencedTableName="account"
+                                 referencedColumnNames="username" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="account_consumable" baseColumnNames="consumable_name" constraintName="fk_consumable" referencedTableName="consumable"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp"/>
+        <addForeignKeyConstraint baseTableName="account_equipment" baseColumnNames="username" constraintName="fk_account" referencedTableName="account"
+                                 referencedColumnNames="username" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="account_equipment" baseColumnNames="equipment_name" constraintName="fk_equipment" referencedTableName="equipment"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="11" author="sebas">
+        <createTable tableName="category" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <addColumn tableName="equipment" schemaName="tskswp">
+            <column name="category_name" type="varchar(256)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="12" author="sebas">
+        <addForeignKeyConstraint baseTableName="equipment" baseColumnNames="category_name" constraintName="fk_category" referencedTableName="category"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp"/>
+
+        <createTable tableName="equipment_status" schemaName="tskswp">
+            <column name="equipment_name" type="varchar(256)">
+                <constraints nullable="true" primaryKey="true"/>
+            </column>
+            <column name="status_name" type="varchar(256)">
+                <constraints nullable="true" primaryKey="true"/>
+            </column>
+
+            <column name="value" type="int"/>
+            <column name="percentage" type="int"/>
+            <column name="instant" type="bit"/>
+        </createTable>
+        <createTable tableName="consumable_status" schemaName="tskswp">
+            <column name="consumable_name" type="varchar(256)">
+                <constraints nullable="true" primaryKey="true"/>
+            </column>
+            <column name="status_name" type="varchar(256)">
+                <constraints nullable="true" primaryKey="true"/>
+            </column>
+
+            <column name="value" type="int"/>
+            <column name="percentage" type="int"/>
+            <column name="instant" type="bit"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="equipment_status" baseColumnNames="status_name" constraintName="fk_status" referencedTableName="status"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="consumable_status" baseColumnNames="status_name" constraintName="fk_status" referencedTableName="status"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="13" author="sebas">
+        <createTable tableName="repetition" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="14" author="sebas">
+        <createTable tableName="difficulty" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="15" author="sebas">
+        <createTable tableName="counter" schemaName="tskswp">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(256)"/>
+            <column name="objective" type="varchar(256)"/>
+            <column name="value" type="varchar(256)"/>
+            <column name="positive" type="bit"/>
+            <column name="difficulty_name" type="varchar(256)"/>
+            <column name="repetition_name" type="varchar(256)"/>
+            <column name="account_name" type="varchar(256)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="counter" baseColumnNames="account_name" constraintName="fk_account" referencedTableName="account"
+                                 referencedColumnNames="username" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="counter" baseColumnNames="repetition_name" constraintName="fk_repetition" referencedTableName="repetition"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="counter" baseColumnNames="difficulty_name" constraintName="fk_difficulty" referencedTableName="difficulty"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+    </changeSet>
+    <changeSet id="16" author="sebas">
+        <createTable tableName="task" schemaName="tskswp">
+            <column name="id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(256)"/>
+            <column name="start_date" type="date"/>
+            <column name="due_date" type="date"/>
+            <column name="difficulty_name" type="varchar(256)"/>
+            <column name="repetition_name" type="varchar(256)"/>
+            <column name="account_name" type="varchar(256)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="account_name" constraintName="fk_account" referencedTableName="account"
+                                 referencedColumnNames="username" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="repetition_name" constraintName="fk_repetition" referencedTableName="repetition"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="difficulty_name" constraintName="fk_difficulty" referencedTableName="difficulty"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+    </changeSet>
+    <changeSet id="17" author="sebas">
+        <createTable tableName="treminder" schemaName="tskswp">
+            <column name="remind_date" type="date">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="quest_id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="treminder" baseColumnNames="quest_id" constraintName="fk_task" referencedTableName="task"
+                                 referencedColumnNames="id" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+        <createTable tableName="creminder" schemaName="tskswp">
+            <column name="remind_date" type="date">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="quest_id" type="int">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="creminder" baseColumnNames="quest_id" constraintName="fk_counter" referencedTableName="counter"
+                                 referencedColumnNames="id" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
+    </changeSet>
 </databaseChangeLog> 
