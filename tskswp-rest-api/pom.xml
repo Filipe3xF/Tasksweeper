@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -19,6 +20,7 @@
         <postgres.version>42.2.19</postgres.version>
         <kotlin.version>1.4.32</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
+        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
         <junit.version>5.7.1</junit.version>
         <kotest.version>4.4.3</kotest.version>
         <mockk.version>1.11.0</mockk.version>
@@ -32,11 +34,6 @@
         <dependency>
             <groupId>io.insert-koin</groupId>
             <artifactId>koin-core</artifactId>
-            <version>${koin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.insert-koin</groupId>
-            <artifactId>koin-core-ext</artifactId>
             <version>${koin.version}</version>
         </dependency>
         <dependency>
@@ -198,7 +195,10 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration><source>1.8</source><target>1.8</target></configuration>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -207,14 +207,18 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <goals><goal>compile</goal></goals>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
                         <configuration>
                             <experimentalCoroutines>enable</experimentalCoroutines>
                         </configuration>
                     </execution>
                     <execution>
                         <id>test-compile</id>
-                        <goals><goal>test-compile</goal></goals>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                         <configuration>
                             <experimentalCoroutines>enable</experimentalCoroutines>
                         </configuration>
@@ -242,7 +246,9 @@
                     <execution>
                         <id>make-assembly</id>
                         <phase>package</phase>
-                        <goals> <goal>single</goal> </goals>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                         <configuration>
                             <archive>
                                 <manifest>

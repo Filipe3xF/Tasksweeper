@@ -1,5 +1,6 @@
 package com.tasksweeper.repository
 
+import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -7,7 +8,6 @@ import io.ktor.config.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.Database
 
 object DatabaseFactory {
@@ -35,12 +35,12 @@ object DatabaseFactory {
         org.jetbrains.exposed.sql.transactions.transaction {
             try {
                 block()
-            } catch (exception: ExposedSQLException) {
+            } catch (exception: Exception) {
                 logger.error(exception) { "Transaction failed due to the following exception:" }
-                throw exception
-            } catch (exception: NoSuchElementException) {
-                logger.error(exception) { "Transaction failed due to the following exception:" }
-                throw exception
+                when (exception) {
+                    is NoSuchElementException -> throw  DatabaseNotFoundException()
+                    else -> throw exception
+                }
             }
         }
     }

@@ -1,9 +1,11 @@
 package com.tasksweeper.controller
 
 import com.tasksweeper.authentication.JWT
-import com.tasksweeper.service.checkAccount
-import com.tasksweeper.service.registerAccount
+import com.tasksweeper.authentication.getUsername
+import com.tasksweeper.service.AccountService
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -11,13 +13,15 @@ import org.koin.ktor.ext.inject
 
 fun Routing.accountController() {
     val jwt: JWT by inject()
+    val accountService: AccountService by inject()
 
     post("/register") {
         call.receive<RegisterDTO>().let {
-            registerAccount(it.username, it.email, it.password).let { account ->
+            accountService.registerAccount(it.username, it.email, it.password).let { account ->
                 call.respond(
-                    mapOf(
-                        "jwt" to jwt.sign(account.username)
+                    HttpStatusCode.Created,
+                    JwtDTO(
+                        jwt.sign(account.username)
                     )
                 )
             }
@@ -26,16 +30,25 @@ fun Routing.accountController() {
 
     post("/login") {
         call.receive<LoginDTO>().let {
-            checkAccount(it.username, it.password).let { account ->
+            accountService.checkAccount(it.username, it.password).let { account ->
                 call.respond(
-                    mapOf(
-                        "jwt" to jwt.sign(account.username)
+                    JwtDTO(
+                        jwt.sign(account.username)
                     )
                 )
             }
+        }
+    }
+
+    authenticate {
+        get("/account") {
+            call.respond(
+                accountService.getAccount(call.getUsername())
+            )
         }
     }
 }
 
 data class LoginDTO(val username: String, val password: String)
 data class RegisterDTO(val username: String, val email: String, val password: String)
+data class JwtDTO(val jwt: String)
