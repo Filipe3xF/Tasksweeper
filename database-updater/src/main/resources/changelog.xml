@@ -127,7 +127,7 @@
             </column>
 
             <column name="value" type="int"/>
-            <column name="percentage" type="int"/>
+            <column name="percentage" type="bool"/>
             <column name="instant" type="bool"/>
         </createTable>
         <createTable tableName="consumable_status" schemaName="tskswp">
@@ -139,7 +139,7 @@
             </column>
 
             <column name="value" type="int"/>
-            <column name="percentage" type="int"/>
+            <column name="percentage" type="bool"/>
             <column name="instant" type="bool"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="equipment_status" baseColumnNames="status_name" constraintName="fk_status" referencedTableName="status"
@@ -257,5 +257,23 @@
     <changeSet id="20" author="sebas">
         <addNotNullConstraint tableName="account" columnName="level" schemaName="tskswp"/>
     </changeSet>
-
+    <changeSet id="21" author="sebas">
+        <insert tableName="difficulty" schemaName="tskswp">
+            <column name="name" value="easy"/>
+        </insert>
+        <insert tableName="difficulty" schemaName="tskswp">
+            <column name="name" value="medium"/>
+        </insert>
+        <insert tableName="difficulty" schemaName="tskswp">
+            <column name="name" value="hard"/>
+        </insert>
+    </changeSet>
+    <changeSet id="22" author="sebas">
+        <addColumn tableName="task" schemaName="tskswp">
+            <column name="description" type="nvarchar(256)"/>
+        </addColumn>
+        <addColumn tableName="counter" schemaName="tskswp">
+            <column name="description" type="nvarchar(256)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog> 
