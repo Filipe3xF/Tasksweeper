@@ -128,7 +128,7 @@
 
             <column name="value" type="int"/>
             <column name="percentage" type="int"/>
-            <column name="instant" type="bit"/>
+            <column name="instant" type="bool"/>
         </createTable>
         <createTable tableName="consumable_status" schemaName="tskswp">
             <column name="consumable_name" type="varchar(256)">
@@ -140,7 +140,7 @@
 
             <column name="value" type="int"/>
             <column name="percentage" type="int"/>
-            <column name="instant" type="bit"/>
+            <column name="instant" type="bool"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="equipment_status" baseColumnNames="status_name" constraintName="fk_status" referencedTableName="status"
                                  referencedColumnNames="name" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
@@ -171,7 +171,7 @@
             <column name="name" type="varchar(256)"/>
             <column name="objective" type="varchar(256)"/>
             <column name="value" type="varchar(256)"/>
-            <column name="positive" type="bit"/>
+            <column name="positive" type="bool"/>
             <column name="difficulty_name" type="varchar(256)"/>
             <column name="repetition_name" type="varchar(256)"/>
             <column name="account_name" type="varchar(256)"/>
@@ -224,4 +224,38 @@
         <addForeignKeyConstraint baseTableName="creminder" baseColumnNames="quest_id" constraintName="fk_counter" referencedTableName="counter"
                                  referencedColumnNames="id" referencedTableSchemaName="tskswp" baseTableSchemaName="tskswp" />
     </changeSet>
+
+    <changeSet id="18" author="sebas">
+        <addDefaultValue tableName="account" columnName="level" schemaName="tskswp" defaultValueNumeric="1"/>
+    </changeSet>
+
+    <changeSet id="19" author="sebas">
+        <addNotNullConstraint tableName="account_status" columnName="value" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="equipment" columnName="price" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="equipment" columnName="description" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="consumable" columnName="price" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="consumable" columnName="description" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="account_consumable" columnName="quantity" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="account_equipment" columnName="quantity" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="equipment_status" columnName="value" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="equipment_status" columnName="percentage" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="equipment_status" columnName="instant" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="consumable_status" columnName="value" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="consumable_status" columnName="percentage" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="consumable_status" columnName="instant" schemaName="tskswp"/>
+        <addForeignKeyConstraint baseTableName="equipment_status" baseColumnNames="equipment_name" constraintName="fk_equipment" referencedTableName="equipment"
+                                 referencedColumnNames="name" baseTableSchemaName="tskswp" referencedTableSchemaName="tskswp"/>
+        <addForeignKeyConstraint baseTableName="consumable_status" baseColumnNames="consumable_name" constraintName="fk_consumable" referencedTableName="consumable"
+                                 referencedColumnNames="name" baseTableSchemaName="tskswp" referencedTableSchemaName="tskswp"/>
+        <addNotNullConstraint tableName="counter" columnName="name" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="counter" columnName="objective" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="counter" columnName="value" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="counter" columnName="positive" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="task" columnName="name" schemaName="tskswp"/>
+        <addNotNullConstraint tableName="task" columnName="start_date" schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="20" author="sebas">
+        <addNotNullConstraint tableName="account" columnName="level" schemaName="tskswp"/>
+    </changeSet>
+
 </databaseChangeLog> 
