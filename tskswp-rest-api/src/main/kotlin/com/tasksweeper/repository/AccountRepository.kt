@@ -28,6 +28,7 @@ class AccountRepository {
     private fun toAccount(row: ResultRow): AccountDTO = AccountDTO(
         username = row[Account.username],
         email = row[Account.email],
+        Implement-changelog-for-the-DB-Model
         password = row[Account.password],
         level = row[Account.level]
     )

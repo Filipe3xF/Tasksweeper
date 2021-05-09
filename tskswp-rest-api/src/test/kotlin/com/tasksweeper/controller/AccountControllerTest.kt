@@ -38,7 +38,6 @@ const val ACCOUNT_LEVEL : Int = 1
 
 class AccountControllerTest : KoinTest {
 
-
     @BeforeEach
     fun start() {
         startKoin {
@@ -71,7 +70,6 @@ class AccountControllerTest : KoinTest {
                 any()
             )
         } returns AccountDTO(register.username, register.email, register.password, ACCOUNT_LEVEL)
-
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {
@@ -229,7 +227,7 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
+           BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
             ACCOUNT_LEVEL
         )
 
@@ -261,6 +259,7 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(account.username) } returns AccountDTO(
             account.username,
             account.email,
+        Implement-changelog-for-the-DB-Model
             BCrypt.hashpw(account.password, BCrypt.gensalt()),
             ACCOUNT_LEVEL
         )
