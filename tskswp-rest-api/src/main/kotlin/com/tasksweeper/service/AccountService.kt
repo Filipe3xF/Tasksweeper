@@ -34,7 +34,8 @@ class AccountService : KoinComponent {
         return accountRepository.insertAccount(
             accountUsername,
             accountEmail,
-            BCrypt.hashpw(accountPassword, BCrypt.gensalt())
+            BCrypt.hashpw(accountPassword, BCrypt.gensalt()),
+            1
         )
     }
 

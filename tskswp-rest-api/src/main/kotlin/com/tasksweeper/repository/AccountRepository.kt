@@ -10,11 +10,12 @@ import org.jetbrains.exposed.sql.select
 
 class AccountRepository {
 
-    suspend fun insertAccount(accountUsername: String, accountEmail: String, accountPassword: String) = transaction {
+    suspend fun insertAccount(accountUsername: String, accountEmail: String, accountPassword: String, accountLevel: Int) = transaction {
         Account.insert {
             it[username] = accountUsername
             it[email] = accountEmail
             it[password] = accountPassword
+            it[level] = accountLevel
         }
     }.resultedValues?.first()?.let { toAccount(it) } ?: throw RegisterException(accountUsername)
 
@@ -27,6 +28,7 @@ class AccountRepository {
     private fun toAccount(row: ResultRow): AccountDTO = AccountDTO(
         username = row[Account.username],
         email = row[Account.email],
-        password = row[Account.password]
+        password = row[Account.password],
+        level = row[Account.level]
     )
 }

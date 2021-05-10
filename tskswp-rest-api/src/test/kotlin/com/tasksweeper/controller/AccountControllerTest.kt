@@ -64,10 +64,10 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
-        } returns AccountDTO(register.username, register.email, register.password)
-
+        } returns AccountDTO(register.username, register.email, register.password, 1)
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {
@@ -99,7 +99,8 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-            BCrypt.hashpw(login.password, BCrypt.gensalt())
+            BCrypt.hashpw(login.password, BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {
@@ -136,7 +137,8 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
         } throws mockk<ExposedSQLException> {
             every { message } returns errorMessage
@@ -224,7 +226,8 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt())
+           BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {
@@ -247,14 +250,16 @@ class AccountControllerTest : KoinTest {
         val account = AccountDTO(
             "username",
             "username@email.com",
-            "password"
+            "password",
+            1
         )
 
         val accountRepository = get<AccountRepository>()
         coEvery { accountRepository.selectAccount(account.username) } returns AccountDTO(
             account.username,
             account.email,
-            BCrypt.hashpw(account.password, BCrypt.gensalt())
+            BCrypt.hashpw(account.password, BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {
