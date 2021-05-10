@@ -33,9 +33,6 @@ import org.koin.test.get
 import org.mindrot.jbcrypt.BCrypt
 import org.postgresql.util.PSQLException
 
-const val ACCOUNT_LEVEL : Int = 1
-
-
 class AccountControllerTest : KoinTest {
 
     @BeforeEach
@@ -67,9 +64,10 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
-        } returns AccountDTO(register.username, register.email, register.password, ACCOUNT_LEVEL)
+        } returns AccountDTO(register.username, register.email, register.password, 1)
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {
@@ -139,7 +137,8 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
         } throws mockk<ExposedSQLException> {
             every { message } returns errorMessage
@@ -228,7 +227,7 @@ class AccountControllerTest : KoinTest {
             login.username,
             "user@mail.com",
            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
-            ACCOUNT_LEVEL
+            1
         )
 
         withTestApplication(Application::module) {
@@ -252,16 +251,15 @@ class AccountControllerTest : KoinTest {
             "username",
             "username@email.com",
             "password",
-            ACCOUNT_LEVEL
+            1
         )
 
         val accountRepository = get<AccountRepository>()
         coEvery { accountRepository.selectAccount(account.username) } returns AccountDTO(
             account.username,
             account.email,
-        Implement-changelog-for-the-DB-Model
             BCrypt.hashpw(account.password, BCrypt.gensalt()),
-            ACCOUNT_LEVEL
+            1
         )
 
         withTestApplication(Application::module) {
