@@ -358,4 +358,7 @@
             <column name="due_date" type="date"/>
         </addColumn>
     </changeSet>
+    <changeSet id="25" author="sebas">
+        <modifyDataType tableName="account" columnName="username" newDataType="varchar(20)" schemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 
