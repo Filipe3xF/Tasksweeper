@@ -70,14 +70,12 @@ class AccountControllerTest : KoinTest {
                 1
             )
         } returns AccountDTO(register.username, register.email, register.password, 1)
-
         val accountStatusRepository = get<Account_StatusRepository>()
         coEvery {
             accountStatusRepository.insertAccount_Status(register.username, "Health", 5)
             accountStatusRepository.insertAccount_Status(register.username, "Gold", 0)
             accountStatusRepository.insertAccount_Status(register.username, "Experience", 0)
         } returns null
-
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {
