@@ -8,6 +8,7 @@ import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.module
 import com.tasksweeper.repository.AccountRepository
+import com.tasksweeper.repository.Account_StatusRepository
 import com.tasksweeper.service.AccountService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
@@ -42,6 +43,7 @@ class AccountControllerTest : KoinTest {
                 single { JWT() }
                 single { AccountService() }
                 single { mockk<AccountRepository>() }
+                single { mockk<Account_StatusRepository>() }
             })
         }
     }
@@ -64,9 +66,17 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
-        } returns AccountDTO(register.username, register.email, register.password)
+        } returns AccountDTO(register.username, register.email, register.password, 1)
+
+        val accountStatusRepository = get<Account_StatusRepository>()
+        coEvery {
+            accountStatusRepository.insertAccount_Status(register.username, "Health", 5)
+            accountStatusRepository.insertAccount_Status(register.username, "Gold", 0)
+            accountStatusRepository.insertAccount_Status(register.username, "Experience", 0)
+        } returns null
 
 
         withTestApplication(Application::module) {
@@ -99,7 +109,8 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-            BCrypt.hashpw(login.password, BCrypt.gensalt())
+            BCrypt.hashpw(login.password, BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {
@@ -136,7 +147,8 @@ class AccountControllerTest : KoinTest {
             accountRepository.insertAccount(
                 register.username,
                 register.email,
-                any()
+                any(),
+                1
             )
         } throws mockk<ExposedSQLException> {
             every { message } returns errorMessage
@@ -224,7 +236,8 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt())
+            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {
@@ -247,14 +260,16 @@ class AccountControllerTest : KoinTest {
         val account = AccountDTO(
             "username",
             "username@email.com",
-            "password"
+            "password",
+            1
         )
 
         val accountRepository = get<AccountRepository>()
         coEvery { accountRepository.selectAccount(account.username) } returns AccountDTO(
             account.username,
             account.email,
-            BCrypt.hashpw(account.password, BCrypt.gensalt())
+            BCrypt.hashpw(account.password, BCrypt.gensalt()),
+            1
         )
 
         withTestApplication(Application::module) {

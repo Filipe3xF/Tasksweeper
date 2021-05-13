@@ -12,12 +12,13 @@ import io.ktor.routing.*
 import org.koin.ktor.ext.inject
 
 fun Routing.accountController() {
+    val STARTING_LEVEL: Int = 1
     val jwt: JWT by inject()
     val accountService: AccountService by inject()
 
     post("/register") {
         call.receive<RegisterDTO>().let {
-            accountService.registerAccount(it.username, it.email, it.password).let { account ->
+            accountService.registerAccount(it.username, it.email, it.password, STARTING_LEVEL).let { account ->
                 call.respond(
                     HttpStatusCode.Created,
                     JwtDTO(

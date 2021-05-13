@@ -6,6 +6,7 @@ import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
+import com.tasksweeper.repository.Account_StatusRepository
 import com.tasksweeper.repository.DatabaseFactory
 import com.tasksweeper.service.AccountService
 import io.ktor.application.*
@@ -33,6 +34,7 @@ val serviceModule = module {
 
 val repositoryModule = module {
     single { AccountRepository() }
+    single { Account_StatusRepository() }
 }
 
 val appModule = module {
