@@ -5,6 +5,7 @@ import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.exceptions.RegisterException
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
@@ -25,10 +26,18 @@ class AccountRepository {
         }.single().let { toAccount(it) }
     }
 
+    suspend fun deleteAccount(accountUsername: String) = transaction {
+        Account.deleteWhere {
+            Account.username eq accountUsername
+        }
+    }
+
     private fun toAccount(row: ResultRow): AccountDTO = AccountDTO(
         username = row[Account.username],
         email = row[Account.email],
         password = row[Account.password],
         level = row[Account.level]
     )
+
+
 }

@@ -1,6 +1,8 @@
 package com.tasksweeper.service
 
 import com.tasksweeper.entities.AccountDTO
+import com.tasksweeper.entities.Account_Status
+import com.tasksweeper.entities.Account_StatusDTO
 import com.tasksweeper.entities.StatusDTO
 import com.tasksweeper.exceptions.InvalidCredentialsException
 import com.tasksweeper.exceptions.InvalidEmailException
@@ -16,15 +18,7 @@ import java.util.regex.Pattern
 class AccountService : KoinComponent {
 
     private val accountRepository: AccountRepository by inject()
-    private val account_statusRepository: Account_StatusRepository by inject()
-
-    val HP: Pair<String, Int> = Pair("Health", 5)
-    val GOLD: Pair<String, Int> = Pair("Gold", 0)
-    val EXP: Pair<String, Int> = Pair("Experience", 0)
-
-    val statusAndValue: List<Pair<String, Int>> = listOf(HP, GOLD, EXP)
-
-
+    private val account_StatusService : Account_StatusService by inject()
     private val usernamePattern = Pattern.compile(
         "^(?=[a-zA-Z0-9._]{4,20}\$)(?!.*[_.]{2})[^_.].*[^_.]\$"
     )
@@ -54,9 +48,7 @@ class AccountService : KoinComponent {
             level
         )
 
-        for (status in statusAndValue) {
-            account_statusRepository.insertAccount_Status(accountUsername, status.first, status.second)
-        }
+        account_StatusService.insertInitialStatus(accountUsername)
 
         return account
     }
