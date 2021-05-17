@@ -6,17 +6,14 @@ import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.*
 
 class StatusRepository {
-
-
-
     suspend fun selectStatus(name: String) = transaction {
-        Status.select{
+        Status.select {
             Status.name eq name
         }.single().let { toStatus(it) }
     }
 
     suspend fun selectAllStatus() = transaction {
-        Status.selectAll().let { toStatusList(it)}
+        Status.selectAll().let { toStatusList(it) }
     }
 
     private fun toStatusList(query: Query): List<StatusDTO> {
@@ -29,7 +26,4 @@ class StatusRepository {
     private fun toStatus(row: ResultRow): StatusDTO = StatusDTO(
         name = row[Status.name]
     )
-
-
-
 }

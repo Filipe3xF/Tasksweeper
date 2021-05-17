@@ -1,15 +1,10 @@
 package com.tasksweeper.service
 
 import com.tasksweeper.entities.AccountDTO
-import com.tasksweeper.entities.Account_Status
-import com.tasksweeper.entities.Account_StatusDTO
-import com.tasksweeper.entities.StatusDTO
 import com.tasksweeper.exceptions.InvalidCredentialsException
 import com.tasksweeper.exceptions.InvalidEmailException
 import com.tasksweeper.exceptions.InvalidUsernameException
 import com.tasksweeper.repository.AccountRepository
-import com.tasksweeper.repository.Account_StatusRepository
-import com.tasksweeper.repository.StatusRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.mindrot.jbcrypt.BCrypt
@@ -18,7 +13,7 @@ import java.util.regex.Pattern
 class AccountService : KoinComponent {
 
     private val accountRepository: AccountRepository by inject()
-    private val account_StatusService : Account_StatusService by inject()
+    private val accountStatusService : AccountStatusService by inject()
     private val usernamePattern = Pattern.compile(
         "^(?=[a-zA-Z0-9._]{4,20}\$)(?!.*[_.]{2})[^_.].*[^_.]\$"
     )
@@ -41,16 +36,14 @@ class AccountService : KoinComponent {
         if (!usernamePattern.matcher(accountUsername).matches()) throw InvalidUsernameException(accountUsername)
         if (!emailPattern.matcher(accountEmail).matches()) throw InvalidEmailException(accountEmail)
 
-        val account: AccountDTO = accountRepository.insertAccount(
+        return accountRepository.insertAccount(
             accountUsername,
             accountEmail,
             BCrypt.hashpw(accountPassword, BCrypt.gensalt()),
             level
-        )
-
-        account_StatusService.insertInitialStatus(accountUsername)
-
-        return account
+        ).also {
+            accountStatusService.insertInitialStatus(accountUsername)
+        }
     }
 
     suspend fun checkAccount(accountUsername: String, accountPassword: String): AccountDTO =

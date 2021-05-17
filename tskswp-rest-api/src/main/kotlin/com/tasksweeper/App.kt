@@ -6,10 +6,10 @@ import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
-import com.tasksweeper.repository.Account_StatusRepository
+import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.DatabaseFactory
 import com.tasksweeper.service.AccountService
-import com.tasksweeper.service.Account_StatusService
+import com.tasksweeper.service.AccountStatusService
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -31,12 +31,12 @@ import org.slf4j.event.Level
 
 val serviceModule = module {
     single { AccountService() }
-    single { Account_StatusService() }
+    single { AccountStatusService() }
 }
 
 val repositoryModule = module {
     single { AccountRepository() }
-    single { Account_StatusRepository() }
+    single { AccountStatusRepository() }
 }
 
 val appModule = module {

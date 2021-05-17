@@ -11,7 +11,12 @@ import org.jetbrains.exposed.sql.select
 
 class AccountRepository {
 
-    suspend fun insertAccount(accountUsername: String, accountEmail: String, accountPassword: String, accountLevel: Int) = transaction {
+    suspend fun insertAccount(
+        accountUsername: String,
+        accountEmail: String,
+        accountPassword: String,
+        accountLevel: Int
+    ) = transaction {
         Account.insert {
             it[username] = accountUsername
             it[email] = accountEmail
@@ -38,6 +43,4 @@ class AccountRepository {
         password = row[Account.password],
         level = row[Account.level]
     )
-
-
 }
