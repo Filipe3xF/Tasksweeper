@@ -6,18 +6,16 @@ import org.jetbrains.exposed.sql.*
 
 class AccountStatusRepository {
 
-
-    suspend fun deleteAccountStatus(accountname: String) = transaction {
+    suspend fun deleteAccountStatus(accountName: String) = transaction {
         AccountStatus.deleteWhere {
-            AccountStatus.username eq accountname
+            AccountStatus.username eq accountName
         }
     }
 
-
-    suspend fun insertAccountStatus(accountname: String, statusname: String, parameter: Int) = transaction {
+    suspend fun insertAccountStatus(accountName: String, statusName: String, parameter: Int) = transaction {
         AccountStatus.insert {
-            it[username] = accountname
-            it[status_name] = statusname
+            it[username] = accountName
+            it[this.statusName] = statusName
             it[value] = parameter
         }.resultedValues?.first()?.let { toAccountStatus(it) }
     }
@@ -29,7 +27,6 @@ class AccountStatusRepository {
     }
 
     private fun toAccountStatusList(query: Query): List<AccountStatusDTO> {
-
         val list = mutableListOf<AccountStatusDTO>();
         query.forEach { list.add(toAccountStatus(it)) }
         return list;
@@ -37,7 +34,7 @@ class AccountStatusRepository {
 
     private fun toAccountStatus(row: ResultRow): AccountStatusDTO = AccountStatusDTO(
         username = row[AccountStatus.username],
-        status_name = row[AccountStatus.status_name],
+        statusName = row[AccountStatus.statusName],
         value = row[AccountStatus.value]
     )
 }

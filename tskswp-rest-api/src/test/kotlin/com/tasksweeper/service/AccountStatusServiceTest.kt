@@ -21,7 +21,6 @@ import kotlin.test.assertEquals
 
 class AccountStatusServiceTest : KoinTest{
 
-
     @BeforeEach
     fun start() {
         startKoin {
@@ -73,20 +72,21 @@ class AccountStatusServiceTest : KoinTest{
         runBlocking {
             val list = accountStatusService.insertInitialStatus(username)
 
-            val health = list.filter { it?.status_name == "Health" }.single()
-            health?.username shouldBe username
-            health?.status_name shouldBe "Health"
-            health?.value shouldBe 5
-
-            val gold = list.filter { it?.status_name == "Gold" }.single()
-            gold?.username shouldBe username
-            gold?.status_name shouldBe "Gold"
-            gold?.value shouldBe 0
-
-            val exp = list.filter { it?.status_name == "Experience" }.single()
-            exp?.username shouldBe username
-            exp?.status_name shouldBe "Experience"
-            exp?.value shouldBe 0
+            list.filter { it?.statusName == "Health" }.single()!!.let{
+                it.username shouldBe username
+                it.statusName shouldBe "Health"
+                it.value shouldBe 5
+            }
+            list.filter { it?.statusName == "Gold" }.single()!!.let {
+                it.username shouldBe username
+                it.statusName shouldBe "Gold"
+                it.value shouldBe 0
+            }
+            list.filter { it?.statusName == "Experience" }.single()!!.let {
+                it.username shouldBe username
+                it.statusName shouldBe "Experience"
+                it.value shouldBe 0
+            }
         }
     }
 
@@ -101,8 +101,7 @@ class AccountStatusServiceTest : KoinTest{
                 "Health",
                 5
             )
-        }.throws(NotFoundException())
-
+        } throws NotFoundException()
 
         coEvery {
             accountStatusrepository.insertAccountStatus(
@@ -110,7 +109,7 @@ class AccountStatusServiceTest : KoinTest{
                 "Gold",
                 0
             )
-        } .throws(NotFoundException())
+        }  throws NotFoundException()
 
         coEvery {
             accountStatusrepository.insertAccountStatus(
@@ -118,13 +117,13 @@ class AccountStatusServiceTest : KoinTest{
                 "Experience",
                 0
             )
-        } .throws(NotFoundException())
+        } throws NotFoundException()
 
         val accountStatusService = AccountStatusService()
 
         runBlocking {
             assertThrows<NotFoundException> {
-                val list = accountStatusService.insertInitialStatus(username)
+                accountStatusService.insertInitialStatus(username)
             }
         }
     }
