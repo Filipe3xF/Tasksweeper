@@ -13,7 +13,7 @@ import java.util.regex.Pattern
 class AccountService : KoinComponent {
 
     private val accountRepository: AccountRepository by inject()
-    private val accountStatusService : AccountStatusService by inject()
+    private val accountStatusService: AccountStatusService by inject()
     private val usernamePattern = Pattern.compile(
         "^(?=[a-zA-Z0-9._]{4,20}\$)(?!.*[_.]{2})[^_.].*[^_.]\$"
     )

@@ -17,7 +17,6 @@ class StatusRepository {
     }
 
     private fun toStatusList(query: Query): List<StatusDTO> {
-
         val list = mutableListOf<StatusDTO>();
         query.forEach { list.add(toStatus(it)) }
         return list;
