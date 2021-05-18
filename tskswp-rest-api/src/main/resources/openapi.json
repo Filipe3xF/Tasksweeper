@@ -20,6 +20,46 @@
     }
   ],
   "paths": {
+    "/api/documentation": {
+      "get": {
+        "tags": [
+          "Documentation"
+        ],
+        "summary": "Get this documentation in JSON format.",
+        "operationId": "getDocumentation",
+        "responses": {
+          "200": {
+            "description": "The documentation in JSON format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "openapi": {
+                      "type": "string",
+                      "example": "3.0.0"
+                    },
+                    "info": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "example": "Documentation for the Tasksweeper API."
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "Tasksweeper API"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "tags": [
