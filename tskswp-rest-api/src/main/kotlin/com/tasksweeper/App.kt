@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
+import com.tasksweeper.controller.apiController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
 import com.tasksweeper.repository.DatabaseFactory
@@ -66,12 +67,13 @@ fun Application.module() {
         }
 
         accountController()
+        apiController()
     }
 }
 
 fun Application.installExceptionHandling() = install(StatusPages) {
     exception<ExposedSQLException> {
-        call.respond(HttpStatusCode.Conflict, AppError(it.message!!))
+        call.respond(HttpStatusCode.Conflict, AppError(it.message!!.substringAfter("Detail: ")))
     }
     exception<DatabaseNotFoundException> {
         call.respond(HttpStatusCode.NotFound, AppError(it.message!!))
