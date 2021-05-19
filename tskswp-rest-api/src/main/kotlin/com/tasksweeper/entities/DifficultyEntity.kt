@@ -1,10 +1,10 @@
 package com.tasksweeper.entities
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.jetbrains.exposed.sql.Table
 
 object Difficulty : Table("tskswp.difficulty") {
-    val name = varchar("name", 256).primaryKey()
+    val name = varchar("name", 256)
+    override val primaryKey = PrimaryKey(name, name = "difficulty_pkey")
 }
 
 data class DifficultyDTO(

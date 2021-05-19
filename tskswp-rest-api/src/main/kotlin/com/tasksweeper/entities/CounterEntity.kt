@@ -1,12 +1,11 @@
 package com.tasksweeper.entities
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.tasksweeper.entities.Counter.primaryKey
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Table
-import java.time.OffsetDateTime
+import org.jetbrains.exposed.sql.`java-time`.timestamp
+import java.time.Instant
 
-object Counter : Table("tskswp.counter") {
-    val id = integer("id").primaryKey()
+object Counter : IntIdTable("tskswp.counter") {
     val name = varchar("name", 256)
     val objective = varchar("objective", 256)
     val value = integer("value")
@@ -15,18 +14,18 @@ object Counter : Table("tskswp.counter") {
     val repetitionName = varchar("repetition_name", 256).references(Repetition.name).nullable()
     val accountName = varchar("account_name", 256).references(Account.username)
     val description = varchar("description", 512).nullable()
-    val dueDate = date("due_date").nullable()
+    val startDate = timestamp("start_date")
 }
 
 data class CounterDTO(
-    val id : Int,
-    val name : String,
-    val objective : String,
-    val value : Int,
-    val positive : Boolean,
-    val difficultyName : String,
-    val repetitionName : String?,
-    val accountName : String,
-    val description : String?,
-    val dueDate : OffsetDateTime?
+    val id: Int,
+    val name: String,
+    val objective: String,
+    val value: Int,
+    val positive: Boolean,
+    val difficultyName: String,
+    val repetitionName: String?,
+    val accountName: String,
+    val description: String?,
+    val startDate: Instant
 )

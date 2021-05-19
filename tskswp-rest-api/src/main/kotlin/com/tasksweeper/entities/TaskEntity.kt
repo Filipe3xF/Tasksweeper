@@ -1,16 +1,13 @@
 package com.tasksweeper.entities
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.tasksweeper.entities.Counter.primaryKey
-import org.jetbrains.exposed.sql.Table
-import org.joda.time.DateTime
-import java.time.OffsetDateTime
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.`java-time`.timestamp
+import java.time.Instant
 
-object Task : Table("tskswp.task") {
-    val id = integer("id").primaryKey()
+object Task : IntIdTable("tskswp.task") {
     val name = varchar("name", 256)
-    val startDate = date("start_date")
-    val dueDate = date("due_date").nullable()
+    val startDate = timestamp("start_date")
+    val dueDate = timestamp("due_date").nullable()
     val difficultyName = varchar("difficulty_name", 256).references(Difficulty.name)
     val repetitionName = varchar("repetition_name", 256).references(Repetition.name).nullable()
     val accountName = varchar("account_name", 256).references(Account.username)
@@ -18,12 +15,12 @@ object Task : Table("tskswp.task") {
 }
 
 data class TaskDTO(
-    val id : Int,
-    val name : String,
-    val startDate : OffsetDateTime,
-    val dueDate : OffsetDateTime?,
-    val difficultyName : String,
-    val repetitionName : String?,
-    val accountName : String,
-    val description : String?,
+    val id: Int,
+    val name: String,
+    val startDate: Instant,
+    val dueDate: Instant?,
+    val difficultyName: String,
+    val repetitionName: String?,
+    val accountName: String,
+    val description: String?,
 )

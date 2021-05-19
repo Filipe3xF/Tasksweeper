@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <koin.version>3.0.1</koin.version>
         <ktor.version>1.5.3</ktor.version>
-        <exposed.version>0.17.13</exposed.version>
+        <exposed.version>0.31.1</exposed.version>
         <hikari.version>4.0.3</hikari.version>
         <postgres.version>42.2.19</postgres.version>
         <kotlin.version>1.4.32</kotlin.version>
@@ -78,7 +78,17 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.exposed</groupId>
-            <artifactId>exposed</artifactId>
+            <artifactId>exposed-core</artifactId>
+            <version>${exposed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.exposed</groupId>
+            <artifactId>exposed-java-time</artifactId>
+            <version>${exposed.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.exposed</groupId>
+            <artifactId>exposed-jdbc</artifactId>
             <version>${exposed.version}</version>
         </dependency>
         <dependency>
