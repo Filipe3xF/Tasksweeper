@@ -369,6 +369,9 @@
         <modifyDataType tableName="creminder" columnName="remind_date" newDataType="timestamp with timezone" schemaName="tskswp"/>
     </changeSet>
     <changeSet id="27" author="sebas">
-        <
+        <addAutoIncrement columnName="id" tableName="task" schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="28" author="sebas">
+        <addAutoIncrement tableName="counter" columnName="id" schemaName="tskswp"/>
     </changeSet>
 </databaseChangeLog> 
