@@ -8,7 +8,7 @@ import java.time.Instant
 object Counter : IntIdTable("tskswp.counter") {
     val name = varchar("name", 256)
     val objective = varchar("objective", 256)
-    val value = integer("value")
+    val value = long("value")
     val positive = bool("positive")
     val difficultyName = varchar("difficulty_name", 256).references(Difficulty.name)
     val repetitionName = varchar("repetition_name", 256).references(Repetition.name).nullable()
@@ -21,7 +21,7 @@ data class CounterDTO(
     val id: Int,
     val name: String,
     val objective: String,
-    val value: Int,
+    val value: Long,
     val positive: Boolean,
     val difficultyName: String,
     val repetitionName: String?,
