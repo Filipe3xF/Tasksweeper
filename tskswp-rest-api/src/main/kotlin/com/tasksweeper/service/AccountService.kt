@@ -13,7 +13,7 @@ import java.util.regex.Pattern
 class AccountService : KoinComponent {
 
     private val accountRepository: AccountRepository by inject()
-
+    private val accountStatusService: AccountStatusService by inject()
     private val usernamePattern = Pattern.compile(
         "^(?=[a-zA-Z0-9._]{4,20}\$)(?!.*[_.]{2})[^_.].*[^_.]\$"
     )
@@ -27,7 +27,12 @@ class AccountService : KoinComponent {
                 ")+"
     )
 
-    suspend fun registerAccount(accountUsername: String, accountEmail: String, accountPassword: String): AccountDTO {
+    suspend fun registerAccount(
+        accountUsername: String,
+        accountEmail: String,
+        accountPassword: String,
+        level: Int
+    ): AccountDTO {
         if (!usernamePattern.matcher(accountUsername).matches()) throw InvalidUsernameException(accountUsername)
         if (!emailPattern.matcher(accountEmail).matches()) throw InvalidEmailException(accountEmail)
 
@@ -35,8 +40,10 @@ class AccountService : KoinComponent {
             accountUsername,
             accountEmail,
             BCrypt.hashpw(accountPassword, BCrypt.gensalt()),
-            1
-        )
+            level
+        ).also {
+            accountStatusService.insertInitialStatus(accountUsername)
+        }
     }
 
     suspend fun checkAccount(accountUsername: String, accountPassword: String): AccountDTO =

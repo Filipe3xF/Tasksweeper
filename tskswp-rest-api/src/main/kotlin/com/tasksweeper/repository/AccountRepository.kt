@@ -5,12 +5,18 @@ import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.exceptions.RegisterException
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
 class AccountRepository {
 
-    suspend fun insertAccount(accountUsername: String, accountEmail: String, accountPassword: String, accountLevel: Int) = transaction {
+    suspend fun insertAccount(
+        accountUsername: String,
+        accountEmail: String,
+        accountPassword: String,
+        accountLevel: Int
+    ) = transaction {
         Account.insert {
             it[username] = accountUsername
             it[email] = accountEmail
@@ -23,6 +29,12 @@ class AccountRepository {
         Account.select {
             Account.username eq accountUsername
         }.single().let { toAccount(it) }
+    }
+
+    suspend fun deleteAccount(accountUsername: String) = transaction {
+        Account.deleteWhere {
+            Account.username eq accountUsername
+        }
     }
 
     private fun toAccount(row: ResultRow): AccountDTO = AccountDTO(

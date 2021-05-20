@@ -361,4 +361,39 @@
     <changeSet id="25" author="sebas">
         <modifyDataType tableName="account" columnName="username" newDataType="varchar(20)" schemaName="tskswp"/>
     </changeSet>
+    <changeSet id="26" author="sebas">
+        <modifyDataType tableName="task" columnName="start_date" newDataType="timestamp with timezone"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="task" columnName="due_date" newDataType="timestamp with timezone"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="counter" columnName="due_date" newDataType="timestamp with timezone"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="treminder" columnName="remind_date" newDataType="timestamp with timezone"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="creminder" columnName="remind_date" newDataType="timestamp with timezone"
+                        schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="27" author="sebas">
+        <addAutoIncrement columnName="id" tableName="task" schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="28" author="sebas">
+        <addAutoIncrement tableName="counter" columnName="id" schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="29" author="filipe">
+        <renameColumn
+                columnDataType="timestamp with timezone"
+                newColumnName="start_date"
+                oldColumnName="due_date"
+                schemaName="tskswp"
+                tableName="counter"/>
+        <addNotNullConstraint
+                columnDataType="timestamp with timezone"
+                columnName="start_date"
+                schemaName="tskswp"
+                tableName="counter"/>
+    </changeSet>
+    <changeSet id="30" author="filipe">
+        <modifyDataType tableName="counter" columnName="value" newDataType="bigint"
+                        schemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 

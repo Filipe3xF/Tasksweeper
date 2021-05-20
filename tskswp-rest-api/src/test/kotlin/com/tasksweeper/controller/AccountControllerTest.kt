@@ -4,11 +4,14 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.AccountDTO
+import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.module
 import com.tasksweeper.repository.AccountRepository
+import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.service.AccountService
+import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import io.kotest.assertions.throwables.shouldNotThrow
@@ -41,7 +44,9 @@ class AccountControllerTest : KoinTest {
             modules(module(createdAtStart = true) {
                 single { JWT() }
                 single { AccountService() }
+                single { AccountStatusService() }
                 single { mockk<AccountRepository>() }
+                single { mockk<AccountStatusRepository>() }
             })
         }
     }
@@ -68,6 +73,19 @@ class AccountControllerTest : KoinTest {
                 1
             )
         } returns AccountDTO(register.username, register.email, register.password, 1)
+        val accountStatusRepository = get<AccountStatusRepository>()
+
+        coEvery {
+            accountStatusRepository.insertAccountStatus(register.username, "Health", 5)
+        } returns AccountStatusDTO("TaskSweeperUser","Health", 5)
+
+        coEvery {
+            accountStatusRepository.insertAccountStatus(register.username, "Gold", 0)
+        } returns AccountStatusDTO("TaskSweeperUser","Gold", 0)
+
+        coEvery {
+            accountStatusRepository.insertAccountStatus(register.username, "Experience", 0)
+        } returns AccountStatusDTO("TaskSweeperUser","Experience", 0)
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {
@@ -226,7 +244,7 @@ class AccountControllerTest : KoinTest {
         coEvery { accountRepository.selectAccount(login.username) } returns AccountDTO(
             login.username,
             "user@mail.com",
-           BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
+            BCrypt.hashpw(login.password.plus("wildcard"), BCrypt.gensalt()),
             1
         )
 
