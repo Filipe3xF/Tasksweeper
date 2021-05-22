@@ -19,10 +19,9 @@ fun Routing.taskController() {
     authenticate {
         post("/task") {
             call.receive<TaskInfoDTO>().let {
-                val username = call.getUsername()
                 taskService.createTask(
                     it.name, it.dueDate, it.dueTime, it.difficultyName,
-                    it.repetition, username, it.description
+                    it.repetition, call.getUsername(), it.description
                 ).let {
                     call.respond(
                         HttpStatusCode.Created,
