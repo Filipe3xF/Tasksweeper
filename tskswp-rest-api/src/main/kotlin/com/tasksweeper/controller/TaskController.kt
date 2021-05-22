@@ -14,7 +14,6 @@ import java.time.Instant
 
 
 fun Routing.taskController() {
-    val jwt: JWT by inject()
     val taskService: TaskService by inject()
 
     authenticate {
@@ -22,7 +21,7 @@ fun Routing.taskController() {
             call.receive<TaskInfoDTO>().let {
                 val username = call.getUsername()
                 taskService.createTask(
-                    it.name, Instant.now(), it.dueDate, it.difficultyName,
+                    it.name, it.dueDate, it.dueTime, it.difficultyName,
                     it.repetition, username, it.description
                 ).let {
                     call.respond(
@@ -35,11 +34,14 @@ fun Routing.taskController() {
     }
 }
 
-
 data class TaskInfoDTO(
     val name: String,
-    val dueDate: String?,
+    val dueDate: DateDTO?,
+    val dueTime: TimeDTO?,
     val difficultyName: String,
     val repetition: String?,
     val description: String?
 )
+
+data class DateDTO(val year: String, val month: String, val day: String)
+data class TimeDTO(val hour: String, val minute: String, val second: String)

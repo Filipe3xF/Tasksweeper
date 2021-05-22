@@ -11,14 +11,12 @@ import java.time.Instant
 class TaskRepository {
 
     suspend fun insertTask(
-        //taskId: Int,
         taskName: String, taskStartDate: Instant,
         taskDueDate: Instant?, taskDifficultyName: String,
         taskRepetition: String?, taskAccountName: String,
         taskDescription: String?
     ) = transaction {
         Task.insert {
-            //it[id] = taskId
             it[name] = taskName
             it[startDate] = taskStartDate
             it[dueDate] = taskDueDate
@@ -29,7 +27,7 @@ class TaskRepository {
         }.resultedValues?.first()?.let { toTask(it) } ?: throw DatabaseNotFoundException("Task")
     }
 
-    fun toTask(row: ResultRow) = TaskDTO(
+    private fun toTask(row: ResultRow) = TaskDTO(
         id = row[Task.id].value,
         name = row[Task.name],
         startDate = row[Task.startDate],
@@ -39,5 +37,4 @@ class TaskRepository {
         accountName = row[Task.accountName],
         description = row[Task.description]
     )
-
 }

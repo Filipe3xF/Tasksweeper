@@ -1,22 +1,15 @@
 package com.tasksweeper.controller
 
-import com.auth0.jwt.exceptions.JWTVerificationException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.TaskDTO
-import com.tasksweeper.exceptions.InvalidDifficultyException
-import com.tasksweeper.exceptions.InvalidRepetitionException
+import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.module
-import com.tasksweeper.repository.AccountRepository
-import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.TaskRepository
-import com.tasksweeper.service.AccountService
-import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.service.TaskService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
-import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.matchers.should
+import com.tasksweeper.utils.instantOf
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -24,7 +17,6 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,10 +25,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField
 
 class TaskControllerTest : KoinTest {
     @BeforeEach
@@ -45,8 +33,7 @@ class TaskControllerTest : KoinTest {
             modules(module(createdAtStart = true) {
                 single { JWT() }
                 single { TaskService() }
-                single { mockk<TaskRepository>()}
-                single { mockkStatic("java.time.Instant")}
+                single { mockk<TaskRepository>() }
             })
         }
     }
@@ -56,59 +43,33 @@ class TaskControllerTest : KoinTest {
         stopKoin()
     }
 
-    val HOURS : Long = 23
-    val MINUTES : Long = 59
-    val SECONDS : Long = 59
-
-    val formatter = DateTimeFormatterBuilder()
-        .appendPattern("dd-MM-yyyy")
-        .parseDefaulting(ChronoField.HOUR_OF_DAY, HOURS)
-        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, MINUTES)
-        .parseDefaulting(ChronoField.SECOND_OF_MINUTE, SECONDS)
-        .parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
-        .toFormatter()
-        .withZone(ZoneId.systemDefault())
-
-
-
-    /*
-    Tests the correct insertion of the task should the parameters be correctly inserted (Pre-existing account, existing
-    difficulty and repetition, due date being after starting date). However, it doesn't test dates very well since it's difficult to test
-    the dates
-     */
     @Test
-    fun `Insert a Test sucessfully with the correct parameters`(){
-        val current = formatter.parse("20-05-2021", Instant :: from)
-        coEvery {
-            Instant.now()
-        } returns current
-
+    fun `Insert a Task successfully with the correct parameters`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
-            "14-06-2021",
+            DateDTO("2021", "06", "14"),
+            TimeDTO("23", "59", "59"),
             "Medium",
             "Weekly",
             "Just a test Task"
         )
 
-        val parsedDueDate = formatter.parse(taskInfoDto.dueDate, Instant :: from)
-
         val taskRepository = get<TaskRepository>()
         coEvery {
             taskRepository.insertTask(
-                taskInfoDto.name,
-                current,
-                parsedDueDate,
-                taskInfoDto.difficultyName,
-                taskInfoDto.repetition,
-                "username",
-                taskInfoDto.description
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
             )
         } returns TaskDTO(
             1,
             taskInfoDto.name,
-            current,
-            parsedDueDate,
+            mockk(relaxed = true),
+            mockk(relaxed = true),
             taskInfoDto.difficultyName,
             taskInfoDto.repetition,
             "username",
@@ -132,35 +93,16 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
-    fun `Insert a Test unsucessfully for inserting incorrect difficulty`(){
-        val current = formatter.parse("20-05-2021", Instant :: from)
-        coEvery {
-            Instant.now()
-        } returns current
-
+    fun `Insert a Task unsuccessfully for inserting incorrect difficulty`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
-            "14-06-2021",
+            DateDTO("2021", "06", "14"),
+            TimeDTO("23", "59", "59"),
             "I don't know",
             "Weekly",
             "Just a test Task"
         )
 
-        val parsedDueDate = formatter.parse(taskInfoDto.dueDate, Instant :: from)
-
-        val taskRepository = get<TaskRepository>()
-        coEvery {
-            taskRepository.insertTask(
-                taskInfoDto.name,
-                current,
-                parsedDueDate,
-                taskInfoDto.difficultyName,
-                taskInfoDto.repetition,
-                "username",
-                taskInfoDto.description
-            )
-        } throws InvalidDifficultyException("I don't know")
-
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
@@ -168,39 +110,24 @@ class TaskControllerTest : KoinTest {
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
             }.apply {
                 response.status() shouldBe HttpStatusCode.BadRequest
+                get<ObjectMapper>().readValue(
+                    response.content,
+                    AppError::class.java
+                ).error shouldContain taskInfoDto.difficultyName
             }
         }
     }
 
     @Test
-    fun `Insert a Test unsucessfully for inserting incorrect repetition`(){
-        val current = formatter.parse("20-05-2021", Instant :: from)
-        coEvery {
-            Instant.now()
-        } returns current
-
+    fun `Insert a Task unsuccessfully for inserting incorrect repetition`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
-            "14-06-2021",
+            DateDTO("2021", "06", "14"),
+            TimeDTO("23", "59", "59"),
             "Medium",
-            "Sometimes",
+            "sometimes",
             "Just a test Task"
         )
-
-        val parsedDueDate = formatter.parse(taskInfoDto.dueDate, Instant :: from)
-
-        val taskRepository = get<TaskRepository>()
-        coEvery {
-            taskRepository.insertTask(
-                taskInfoDto.name,
-                current,
-                parsedDueDate,
-                taskInfoDto.difficultyName,
-                taskInfoDto.repetition,
-                "username",
-                taskInfoDto.description
-            )
-        } throws InvalidRepetitionException("sometimes")
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/task") {
@@ -209,9 +136,58 @@ class TaskControllerTest : KoinTest {
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
             }.apply {
                 response.status() shouldBe HttpStatusCode.BadRequest
+                get<ObjectMapper>().readValue(
+                    response.content,
+                    AppError::class.java
+                ).error shouldContain taskInfoDto.repetition!!
             }
         }
     }
 
+    @Test
+    fun `Insert a Task unsuccessfully with the a due date in the past`() {
+        val taskInfoDto = TaskInfoDTO(
+            "someTask",
+            DateDTO("0420", "06", "14"),
+            TimeDTO("23", "59", "59"),
+            "Medium",
+            "Weekly",
+            "Just a test Task"
+        )
 
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Post, "/task") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+                setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
+            }.apply {
+                response.status() shouldBe HttpStatusCode.BadRequest
+                get<ObjectMapper>().readValue(
+                    response.content,
+                    AppError::class.java
+                ).error shouldContain instantOf(taskInfoDto.dueDate!!, taskInfoDto.dueTime!!).toString()
+            }
+        }
+    }
+
+    @Test
+    fun `Get blocked out for not having the credentials`() {
+        val taskInfoDto = TaskInfoDTO(
+            "someTask",
+            DateDTO("2021", "06", "14"),
+            TimeDTO("23", "59", "59"),
+            "Medium",
+            "Weekly",
+            "Just a test Task"
+        )
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Post, "/task") {
+                addContentTypeHeader()
+                setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
 }
