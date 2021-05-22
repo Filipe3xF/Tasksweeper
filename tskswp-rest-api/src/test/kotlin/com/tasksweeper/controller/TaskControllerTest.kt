@@ -10,6 +10,7 @@ import com.tasksweeper.service.TaskService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import com.tasksweeper.utils.instantOf
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -25,6 +26,7 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
+import java.time.Instant
 
 class TaskControllerTest : KoinTest {
     @BeforeEach
@@ -68,8 +70,8 @@ class TaskControllerTest : KoinTest {
         } returns TaskDTO(
             1,
             taskInfoDto.name,
-            mockk(relaxed = true),
-            mockk(relaxed = true),
+            Instant.now(),
+            Instant.now(),
             taskInfoDto.difficultyName,
             taskInfoDto.repetition,
             "username",
@@ -171,6 +173,36 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
+    fun `Insert a Task unsuccessfully with an invalid due date`() {
+        val date = DateDTO("2021", "13", "14")
+        val time = TimeDTO("23", "59", "59")
+
+        val taskInfoDto = TaskInfoDTO(
+            "someTask",
+            date,
+            time,
+            "Medium",
+            "Weekly",
+            "Just a test Task"
+        )
+
+        val timestamp: String = "${date.year}-${date.month}-${date.day}T${time.hour}:${time.minute}:${time.second}.000Z"
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Post, "/task") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+                setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
+            }.let {
+                get<ObjectMapper>().readValue(
+                    it.response.content,
+                    AppError::class.java
+                ).error shouldContain instantOf(date,time).toString()
+            }
+        }
+    }
+
+    @Test
     fun `Get blocked out for not having the credentials`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
@@ -180,6 +212,7 @@ class TaskControllerTest : KoinTest {
             "Weekly",
             "Just a test Task"
         )
+
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/task") {

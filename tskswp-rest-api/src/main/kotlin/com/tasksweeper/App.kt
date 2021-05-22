@@ -31,6 +31,7 @@ import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.logger.slf4jLogger
 import org.slf4j.event.Level
+import java.time.format.DateTimeParseException
 
 
 val serviceModule = module {
@@ -105,6 +106,9 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     }
     exception<InvalidDueDateException>{
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<DateTimeParseException>{
+        call.respond(HttpStatusCode.BadRequest, AppError("${it.parsedString} is not a valid timestamp."))
     }
 }
 

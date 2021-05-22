@@ -1,5 +1,7 @@
 package com.tasksweeper.entities
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.tasksweeper.utils.InstantSerializer
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
@@ -17,7 +19,9 @@ object Task : IntIdTable("tskswp.task") {
 data class TaskDTO(
     val id: Int,
     val name: String,
+    @JsonSerialize(using = InstantSerializer::class)
     val startDate: Instant,
+    @JsonSerialize(using = InstantSerializer::class)
     val dueDate: Instant?,
     val difficultyName: String,
     val repetitionName: String?,

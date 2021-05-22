@@ -17,9 +17,90 @@
     {
       "name": "Account",
       "description": "Accounts of the users of the application"
+    },
+    {
+      "name": "Task",
+      "description": "Tasks of the users"
     }
   ],
   "paths": {
+    "/task": {
+      "post": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Register user's new task.",
+        "operationId": "postTask",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Information about the newly created Task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenericTask"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "One of the properties was incorrectly filled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Details about which property was unproperly filled"
+                    }
+                  }
+                },
+                "examples": {
+                  "difficulty": {
+                    "value": {
+                      "error": "Difficulty 'difficulty' name does not exist! Please pick 'Easy', 'Medium' or 'Hard'"
+                    }
+                  },
+                  "repetition": {
+                    "value": {
+                      "error": "Repetition named 'repetition' does not exist! Please pick 'Daily' 'Weekly''Monthly' or 'Yearly'"
+                    }
+                  },
+                  "dueDatePast": {
+                    "value": {
+                      "error": "The following date 'dueDate' is before the actual date!"
+                    }
+                  },
+                  "dueDateInvalid": {
+                    "value": {
+                      "error": "Text 'dueDate' could not be parsed at index x"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewTaskBody"
+              }
+            }
+          },
+          "description": "Account information to add."
+        }
+      }
+    },
     "/api/documentation": {
       "get": {
         "tags": [
@@ -303,6 +384,98 @@
           "password": {
             "type": "string",
             "example": "password"
+          }
+        }
+      },
+      "NewTaskBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Task name"
+          },
+          "difficultyName": {
+            "type": "string",
+            "example": "Easy/Medium/Hard"
+          },
+          "description": {
+            "type": "string",
+            "example": "Task description"
+          },
+          "dueDate": {
+            "type": "object",
+            "properties": {
+              "year": {
+                "type": "string",
+                "example": "2032"
+              },
+              "month": {
+                "type": "string",
+                "example": "10"
+              },
+              "day": {
+                "type": "string",
+                "example": "01"
+              }
+            }
+          },
+          "dueTime": {
+            "type": "object",
+            "properties": {
+              "hour": {
+                "type": "string",
+                "example": "06"
+              },
+              "minute": {
+                "type": "string",
+                "example": "10"
+              },
+              "second": {
+                "type": "string",
+                "example": "25"
+              }
+            }
+          },
+          "repetition": {
+            "type": "string",
+            "example": "Daily/Weekly/Monthly/Yearly"
+          }
+        }
+      },
+      "GenericTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Task Name"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2021-05-22 16:03:30"
+          },
+          "dueDate": {
+            "type": "string",
+            "example": "2032-10-01 06:10:25"
+          },
+          "difficultyName": {
+            "type": "string",
+            "example": "Easy/Medium/Hard"
+          },
+          "repetitionName": {
+            "type": "string",
+            "example": "Daily/Weekly/Monthly/Yearly"
+          },
+          "accountName": {
+            "type": "string",
+            "example": "username"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of said task"
           }
         }
       },
