@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
 import com.tasksweeper.controller.apiController
+import com.tasksweeper.controller.taskController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
 import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.DatabaseFactory
+import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.service.AccountService
 import com.tasksweeper.service.AccountStatusService
+import com.tasksweeper.service.TaskService
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -33,11 +36,13 @@ import org.slf4j.event.Level
 val serviceModule = module {
     single { AccountService() }
     single { AccountStatusService() }
+    single { TaskService() }
 }
 
 val repositoryModule = module {
     single { AccountRepository() }
     single { AccountStatusRepository() }
+    single { TaskRepository() }
 }
 
 val appModule = module {
@@ -72,6 +77,7 @@ fun Application.module() {
 
         accountController()
         apiController()
+        taskController()
     }
 }
 
@@ -89,6 +95,15 @@ fun Application.installExceptionHandling() = install(StatusPages) {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
     exception<InvalidEmailException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<InvalidRepetitionException>{
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<InvalidDifficultyException>{
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<InvalidDueDateException>{
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
 }
