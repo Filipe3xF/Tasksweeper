@@ -197,7 +197,7 @@ class TaskControllerTest : KoinTest {
                 get<ObjectMapper>().readValue(
                     it.response.content,
                     AppError::class.java
-                ).error shouldContain instantOf(date,time).toString()
+                ).error shouldContain timestamp
             }
         }
     }
