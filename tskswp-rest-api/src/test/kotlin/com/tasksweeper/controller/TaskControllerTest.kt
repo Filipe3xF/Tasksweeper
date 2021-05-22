@@ -81,13 +81,13 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.apply {
-                response.status() shouldBe HttpStatusCode.Created
-                response.content shouldContain taskInfoDto.name
-                response.content shouldContain taskInfoDto.description!!
-                response.content shouldContain taskInfoDto.difficultyName
-                response.content shouldContain taskInfoDto.repetition!!
-                response.content shouldContain "username"
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.Created
+                it.response.content shouldContain taskInfoDto.name
+                it.response.content shouldContain taskInfoDto.description!!
+                it.response.content shouldContain taskInfoDto.difficultyName
+                it.response.content shouldContain taskInfoDto.repetition!!
+                it.response.content shouldContain "username"
             }
         }
     }
@@ -108,10 +108,10 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.apply {
-                response.status() shouldBe HttpStatusCode.BadRequest
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.BadRequest
                 get<ObjectMapper>().readValue(
-                    response.content,
+                    it.response.content,
                     AppError::class.java
                 ).error shouldContain taskInfoDto.difficultyName
             }
@@ -134,10 +134,10 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.apply {
-                response.status() shouldBe HttpStatusCode.BadRequest
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.BadRequest
                 get<ObjectMapper>().readValue(
-                    response.content,
+                    it.response.content,
                     AppError::class.java
                 ).error shouldContain taskInfoDto.repetition!!
             }
@@ -145,7 +145,7 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
-    fun `Insert a Task unsuccessfully with the a due date in the past`() {
+    fun `Insert a Task unsuccessfully with a past due date`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
             DateDTO("0420", "06", "14"),
@@ -160,10 +160,10 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.apply {
-                response.status() shouldBe HttpStatusCode.BadRequest
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.BadRequest
                 get<ObjectMapper>().readValue(
-                    response.content,
+                    it.response.content,
                     AppError::class.java
                 ).error shouldContain instantOf(taskInfoDto.dueDate!!, taskInfoDto.dueTime!!).toString()
             }
@@ -185,8 +185,8 @@ class TaskControllerTest : KoinTest {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
+            }.let{
+                it.response.status() shouldBe HttpStatusCode.Unauthorized
             }
         }
     }
