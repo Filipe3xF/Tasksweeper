@@ -1,10 +1,10 @@
 package com.tasksweeper.entities
 
-import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
 
-object Counter : IntIdTable("tskswp.counter") {
+object Counter : LongIdTable("tskswp.counter") {
     val name = varchar("name", 256)
     val objective = varchar("objective", 256)
     val value = long("value")
@@ -17,7 +17,7 @@ object Counter : IntIdTable("tskswp.counter") {
 }
 
 data class CounterDTO(
-    val id: Int,
+    val id: Long,
     val name: String,
     val objective: String,
     val value: Long,

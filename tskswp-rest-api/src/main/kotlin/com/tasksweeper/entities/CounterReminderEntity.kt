@@ -6,11 +6,11 @@ import java.time.Instant
 
 object CounterReminder : Table("tskswp.creminder") {
     val remindDate = timestamp("remind_date")
-    val questId = integer("quest_id").references(Counter.id)
+    val questId = long("quest_id").references(Counter.id)
     override val primaryKey = PrimaryKey(remindDate, questId, name = "creminder_pkey")
 }
 
 data class CounterReminderDTO(
     val remindDate: Instant,
-    val questId: Int
+    val questId: Long
 )
