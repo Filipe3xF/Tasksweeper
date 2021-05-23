@@ -396,4 +396,26 @@
         <modifyDataType tableName="counter" columnName="value" newDataType="bigint"
                         schemaName="tskswp"/>
     </changeSet>
+    <changeSet id="31" author="filipe">
+        <modifyDataType tableName="account_status" columnName="value" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="account" columnName="level" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="account_consumable" columnName="quantity" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="account_equipment" columnName="quantity" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="consumable_status" columnName="value" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="equipment_status" columnName="value" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="task" columnName="id" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="counter" columnName="id" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="treminder" columnName="quest_id" newDataType="bigint"
+                        schemaName="tskswp"/>
+        <modifyDataType tableName="creminder" columnName="quest_id" newDataType="bigint"
+                        schemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 
