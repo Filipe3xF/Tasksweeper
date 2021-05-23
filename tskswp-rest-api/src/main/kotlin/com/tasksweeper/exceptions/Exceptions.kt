@@ -6,7 +6,7 @@ open class TaskSweeperException(message: String? = null) : Exception(message)
 class RegisterException(username: String) : TaskSweeperException("Could not register user $username.")
 class InvalidCredentialsException : TaskSweeperException("Login unsuccessful due to invalid credentials.")
 class DatabaseNotFoundException(entityName: String? = null) : TaskSweeperException(
-    entityName?.let { "The desired element of type $entityName was not found in the database" }
+    entityName?.let { "The desired element of type $entityName was not found in the database." }
         ?: "The desired element was not found in the database."
 )
 class InvalidEmailException(email: String) : TaskSweeperException("The email '$email' is not valid.")
@@ -15,7 +15,7 @@ class InvalidDueDateException(instant: String?) :
     TaskSweeperException("The following date $instant is before the actual date!")
 
 class InvalidDifficultyException(difficulty: String?) :
-    TaskSweeperException("Difficulty $difficulty does not exist! Please pick 'Easy', 'Medium' or 'Hard'")
+    TaskSweeperException("Difficulty $difficulty does not exist! Please pick 'Easy', 'Medium' or 'Hard'.")
 
 class InvalidRepetitionException(repetition: String?) :
-    TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'")
+    TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'.")

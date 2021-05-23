@@ -40,7 +40,7 @@ class TaskService : KoinComponent {
         if (Difficulties.values().none { it.dbName == taskDifficultyName })
             throw InvalidDifficultyException(taskDifficultyName)
 
-        if (Repetitions.values().none { it.dbName == taskRepetition })
+        if (taskRepetition != null && Repetitions.values().none { it.dbName == taskRepetition })
             throw InvalidRepetitionException(taskRepetition)
 
         if (dueInstant != null && taskStartDay.isAfter(dueInstant))
