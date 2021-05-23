@@ -12,11 +12,13 @@ import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.utils.instantOf
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.lang.Exception
 import java.time.Instant
 
 
 class TaskService : KoinComponent {
-
+    private val accountStatusService : AccountStatusService by inject()
+    private val accountService : AccountService by inject()
     private val taskRepository: TaskRepository by inject()
 
     suspend fun createTask(
@@ -57,10 +59,16 @@ class TaskService : KoinComponent {
         )
     }
 
-    suspend fun getTask(taskId : Long): TaskDTO = taskRepository.selectTask(taskId)
+    suspend fun closeTaskSuccessfully(username: String, taskId: String?): Any {
+        if(taskId == null)
+            throw Exception()
 
-    suspend fun deleteTask(taskId: Long) {
-        taskRepository.deleteTask(taskId)
+        val id : Long = taskId.toLong()
+
+        val level = accountService.getAccount(username).level
+        accountStatusService.insertNewStatus(username, level, taskRepository.selectTask(id))
+        taskRepository.deleteTask(id)
+        return "Task with id: ${taskId} was deleted successfully"
     }
 
 }

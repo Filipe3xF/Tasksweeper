@@ -9,11 +9,11 @@ class RewardService : KoinComponent {
     private val accountService : AccountService by inject()
     private val taskService : TaskService by inject()
 
-    suspend fun giveReward(accountUsername : String, taskId: Long) : String{
+    /*suspend fun giveReward(accountUsername : String, taskId: Long) : String{
         val level = accountService.getAccount(accountUsername).level
         accountStatusService.insertNewStatus(accountUsername, level, taskId)
         taskService.deleteTask(taskId)
         return "Task with id: ${taskId} was deleted successfully"
     }
-
+*/
 }

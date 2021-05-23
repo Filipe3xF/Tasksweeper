@@ -28,7 +28,21 @@ fun Routing.taskController() {
                 }
             }
         }
+
+        delete("/task/{taskId}/success") {
+            taskService.closeTaskSuccessfully(
+                call.getUsername(),
+                call.parameters["taskId"]
+            ).let {
+                call.respond(
+                    HttpStatusCode.OK,
+                    it
+                )
+            }
+        }
+
     }
+
 }
 
 data class TaskInfoDTO(

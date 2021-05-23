@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
 import com.tasksweeper.controller.apiController
-import com.tasksweeper.controller.rewardController
 import com.tasksweeper.controller.taskController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
@@ -82,7 +81,6 @@ fun Application.module() {
         accountController()
         apiController()
         taskController()
-        rewardController()
     }
 }
 
@@ -113,6 +111,9 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     }
     exception<DateTimeParseException>{
         call.respond(HttpStatusCode.BadRequest, AppError("${it.parsedString} is not a valid timestamp."))
+    }
+    exception<NullTaskIdException> {
+        call.respond(HttpStatusCode.BadRequest, AppError("TaskId cannot be null."))
     }
 }
 

@@ -2,6 +2,7 @@ package com.tasksweeper.service
 
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.AccountStatusValues
+import com.tasksweeper.entities.TaskDTO
 import com.tasksweeper.entities.TaskDifficultyValues
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
@@ -9,7 +10,6 @@ import org.koin.core.component.inject
 
 class AccountStatusService : KoinComponent {
     private val accountStatusRepository: AccountStatusRepository by inject()
-    private val taskService: TaskService by inject()
 
     private fun calculatedReceivedExperience(level: Long, difficultyValue: Int) = 10 + level * difficultyValue
 
@@ -23,10 +23,10 @@ class AccountStatusService : KoinComponent {
         return list
     }
 
-    suspend fun insertNewStatus(accountUsername: String, level: Long, taskId: Long): Long {
+    suspend fun insertNewStatus(accountUsername: String, level: Long, task : TaskDTO): Long {
         val list = accountStatusRepository.selectAccountStatus(accountUsername)
         val taskDifficultyValue =
-            TaskDifficultyValues.values().single { it.dbName == taskService.getTask(taskId).difficultyName }.value
+            TaskDifficultyValues.values().single { it.dbName == task.difficultyName }.value
 
         val accumulatedExperience = list.single() {
             it.statusName == "Experience"
