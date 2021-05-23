@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
 import com.tasksweeper.controller.apiController
+import com.tasksweeper.controller.rewardController
 import com.tasksweeper.controller.taskController
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.AccountRepository
@@ -13,6 +14,7 @@ import com.tasksweeper.repository.DatabaseFactory
 import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.service.AccountService
 import com.tasksweeper.service.AccountStatusService
+import com.tasksweeper.service.RewardService
 import com.tasksweeper.service.TaskService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -37,6 +39,7 @@ import java.time.format.DateTimeParseException
 val serviceModule = module {
     single { AccountService() }
     single { AccountStatusService() }
+    single { RewardService() }
     single { TaskService() }
 }
 
@@ -79,6 +82,7 @@ fun Application.module() {
         accountController()
         apiController()
         taskController()
+        rewardController()
     }
 }
 

@@ -2,6 +2,13 @@ package com.tasksweeper.entities
 
 import org.jetbrains.exposed.sql.Table
 
+enum class AccountStatusValues(val dbName: String, val initialValue: Long) {
+    HP("Health", 20),
+    GOLD("Gold", 0),
+    EXP("Experience", 0)
+}
+
+
 object AccountStatus : Table("tskswp.account_status") {
     val username = varchar("username", 256).references(Account.username)
     val statusName = varchar("status_name", 256).references(Status.name)

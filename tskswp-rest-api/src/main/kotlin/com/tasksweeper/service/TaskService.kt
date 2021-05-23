@@ -56,4 +56,11 @@ class TaskService : KoinComponent {
             taskDescription
         )
     }
+
+    suspend fun getTask(taskId : Long): TaskDTO = taskRepository.selectTask(taskId)
+
+    suspend fun deleteTask(taskId: Long) {
+        taskRepository.deleteTask(taskId)
+    }
+
 }

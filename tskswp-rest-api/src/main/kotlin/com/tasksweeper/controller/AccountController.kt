@@ -12,7 +12,7 @@ import io.ktor.routing.*
 import org.koin.ktor.ext.inject
 
 fun Routing.accountController() {
-    val startingLevel = 1
+    val startingLevel : Long = 1
     val jwt: JWT by inject()
     val accountService: AccountService by inject()
 

@@ -31,7 +31,7 @@ class AccountService : KoinComponent {
         accountUsername: String,
         accountEmail: String,
         accountPassword: String,
-        level: Int
+        level: Long
     ): AccountDTO {
         if (!usernamePattern.matcher(accountUsername).matches()) throw InvalidUsernameException(accountUsername)
         if (!emailPattern.matcher(accountEmail).matches()) throw InvalidEmailException(accountEmail)
@@ -51,6 +51,10 @@ class AccountService : KoinComponent {
             if (!BCrypt.checkpw(accountPassword, it.password))
                 throw InvalidCredentialsException()
         }
+
+    suspend fun updateAccountLevel(accountUsername: String, newLevel: Long){
+        accountRepository.updateLevel(accountUsername,newLevel)
+    }
 
     suspend fun getAccount(accountUsername: String): AccountDTO =
         accountRepository.selectAccount(accountUsername)

@@ -12,7 +12,7 @@ class AccountStatusRepository {
         }
     }
 
-    suspend fun insertAccountStatus(accountName: String, statusName: String, parameter: Int) = transaction {
+    suspend fun insertAccountStatus(accountName: String, statusName: String, parameter: Long) = transaction {
         AccountStatus.insert {
             it[username] = accountName
             it[this.statusName] = statusName
@@ -24,6 +24,12 @@ class AccountStatusRepository {
         AccountStatus.select {
             AccountStatus.username eq username
         }.let { toAccountStatusList(it) }
+    }
+
+    suspend fun updateStatus(username : String, statusName: String, newValue : Long) = transaction{
+        AccountStatus.update({ (AccountStatus.username eq username).and( AccountStatus.statusName eq statusName) }) {
+            it[value] = newValue
+        }
     }
 
     private fun toAccountStatusList(query: Query): List<AccountStatusDTO> {

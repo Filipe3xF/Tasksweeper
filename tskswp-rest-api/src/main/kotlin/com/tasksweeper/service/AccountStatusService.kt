@@ -1,22 +1,53 @@
 package com.tasksweeper.service
 
 import com.tasksweeper.entities.AccountStatusDTO
+import com.tasksweeper.entities.AccountStatusValues
+import com.tasksweeper.entities.TaskDifficultyValues
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class AccountStatusService : KoinComponent {
     private val accountStatusRepository: AccountStatusRepository by inject()
-    private val hp: Pair<String, Int> = Pair("Health", 5)
-    private val gold: Pair<String, Int> = Pair("Gold", 0)
-    private val exp: Pair<String, Int> = Pair("Experience", 0)
-    private val statusAndValue: List<Pair<String, Int>> = listOf(hp, gold, exp)
+    private val taskService: TaskService by inject()
+
+    private fun calculatedReceivedExperience(level: Long, difficultyValue: Int) = 10 + level * difficultyValue
+
+    private fun calculatedReceivedGold(level: Long, difficultyValue: Int) = 10 + level * difficultyValue
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
-        for (status in statusAndValue) {
-            list.add(accountStatusRepository.insertAccountStatus(accountUsername, status.first, status.second))
+        for (status in AccountStatusValues.values()) {
+            list.add(accountStatusRepository.insertAccountStatus(accountUsername, status.dbName, status.initialValue))
         }
         return list
     }
+
+    suspend fun insertNewStatus(accountUsername: String, level: Long, taskId: Long): Long {
+        val list = accountStatusRepository.selectAccountStatus(accountUsername)
+        val taskDifficultyValue =
+            TaskDifficultyValues.values().single { it.dbName == taskService.getTask(taskId).difficultyName }.value
+
+        val accumulatedExperience = list.single() {
+            it.statusName == "Experience"
+        }.value + calculatedReceivedExperience(level, taskDifficultyValue)
+
+        accountStatusRepository.updateStatus(
+            accountUsername,
+            AccountStatusValues.EXP.dbName,
+            accumulatedExperience
+        )
+
+        val accumulatedGold =
+            list.single { it.statusName == "Gold" }.value + calculatedReceivedGold(level, taskDifficultyValue)
+
+        accountStatusRepository.updateStatus(
+            accountUsername,
+            AccountStatusValues.GOLD.dbName,
+            accumulatedGold
+        )
+
+        return level
+    }
+
 }
