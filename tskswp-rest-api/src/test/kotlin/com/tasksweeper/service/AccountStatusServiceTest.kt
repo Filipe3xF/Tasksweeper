@@ -1,6 +1,5 @@
 package com.tasksweeper.service
 
-import org.koin.test.get
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.repository.AccountStatusRepository
@@ -17,7 +16,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
-import kotlin.test.assertEquals
+import org.koin.test.get
 
 class AccountStatusServiceTest : KoinTest{
 
@@ -72,17 +71,17 @@ class AccountStatusServiceTest : KoinTest{
         runBlocking {
             val list = accountStatusService.insertInitialStatus(username)
 
-            list.filter { it?.statusName == "Health" }.single()!!.let{
+            list.single { it?.statusName == "Health" }!!.let{
                 it.username shouldBe username
                 it.statusName shouldBe "Health"
                 it.value shouldBe 5
             }
-            list.filter { it?.statusName == "Gold" }.single()!!.let {
+            list.single { it?.statusName == "Gold" }!!.let {
                 it.username shouldBe username
                 it.statusName shouldBe "Gold"
                 it.value shouldBe 0
             }
-            list.filter { it?.statusName == "Experience" }.single()!!.let {
+            list.single { it?.statusName == "Experience" }!!.let {
                 it.username shouldBe username
                 it.statusName shouldBe "Experience"
                 it.value shouldBe 0

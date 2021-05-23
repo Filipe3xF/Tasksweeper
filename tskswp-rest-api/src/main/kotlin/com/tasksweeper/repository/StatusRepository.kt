@@ -1,9 +1,12 @@
 package com.tasksweeper.repository
 
-import com.tasksweeper.entities.*
-import com.tasksweeper.exceptions.RegisterException
+import com.tasksweeper.entities.Status
+import com.tasksweeper.entities.StatusDTO
 import com.tasksweeper.repository.DatabaseFactory.transaction
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class StatusRepository {
     suspend fun selectStatus(name: String) = transaction {
@@ -13,13 +16,13 @@ class StatusRepository {
     }
 
     suspend fun selectAllStatus() = transaction {
-        Status.selectAll().let { toStatusList(it) }
+        toStatusList(Status.selectAll())
     }
 
     private fun toStatusList(query: Query): List<StatusDTO> {
-        val list = mutableListOf<StatusDTO>();
+        val list = mutableListOf<StatusDTO>()
         query.forEach { list.add(toStatus(it)) }
-        return list;
+        return list
     }
 
     private fun toStatus(row: ResultRow): StatusDTO = StatusDTO(

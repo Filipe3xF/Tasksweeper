@@ -10,7 +10,6 @@ import com.tasksweeper.service.TaskService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import com.tasksweeper.utils.instantOf
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -186,7 +185,7 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-        val timestamp: String = "${date.year}-${date.month}-${date.day}T${time.hour}:${time.minute}:${time.second}.000Z"
+        val timestamp = "${date.year}-${date.month}-${date.day}T${time.hour}:${time.minute}:${time.second}.000Z"
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/task") {
@@ -213,12 +212,11 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
-            }.let{
+            }.let {
                 it.response.status() shouldBe HttpStatusCode.Unauthorized
             }
         }
