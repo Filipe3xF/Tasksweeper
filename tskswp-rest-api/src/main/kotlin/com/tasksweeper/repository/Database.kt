@@ -38,7 +38,7 @@ object DatabaseFactory {
             } catch (exception: Exception) {
                 logger.error(exception) { "Transaction failed due to the following exception:" }
                 when (exception) {
-                    is NoSuchElementException -> throw  DatabaseNotFoundException()
+                    is NoSuchElementException -> throw DatabaseNotFoundException()
                     else -> throw exception
                 }
             }

@@ -1,6 +1,5 @@
 package com.tasksweeper.controller
 
-import com.tasksweeper.authentication.JWT
 import com.tasksweeper.authentication.getUsername
 import com.tasksweeper.service.TaskService
 import io.ktor.application.*
@@ -10,7 +9,6 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.koin.ktor.ext.inject
-import java.time.Instant
 
 
 fun Routing.taskController() {
@@ -22,10 +20,10 @@ fun Routing.taskController() {
                 taskService.createTask(
                     it.name, it.dueDate, it.dueTime, it.difficultyName,
                     it.repetition, call.getUsername(), it.description
-                ).let {
+                ).let { task ->
                     call.respond(
                         HttpStatusCode.Created,
-                        it
+                        task
                     )
                 }
             }

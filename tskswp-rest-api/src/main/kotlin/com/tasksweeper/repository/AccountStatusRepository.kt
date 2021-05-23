@@ -27,9 +27,9 @@ class AccountStatusRepository {
     }
 
     private fun toAccountStatusList(query: Query): List<AccountStatusDTO> {
-        val list = mutableListOf<AccountStatusDTO>();
+        val list = mutableListOf<AccountStatusDTO>()
         query.forEach { list.add(toAccountStatus(it)) }
-        return list;
+        return list
     }
 
     private fun toAccountStatus(row: ResultRow): AccountStatusDTO = AccountStatusDTO(
