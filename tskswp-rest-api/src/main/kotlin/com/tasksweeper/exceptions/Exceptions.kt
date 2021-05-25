@@ -19,4 +19,4 @@ class InvalidDifficultyException(difficulty: String?) :
 
 class InvalidRepetitionException(repetition: String?) :
     TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'.")
-class NullTaskIdException() : TaskSweeperException("TaskId cannot be null.")
+class InvalidTaskIdException(taskId: String) : TaskSweeperException("'$taskId' is not a valid ID for a Task.")

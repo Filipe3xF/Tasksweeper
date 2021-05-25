@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
 
 
-enum class TaskDifficultyValues(val dbName: String, val value: Int) {
+enum class TaskDifficulty(val dbName: String, val value: Int) {
     EASY("Easy", 1),
     MEDIUM("Medium", 2),
     HARD("Hard", 3)

@@ -2,8 +2,8 @@ package com.tasksweeper.entities
 
 import org.jetbrains.exposed.sql.Table
 
-enum class AccountStatusValues(val dbName: String, val initialValue: Long) {
-    HP("Health", 20),
+enum class AccountStatusValue(val dbName: String, val initialValue: Long) {
+    HP("Health", 100),
     GOLD("Gold", 0),
     EXP("Experience", 0)
 }

@@ -1,6 +1,7 @@
 package com.tasksweeper.repository
 
-import com.tasksweeper.entities.*
+import com.tasksweeper.entities.AccountStatus
+import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.*
 
@@ -23,19 +24,13 @@ class AccountStatusRepository {
     suspend fun selectAccountStatus(username: String) = transaction {
         AccountStatus.select {
             AccountStatus.username eq username
-        }.let { toAccountStatusList(it) }
+        }.map { toAccountStatus(it) }
     }
 
     suspend fun updateStatus(username : String, statusName: String, newValue : Long) = transaction{
-        AccountStatus.update({ (AccountStatus.username eq username).and( AccountStatus.statusName eq statusName) }) {
+        AccountStatus.update({ (AccountStatus.username eq username) and (AccountStatus.statusName eq statusName) }) {
             it[value] = newValue
         }
-    }
-
-    private fun toAccountStatusList(query: Query): List<AccountStatusDTO> {
-        val list = mutableListOf<AccountStatusDTO>()
-        query.forEach { list.add(toAccountStatus(it)) }
-        return list
     }
 
     private fun toAccountStatus(row: ResultRow): AccountStatusDTO = AccountStatusDTO(

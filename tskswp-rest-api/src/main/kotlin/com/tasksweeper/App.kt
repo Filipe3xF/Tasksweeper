@@ -13,7 +13,6 @@ import com.tasksweeper.repository.DatabaseFactory
 import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.service.AccountService
 import com.tasksweeper.service.AccountStatusService
-import com.tasksweeper.service.RewardService
 import com.tasksweeper.service.TaskService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -38,7 +37,6 @@ import java.time.format.DateTimeParseException
 val serviceModule = module {
     single { AccountService() }
     single { AccountStatusService() }
-    single { RewardService() }
     single { TaskService() }
 }
 
@@ -100,20 +98,20 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<InvalidEmailException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidRepetitionException>{
+    exception<InvalidRepetitionException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidDifficultyException>{
+    exception<InvalidDifficultyException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidDueDateException>{
+    exception<InvalidDueDateException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<DateTimeParseException>{
+    exception<DateTimeParseException> {
         call.respond(HttpStatusCode.BadRequest, AppError("${it.parsedString} is not a valid timestamp."))
     }
-    exception<NullTaskIdException> {
-        call.respond(HttpStatusCode.BadRequest, AppError("TaskId cannot be null."))
+    exception<InvalidTaskIdException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
 }
 
