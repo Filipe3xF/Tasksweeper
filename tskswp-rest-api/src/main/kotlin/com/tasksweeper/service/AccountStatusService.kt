@@ -5,7 +5,7 @@ import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.AccountStatusValue
 import com.tasksweeper.entities.AccountStatusValue.EXP
 import com.tasksweeper.entities.AccountStatusValue.GOLD
-import com.tasksweeper.entities.TaskDifficulty
+import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -27,14 +27,17 @@ class AccountStatusService : KoinComponent {
         return list
     }
 
-    suspend fun reward(account: AccountDTO, taskDifficulty: TaskDifficulty) {
+    suspend fun reward(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         accountStatusRepository.selectAccountStatus(account.username).let { statusList ->
-            statusList.updateStatusValue(EXP, calculateExperienceGain(account.level, taskDifficulty.value))
-            statusList.updateStatusValue(GOLD, calculateGoldGain(account.level, taskDifficulty.value))
+            statusList.updateStatusValue(EXP, calculateExperienceGain(account.level, difficultyMultiplier.value))
+            statusList.updateStatusValue(GOLD, calculateGoldGain(account.level, difficultyMultiplier.value))
         }
     }
 
-    private suspend fun List<AccountStatusDTO>.updateStatusValue(accountStatusValue: AccountStatusValue, valueDelta: Long) =
+    private suspend fun List<AccountStatusDTO>.updateStatusValue(
+        accountStatusValue: AccountStatusValue,
+        valueDelta: Long
+    ) =
         single { it.statusName == accountStatusValue.dbName }.let {
             accountStatusRepository.updateStatus(
                 it.username,

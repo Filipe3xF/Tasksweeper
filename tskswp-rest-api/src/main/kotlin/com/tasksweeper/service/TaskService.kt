@@ -2,13 +2,13 @@ package com.tasksweeper.service
 
 import com.tasksweeper.controller.DateDTO
 import com.tasksweeper.controller.TimeDTO
-import com.tasksweeper.entities.Difficulties
 import com.tasksweeper.entities.Repetitions
 import com.tasksweeper.entities.TaskDTO
-import com.tasksweeper.entities.TaskDifficulty
+import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.exceptions.InvalidDifficultyException
 import com.tasksweeper.exceptions.InvalidDueDateException
 import com.tasksweeper.exceptions.InvalidRepetitionException
+import com.tasksweeper.exceptions.NotAuthorizedTaskDeletion
 import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.utils.instantOf
 import org.koin.core.component.KoinComponent
@@ -39,7 +39,7 @@ class TaskService : KoinComponent {
 
         val taskStartDay = Instant.now()
 
-        if (Difficulties.values().none { it.dbName == taskDifficultyName })
+        if (DifficultyMultiplier.values().none { it.dbName == taskDifficultyName })
             throw InvalidDifficultyException(taskDifficultyName)
 
         if (taskRepetition != null && Repetitions.values().none { it.dbName == taskRepetition })
@@ -60,11 +60,15 @@ class TaskService : KoinComponent {
     }
 
     suspend fun closeTaskSuccessfully(username: String, taskId: Long): Any {
+        val task = taskRepository.selectTask(taskId)
+        if (task.accountName != username)
+            throw NotAuthorizedTaskDeletion(username)
         accountStatusService.reward(
             accountService.getAccount(username),
-            TaskDifficulty.values().single { taskRepository.selectTask(taskId).difficultyName == it.dbName }
+            DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
         )
         taskRepository.deleteTask(taskId)
-        return "Task with id: ${taskId} was deleted successfully"
+        return task
     }
+
 }

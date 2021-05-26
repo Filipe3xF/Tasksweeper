@@ -113,6 +113,9 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<InvalidTaskIdException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
+    exception<NotAuthorizedTaskDeletion>{
+        call.respond(HttpStatusCode.Unauthorized, AppError(it.message!!))
+    }
 }
 
 fun Application.installAuthentication() = install(Authentication) {

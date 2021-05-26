@@ -30,8 +30,8 @@ class TaskRepository {
     }
 
 
-    suspend fun selectTask( taskId : Long) = transaction{
-        Task.select{
+    suspend fun selectTask(taskId: Long) = transaction {
+        Task.select {
             Task.id eq taskId
         }.single().let { toTask(it) }
     }
@@ -47,7 +47,7 @@ class TaskRepository {
         description = row[Task.description]
     )
 
-    suspend fun deleteTask(taskId: Long) = transaction{
+    suspend fun deleteTask(taskId: Long) = transaction {
         Task.deleteWhere {
             Task.id eq taskId
         }
