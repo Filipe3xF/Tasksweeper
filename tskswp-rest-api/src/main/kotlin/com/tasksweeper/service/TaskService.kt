@@ -2,9 +2,11 @@ package com.tasksweeper.service
 
 import com.tasksweeper.controller.DateDTO
 import com.tasksweeper.controller.TimeDTO
+import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.entities.Repetitions
 import com.tasksweeper.entities.TaskDTO
-import com.tasksweeper.entities.DifficultyMultiplier
+import com.tasksweeper.entities.TaskResult
+import com.tasksweeper.entities.TaskResult.SUCCESS
 import com.tasksweeper.exceptions.InvalidDifficultyException
 import com.tasksweeper.exceptions.InvalidDueDateException
 import com.tasksweeper.exceptions.InvalidRepetitionException
@@ -59,27 +61,21 @@ class TaskService : KoinComponent {
         )
     }
 
-    suspend fun closeTaskSuccessfully(username: String, taskId: Long): Any {
+    suspend fun closeTask(username: String, taskId: Long, result: TaskResult): Any {
         val task = taskRepository.selectTask(taskId)
         if (task.accountName != username)
             throw NotAuthorizedTaskDeletion(username)
-        accountStatusService.reward(
-            accountService.getAccount(username),
-            DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
-        )
-        taskRepository.deleteTask(taskId)
-        return task
-    }
 
-    suspend fun closeFailedTask(username: String, taskId: Long): Any {
-        val task = taskRepository.selectTask(taskId)
-        if (task.accountName != username)
-            throw NotAuthorizedTaskDeletion(username)
-        accountStatusService.punish(
-            accountService.getAccount(username),
-            DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
-        )
+        val accountDTO = accountService.getAccount(username)
+        val difficulty = DifficultyMultiplier.valueOf(task.difficultyName.toUpperCase())
+
+        if (result == SUCCESS)
+            accountStatusService.reward(accountDTO, difficulty)
+        else
+            accountStatusService.punish(accountDTO, difficulty)
+
         taskRepository.deleteTask(taskId)
+
         return task
     }
 

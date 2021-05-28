@@ -6,6 +6,11 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
 
+enum class TaskResult {
+    SUCCESS,
+    FAILURE,
+}
+
 object Task : LongIdTable("tskswp.task") {
     val name = varchar("name", 256)
     val startDate = timestamp("start_date")

@@ -18,7 +18,8 @@ class AccountStatusService : KoinComponent {
 
     private fun calculateGoldGain(level: Long, difficulty: Int) = 10 + level * difficulty
 
-    private fun calculateHealthLoss(level: Long, difficulty: Int) = (-1) * (level * difficulty)
+    private fun calculateHealthLoss(level: Long, difficulty: Int) =
+        (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
