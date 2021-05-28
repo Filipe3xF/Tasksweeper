@@ -290,7 +290,7 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
-    fun `Fails to deliver rewards because the username is not valid`() {
+    fun `Fails to deliver rewards because the user isn't logged in `() {
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Delete, "/task/1/success") {
                 addContentTypeHeader()
