@@ -27,7 +27,7 @@
     "/task/{taskId}/failure": {
       "delete": {
         "tags": [
-          "Task Punish"
+          "Task"
         ],
         "summary": "Closes a task and punishes the user",
         "parameters": [
@@ -124,7 +124,7 @@
     "/task/{taskId}/success": {
       "delete": {
         "tags": [
-          "Task Reward"
+          "Task"
         ],
         "summary": "Closes a task and gives the user rewards.",
         "parameters": [
