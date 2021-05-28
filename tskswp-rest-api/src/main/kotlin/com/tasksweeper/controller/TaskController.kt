@@ -41,6 +41,18 @@ fun Routing.taskController() {
                 )
             }
         }
+
+        delete("/task/{taskId}/failure") {
+            taskService.closeFailedTask(
+                call.getUsername(),
+                call.parameters["taskId"]!!.let { it.toLongOrNull() ?: throw InvalidTaskIdException(it) }
+            ).let {
+                call.respond(
+                    HttpStatusCode.OK,
+                    it
+                )
+            }
+        }
     }
 }
 

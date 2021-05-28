@@ -71,4 +71,16 @@ class TaskService : KoinComponent {
         return task
     }
 
+    suspend fun closeFailedTask(username: String, taskId: Long): Any {
+        val task = taskRepository.selectTask(taskId)
+        if (task.accountName != username)
+            throw NotAuthorizedTaskDeletion(username)
+        accountStatusService.punish(
+            accountService.getAccount(username),
+            DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
+        )
+        taskRepository.deleteTask(taskId)
+        return task
+    }
+
 }

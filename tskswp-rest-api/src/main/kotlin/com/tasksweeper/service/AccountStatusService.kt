@@ -3,8 +3,7 @@ package com.tasksweeper.service
 import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.AccountStatusValue
-import com.tasksweeper.entities.AccountStatusValue.EXP
-import com.tasksweeper.entities.AccountStatusValue.GOLD
+import com.tasksweeper.entities.AccountStatusValue.*
 import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
@@ -18,6 +17,8 @@ class AccountStatusService : KoinComponent {
         (10 + level.toDouble().pow(1.45) * difficulty).toLong()
 
     private fun calculateGoldGain(level: Long, difficulty: Int) = 10 + level * difficulty
+
+    private fun calculateHealthLoss(level: Long, difficulty: Int) = (-1) * (level * difficulty)
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
@@ -33,6 +34,10 @@ class AccountStatusService : KoinComponent {
             statusList.updateStatusValue(GOLD, calculateGoldGain(account.level, difficultyMultiplier.value))
         }
     }
+
+    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) =
+        accountStatusRepository.selectAccountStatus(account.username)
+            .updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
 
     private suspend fun List<AccountStatusDTO>.updateStatusValue(
         accountStatusValue: AccountStatusValue,
