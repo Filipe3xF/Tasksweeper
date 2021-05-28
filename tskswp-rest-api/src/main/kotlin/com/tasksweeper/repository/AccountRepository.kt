@@ -28,13 +28,11 @@ class AccountRepository {
         }.single().let { toAccount(it) }
     }
 
-
     suspend fun updateLevel(accountUsername: String, newLevel: Long) = transaction {
-        Account.update({ Account.username eq accountUsername}) {
+        Account.update({ Account.username eq accountUsername }) {
             it[level] = newLevel
         }
     }
-
 
     suspend fun deleteAccount(accountUsername: String) = transaction {
         Account.deleteWhere {

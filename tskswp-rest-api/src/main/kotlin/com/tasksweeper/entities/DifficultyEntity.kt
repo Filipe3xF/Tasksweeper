@@ -7,6 +7,7 @@ enum class DifficultyMultiplier(val dbName: String, val value: Int) {
     MEDIUM("Medium", 2),
     HARD("Hard", 3)
 }
+
 object Difficulty : Table("tskswp.difficulty") {
     val name = varchar("name", 256)
     override val primaryKey = PrimaryKey(name, name = "difficulty_pkey")
