@@ -19,3 +19,5 @@ class InvalidDifficultyException(difficulty: String?) :
 
 class InvalidRepetitionException(repetition: String?) :
     TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'.")
+class InvalidTaskIdException(taskId: String) : TaskSweeperException("Task with id '$taskId' does not exist.")
+class NotAuthorizedTaskDeletion(username: String) : TaskSweeperException("The account $username is trying to close a task from another account")

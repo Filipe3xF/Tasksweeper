@@ -98,17 +98,23 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<InvalidEmailException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidRepetitionException>{
+    exception<InvalidRepetitionException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidDifficultyException>{
+    exception<InvalidDifficultyException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<InvalidDueDateException>{
+    exception<InvalidDueDateException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<DateTimeParseException>{
+    exception<DateTimeParseException> {
         call.respond(HttpStatusCode.BadRequest, AppError("${it.parsedString} is not a valid timestamp."))
+    }
+    exception<InvalidTaskIdException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<NotAuthorizedTaskDeletion>{
+        call.respond(HttpStatusCode.Unauthorized, AppError(it.message!!))
     }
 }
 

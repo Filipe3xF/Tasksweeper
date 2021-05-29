@@ -2,10 +2,18 @@ package com.tasksweeper.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
+import com.tasksweeper.entities.AccountDTO
+import com.tasksweeper.entities.AccountStatusDTO
+import com.tasksweeper.entities.AccountStatusValue
 import com.tasksweeper.entities.TaskDTO
 import com.tasksweeper.exceptions.AppError
+import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.module
+import com.tasksweeper.repository.AccountRepository
+import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.TaskRepository
+import com.tasksweeper.service.AccountService
+import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.service.TaskService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
@@ -34,7 +42,11 @@ class TaskControllerTest : KoinTest {
             modules(module(createdAtStart = true) {
                 single { JWT() }
                 single { TaskService() }
+                single { AccountService() }
+                single { AccountStatusService() }
                 single { mockk<TaskRepository>() }
+                single { mockk<AccountStatusRepository>() }
+                single { mockk<AccountRepository>() }
             })
         }
     }
@@ -220,5 +232,115 @@ class TaskControllerTest : KoinTest {
                 it.response.status() shouldBe HttpStatusCode.Unauthorized
             }
         }
+    }
+
+    @Test
+    fun `Deletes an account successfully and delivers the appropriate rewards`() {
+        val taskDTO = TaskDTO(
+            1,
+            "sometask",
+            Instant.now(),
+            Instant.now(),
+            "Easy",
+            "Daily",
+            "username",
+            "I'm describing a test Task"
+        )
+
+        val accountRepository = get<AccountRepository>()
+        coEvery {
+            accountRepository.selectAccount("username")
+        } returns AccountDTO("username", "some@mail.com", "somepass", 1)
+
+        val accountStatusRepository = get<AccountStatusRepository>()
+        coEvery {
+            accountStatusRepository.selectAccountStatus("username")
+        } returns listOf(
+            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.HP.dbName, AccountStatusValue.HP.initialValue),
+            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.EXP.dbName, AccountStatusValue.EXP.initialValue),
+            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.GOLD.dbName, AccountStatusValue.GOLD.initialValue)
+        )
+        coEvery {
+            accountStatusRepository.updateStatus("username", any(), any())
+        } returns 0
+
+        val taskRepository = get<TaskRepository>()
+        coEvery {
+            taskRepository.selectTask(1)
+        } returns taskDTO
+        coEvery {
+            taskRepository.deleteTask(1)
+        } returns 1
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Delete, "/task/1/success") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+                setBody(get<ObjectMapper>().writeValueAsString(taskDTO))
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.OK
+                it.response.content shouldContain taskDTO.id.toString()
+                it.response.content shouldContain taskDTO.accountName
+                it.response.content shouldContain taskDTO.description!!
+                it.response.content shouldContain taskDTO.difficultyName
+                it.response.content shouldContain taskDTO.name
+                it.response.content shouldContain taskDTO.repetitionName!!
+            }
+        }
+    }
+
+    @Test
+    fun `Fails to deliver rewards because the user isn't logged in `() {
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Delete, "/task/1/success") {
+                addContentTypeHeader()
+            }.let {
+                it.response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
+
+    @Test
+    fun `Tried to get rewards for a task that doesn't exist`() {
+        val taskRepository = get<TaskRepository>()
+        coEvery {
+            taskRepository.selectTask(1)
+        } throws DatabaseNotFoundException()
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Delete, "/task/1/success") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.NotFound
+            }
+        }
+    }
+
+    @Test
+    fun `Get an exception after trying to reap the rewards from another account`() {
+        val taskRepository = get<TaskRepository>()
+        coEvery {
+            taskRepository.selectTask(1)
+        } returns TaskDTO(
+            1,
+            "sometask",
+            Instant.now(),
+            Instant.now(),
+            "Easy",
+            null,
+            "NotMyAccount",
+            null
+        )
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Delete, "/task/1/success") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "MyAccount")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+
     }
 }

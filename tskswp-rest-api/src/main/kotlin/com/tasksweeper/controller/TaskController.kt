@@ -1,6 +1,7 @@
 package com.tasksweeper.controller
 
 import com.tasksweeper.authentication.getUsername
+import com.tasksweeper.exceptions.InvalidTaskIdException
 import com.tasksweeper.service.TaskService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -26,6 +27,18 @@ fun Routing.taskController() {
                         task
                     )
                 }
+            }
+        }
+
+        delete("/task/{taskId}/success") {
+            taskService.closeTaskSuccessfully(
+                call.getUsername(),
+                call.parameters["taskId"]!!.let { it.toLongOrNull() ?: throw InvalidTaskIdException(it) }
+            ).let {
+                call.respond(
+                    HttpStatusCode.OK,
+                    it
+                )
             }
         }
     }
