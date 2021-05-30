@@ -2,9 +2,9 @@ package com.tasksweeper.service
 
 import com.tasksweeper.controller.DateDTO
 import com.tasksweeper.controller.TimeDTO
+import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.entities.Repetitions
 import com.tasksweeper.entities.TaskDTO
-import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.exceptions.InvalidDifficultyException
 import com.tasksweeper.exceptions.InvalidDueDateException
 import com.tasksweeper.exceptions.InvalidRepetitionException
@@ -63,12 +63,11 @@ class TaskService : KoinComponent {
         val task = taskRepository.selectTask(taskId)
         if (task.accountName != username)
             throw NotAuthorizedTaskDeletion(username)
+        taskRepository.deleteTask(taskId)
         accountStatusService.reward(
             accountService.getAccount(username),
             DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
         )
-        taskRepository.deleteTask(taskId)
         return task
     }
-
 }
