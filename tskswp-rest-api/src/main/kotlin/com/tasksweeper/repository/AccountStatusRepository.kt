@@ -27,6 +27,12 @@ class AccountStatusRepository {
         }.map { toAccountStatus(it) }
     }
 
+    suspend fun selectAccountStatusByName(username: String, statusName: String) = transaction {
+        AccountStatus.select {
+            (AccountStatus.username eq username) and (AccountStatus.statusName eq statusName)
+        }.single().let { toAccountStatus(it) }
+    }
+
     suspend fun updateStatus(username : String, statusName: String, newValue : Long) = transaction{
         AccountStatus.update({ (AccountStatus.username eq username) and (AccountStatus.statusName eq statusName) }) {
             it[value] = newValue

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.entities.AccountStatusDTO
-import com.tasksweeper.entities.AccountStatusValue
+import com.tasksweeper.entities.AccountStatusValue.*
 import com.tasksweeper.entities.TaskDTO
 import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
@@ -236,6 +236,8 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Deletes a task successfully and delivers the appropriate rewards`() {
+        val username = "username"
+
         val taskDTO = TaskDTO(
             1,
             "sometask",
@@ -243,26 +245,9 @@ class TaskControllerTest : KoinTest {
             Instant.now(),
             "Easy",
             "Daily",
-            "username",
+            username,
             "I'm describing a test Task"
         )
-
-        val accountRepository = get<AccountRepository>()
-        coEvery {
-            accountRepository.selectAccount("username")
-        } returns AccountDTO("username", "some@mail.com", "somepass", 1)
-
-        val accountStatusRepository = get<AccountStatusRepository>()
-        coEvery {
-            accountStatusRepository.selectAccountStatus("username")
-        } returns listOf(
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.HP.dbName, AccountStatusValue.HP.initialValue),
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.EXP.dbName, AccountStatusValue.EXP.initialValue),
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.GOLD.dbName, AccountStatusValue.GOLD.initialValue)
-        )
-        coEvery {
-            accountStatusRepository.updateStatus("username", any(), any())
-        } returns 0
 
         val taskRepository = get<TaskRepository>()
         coEvery {
@@ -271,6 +256,26 @@ class TaskControllerTest : KoinTest {
         coEvery {
             taskRepository.deleteTask(1)
         } returns 1
+
+        val accountRepository = get<AccountRepository>()
+        coEvery {
+            accountRepository.selectAccount("username")
+        } returns AccountDTO(username, "some@mail.com", "somepass", 1)
+
+        val accountStatusRepository = get<AccountStatusRepository>()
+        coEvery {
+            accountStatusRepository.selectAccountStatusByName(username, GOLD.dbName)
+        } returns AccountStatusDTO(username, GOLD.dbName, 10)
+        coEvery {
+            accountStatusRepository.updateStatus(username, GOLD.dbName, any())
+        } returns 20
+
+        coEvery {
+            accountStatusRepository.selectAccountStatusByName(username, EXP.dbName)
+        } returns AccountStatusDTO(username, EXP.dbName, 0)
+        coEvery {
+            accountStatusRepository.updateStatus(username, EXP.dbName, any())
+        } returns 20
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Delete, "/task/1/success") {
@@ -338,7 +343,7 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "MyAccount")
             }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
+                response.status() shouldBe HttpStatusCode.Forbidden
             }
         }
 
@@ -366,9 +371,9 @@ class TaskControllerTest : KoinTest {
         coEvery {
             accountStatusRepository.selectAccountStatus("username")
         } returns listOf(
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.HP.dbName, AccountStatusValue.HP.initialValue),
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.EXP.dbName, AccountStatusValue.EXP.initialValue),
-            AccountStatusDTO(taskDTO.accountName, AccountStatusValue.GOLD.dbName, AccountStatusValue.GOLD.initialValue)
+            AccountStatusDTO(taskDTO.accountName, HP.dbName, HP.initialValue),
+            AccountStatusDTO(taskDTO.accountName, EXP.dbName, EXP.initialValue),
+            AccountStatusDTO(taskDTO.accountName, GOLD.dbName, GOLD.initialValue)
         )
         coEvery {
             accountStatusRepository.updateStatus("username", any(), any())
@@ -448,7 +453,7 @@ class TaskControllerTest : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), "MyAccount")
             }.apply {
-                response.status() shouldBe HttpStatusCode.Unauthorized
+                response.status() shouldBe HttpStatusCode.Forbidden
             }
         }
 
