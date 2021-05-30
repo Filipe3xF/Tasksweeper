@@ -70,7 +70,7 @@ class TaskService : KoinComponent {
         taskRepository.deleteTask(taskId)
 
         accountService.getAccount(username).let { account ->
-            DifficultyMultiplier.valueOf(task.difficultyName.toUpperCase()).let { difficulty ->
+            DifficultyMultiplier.valueOf(task.difficultyName.uppercase()).let { difficulty ->
                 if (result == SUCCESS)
                     accountStatusService.reward(account, difficulty)
                 else
