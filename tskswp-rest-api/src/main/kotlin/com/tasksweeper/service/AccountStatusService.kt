@@ -27,6 +27,9 @@ class AccountStatusService : KoinComponent {
 
     private fun calculateMaximumHealth(level: Long) = 100 + round(level.toDouble().pow(2.1) / 2).toLong()
 
+    private fun calculateHealthLoss(level: Long, difficulty: Int) =
+        (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
+
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
         for (status in AccountStatusValue.values()) {
@@ -39,6 +42,10 @@ class AccountStatusService : KoinComponent {
         increaseAccountExperience(account.username, account.level, difficultyMultiplier.value)
         increaseAccountGold(account.username, account.level, difficultyMultiplier.value)
     }
+
+    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) =
+        accountStatusRepository.selectAccountStatus(account.username)
+            .updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
 
     private suspend fun increaseAccountGold(
         accountUsername: String,

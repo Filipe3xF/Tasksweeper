@@ -5,6 +5,8 @@ import com.tasksweeper.controller.TimeDTO
 import com.tasksweeper.entities.DifficultyMultiplier
 import com.tasksweeper.entities.Repetitions
 import com.tasksweeper.entities.TaskDTO
+import com.tasksweeper.entities.TaskResult
+import com.tasksweeper.entities.TaskResult.SUCCESS
 import com.tasksweeper.exceptions.InvalidDifficultyException
 import com.tasksweeper.exceptions.InvalidDueDateException
 import com.tasksweeper.exceptions.InvalidRepetitionException
@@ -59,15 +61,22 @@ class TaskService : KoinComponent {
         )
     }
 
-    suspend fun closeTaskSuccessfully(username: String, taskId: Long): Any {
+    suspend fun closeTask(username: String, taskId: Long, result: TaskResult): Any {
         val task = taskRepository.selectTask(taskId)
+
         if (task.accountName != username)
             throw NotAuthorizedTaskDeletion(username)
+
         taskRepository.deleteTask(taskId)
-        accountStatusService.reward(
-            accountService.getAccount(username),
-            DifficultyMultiplier.values().single { task.difficultyName == it.dbName }
-        )
+
+        accountService.getAccount(username).let { account ->
+            DifficultyMultiplier.valueOf(task.difficultyName.toUpperCase()).let { difficulty ->
+                if (result == SUCCESS)
+                    accountStatusService.reward(account, difficulty)
+                else
+                    accountStatusService.punish(account, difficulty)
+            }
+        }
         return task
     }
 }

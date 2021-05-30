@@ -24,10 +24,107 @@
     }
   ],
   "paths": {
+    "/task/{taskId}/failure": {
+      "delete": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Closes a task and punishes the user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "taskId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the task that the user wants to close"
+          }
+        ],
+        "operationId": "deleteFailedTask",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Information about the task that was removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Didn t insert a valid taskId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Task with id something does not exist."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Either not logged in an account, or tried to delete a task that belongs to another user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not allowed to make changes to this task"
+                    }
+                  }
+                },
+                "examples": {
+                  "JWT": {
+                    "value": {
+                      "error": "Error due to invalid credentials."
+                    }
+                  },
+                  "Invalid Account": {
+                    "value": {
+                      "error": "The account username is trying to close a task from another account"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Didn t find a TaskId in the database that matched the one in the input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The desired element was not found in the database."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/task/{taskId}/success": {
       "delete": {
         "tags": [
-          "Task Reward"
+          "Task"
         ],
         "summary": "Closes a task and gives the user rewards.",
         "parameters": [
