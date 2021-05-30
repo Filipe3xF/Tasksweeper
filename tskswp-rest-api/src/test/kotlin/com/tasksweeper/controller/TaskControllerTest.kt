@@ -235,7 +235,7 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
-    fun `Deletes an account successfully and delivers the appropriate rewards`() {
+    fun `Deletes a task successfully and delivers the appropriate rewards`() {
         val taskDTO = TaskDTO(
             1,
             "sometask",
@@ -345,7 +345,7 @@ class TaskControllerTest : KoinTest {
     }
 
     @Test
-    fun `Deletes an account successfully and punishes the account accordingly`() {
+    fun `Deletes a task successfully and punishes the account accordingly`() {
         val taskDTO = TaskDTO(
             1,
             "sometask",
