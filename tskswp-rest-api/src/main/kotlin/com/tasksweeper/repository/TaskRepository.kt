@@ -29,7 +29,6 @@ class TaskRepository {
         }.resultedValues?.first()?.let { toTask(it) } ?: throw DatabaseNotFoundException("Task")
     }
 
-
     suspend fun selectTask(taskId: Long) = transaction {
         Task.select {
             Task.id eq taskId
