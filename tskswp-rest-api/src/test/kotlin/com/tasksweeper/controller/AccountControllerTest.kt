@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.entities.AccountStatusDTO
+import com.tasksweeper.entities.AccountStatusValue
 import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.module
@@ -76,16 +77,36 @@ class AccountControllerTest : KoinTest {
         val accountStatusRepository = get<AccountStatusRepository>()
 
         coEvery {
-            accountStatusRepository.insertAccountStatus(register.username, "Health", 5)
-        } returns AccountStatusDTO("TaskSweeperUser","Health", 5)
+            accountStatusRepository.insertAccountStatus(
+                register.username,
+                AccountStatusValue.HP.dbName,
+                AccountStatusValue.HP.initialValue
+            )
+        } returns AccountStatusDTO(register.username, AccountStatusValue.HP.dbName, AccountStatusValue.HP.initialValue)
 
         coEvery {
-            accountStatusRepository.insertAccountStatus(register.username, "Gold", 0)
-        } returns AccountStatusDTO("TaskSweeperUser","Gold", 0)
+            accountStatusRepository.insertAccountStatus(
+                register.username,
+                AccountStatusValue.GOLD.dbName,
+                AccountStatusValue.GOLD.initialValue
+            )
+        } returns AccountStatusDTO(
+            register.username,
+            AccountStatusValue.GOLD.dbName,
+            AccountStatusValue.GOLD.initialValue
+        )
 
         coEvery {
-            accountStatusRepository.insertAccountStatus(register.username, "Experience", 0)
-        } returns AccountStatusDTO("TaskSweeperUser","Experience", 0)
+            accountStatusRepository.insertAccountStatus(
+                register.username,
+                AccountStatusValue.EXP.dbName,
+                AccountStatusValue.EXP.initialValue
+            )
+        } returns AccountStatusDTO(
+            register.username,
+            AccountStatusValue.EXP.dbName,
+            AccountStatusValue.EXP.initialValue
+        )
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/register") {

@@ -156,7 +156,7 @@
             }
           },
           "400": {
-            "description": "Didn t insert a valid taskId",
+            "description": "Didn't insert a valid taskId.",
             "content": {
               "application/json": {
                 "schema": {
@@ -172,7 +172,7 @@
             }
           },
           "401": {
-            "description": "Either not logged in an account, or tried to delete a task that belongs to another user",
+            "description": "JWT is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -180,19 +180,23 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Not allowed to make changes to this task"
+                      "example": "Error due to invalid credentials."
                     }
                   }
-                },
-                "examples": {
-                  "JWT": {
-                    "value": {
-                      "error": "Error due to invalid credentials."
-                    }
-                  },
-                  "Invalid Account": {
-                    "value": {
-                      "error": "The account username is trying to close a task from another account"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to delete the desired task.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The account username is trying to close a task from another account."
                     }
                   }
                 }
@@ -200,7 +204,7 @@
             }
           },
           "404": {
-            "description": "Didn t find a TaskId in the database that matched the one in the input",
+            "description": "Didn t find a TaskId in the database that matched the one in the input.",
             "content": {
               "application/json": {
                 "schema": {

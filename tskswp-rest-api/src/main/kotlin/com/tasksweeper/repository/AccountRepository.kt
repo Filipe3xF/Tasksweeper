@@ -28,9 +28,19 @@ class AccountRepository {
         }.single().let { toAccount(it) }
     }
 
-    suspend fun updateLevel(accountUsername: String, newLevel: Long) = transaction {
+    suspend fun levelUp(accountUsername: String) = transaction {
         Account.update({ Account.username eq accountUsername }) {
-            it[level] = newLevel
+            with(SqlExpressionBuilder) {
+                it[level] = level + 1
+            }
+        }
+    }
+
+    suspend fun levelDown(accountUsername: String) = transaction {
+        Account.update({ Account.username eq accountUsername }) {
+            with(SqlExpressionBuilder) {
+                it[level] = level - 1
+            }
         }
     }
 

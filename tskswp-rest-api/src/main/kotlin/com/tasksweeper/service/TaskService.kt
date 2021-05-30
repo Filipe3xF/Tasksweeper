@@ -63,20 +63,20 @@ class TaskService : KoinComponent {
 
     suspend fun closeTask(username: String, taskId: Long, result: TaskResult): Any {
         val task = taskRepository.selectTask(taskId)
+
         if (task.accountName != username)
             throw NotAuthorizedTaskDeletion(username)
 
-        val accountDTO = accountService.getAccount(username)
-        val difficulty = DifficultyMultiplier.valueOf(task.difficultyName.toUpperCase())
-
-        if (result == SUCCESS)
-            accountStatusService.reward(accountDTO, difficulty)
-        else
-            accountStatusService.punish(accountDTO, difficulty)
-
         taskRepository.deleteTask(taskId)
 
+        accountService.getAccount(username).let { account ->
+            DifficultyMultiplier.valueOf(task.difficultyName.uppercase()).let { difficulty ->
+                if (result == SUCCESS)
+                    accountStatusService.reward(account, difficulty)
+                else
+                    accountStatusService.punish(account, difficulty)
+            }
+        }
         return task
     }
-
 }
