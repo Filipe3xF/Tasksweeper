@@ -22,9 +22,9 @@ class AccountStatusService : KoinComponent {
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
         (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
-    private fun calculateGoldLost(gold: Long) = gold - (gold * 0.10).toLong()
+    private fun calculateGoldLost(gold: Long) = - (gold * 0.10).toLong()
 
-    private fun calculateMaxHealth(level: Long) = 100 + (20 * (level - 1))
+    private fun calculateMaxHealth(level: Long) : Long = (100 + ((level - 1) * (20)))
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
@@ -52,8 +52,8 @@ class AccountStatusService : KoinComponent {
     private suspend fun List<AccountStatusDTO>.downgradeCharacter(account: AccountDTO) {
         val newLevel: Long = accountService.levelDownAccount(account.username, account.level)
 
-        updateStatusValue(HP, calculateMaxHealth(newLevel))
-        updateStatusValue(EXP, 0)
+        updateStatusValue(HP, calculateMaxHealth(newLevel) - single{it.statusName == HP.dbName}.value)
+        updateStatusValue(EXP, -single { it.statusName == EXP.dbName }.value)
         updateStatusValue(GOLD, calculateGoldLost(single { it.statusName == GOLD.dbName }.value))
     }
 
