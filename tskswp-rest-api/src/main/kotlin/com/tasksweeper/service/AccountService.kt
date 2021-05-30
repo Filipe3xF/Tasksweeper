@@ -52,8 +52,15 @@ class AccountService : KoinComponent {
                 throw InvalidCredentialsException()
         }
 
-    suspend fun updateAccountLevel(accountUsername: String, newLevel: Long) {
+    suspend fun levelDownAccount(accountUsername: String, level: Long): Long {
+        val newLevel : Long =
+        if (level >= 2)
+            (level - 1)
+        else
+            1
         accountRepository.updateLevel(accountUsername, newLevel)
+
+        return newLevel
     }
 
     suspend fun getAccount(accountUsername: String): AccountDTO =

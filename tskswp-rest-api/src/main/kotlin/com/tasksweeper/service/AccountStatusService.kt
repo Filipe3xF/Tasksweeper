@@ -12,6 +12,7 @@ import kotlin.math.pow
 
 class AccountStatusService : KoinComponent {
     private val accountStatusRepository: AccountStatusRepository by inject()
+    private val accountService: AccountService by inject()
 
     private fun calculateExperienceGain(level: Long, difficulty: Int) =
         (10 + level.toDouble().pow(1.45) * difficulty).toLong()
@@ -20,6 +21,10 @@ class AccountStatusService : KoinComponent {
 
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
         (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
+
+    private fun calculateGoldLost(gold: Long) = gold - (gold * 0.10).toLong()
+
+    private fun calculateMaxHealth(level: Long) = 100 + (20 * (level - 1))
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
@@ -36,19 +41,35 @@ class AccountStatusService : KoinComponent {
         }
     }
 
-    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) =
-        accountStatusRepository.selectAccountStatus(account.username)
-            .updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
+    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
+        val accountStatusList = accountStatusRepository.selectAccountStatus(account.username)
+        val currentHealth =
+            accountStatusList.updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
+        if (currentHealth <= 0)
+            accountStatusList.downgradeCharacter(account)
+    }
+
+    private suspend fun List<AccountStatusDTO>.downgradeCharacter(account: AccountDTO) {
+        val newLevel: Long = accountService.levelDownAccount(account.username, account.level)
+
+        updateStatusValue(HP, calculateMaxHealth(newLevel))
+        updateStatusValue(EXP, 0)
+        updateStatusValue(GOLD, calculateGoldLost(single { it.statusName == GOLD.dbName }.value))
+    }
 
     private suspend fun List<AccountStatusDTO>.updateStatusValue(
         accountStatusValue: AccountStatusValue,
         valueDelta: Long
-    ) =
+    ): Long {
+        val newValue: Long
         single { it.statusName == accountStatusValue.dbName }.let {
+            newValue = it.value + valueDelta
             accountStatusRepository.updateStatus(
                 it.username,
                 it.statusName,
-                it.value + valueDelta
+                newValue
             )
         }
+        return newValue
+    }
 }
