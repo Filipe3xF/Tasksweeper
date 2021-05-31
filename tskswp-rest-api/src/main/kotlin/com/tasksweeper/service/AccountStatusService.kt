@@ -30,7 +30,7 @@ class AccountStatusService : KoinComponent {
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
         (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
-    private fun calculateGoldLost(gold: Long) = - (gold * 0.10).toLong()
+    private fun calculateNewGoldAfterPunish(gold: Long) = gold - (gold * 0.10)
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
@@ -54,12 +54,30 @@ class AccountStatusService : KoinComponent {
     }
 
     private suspend fun List<AccountStatusDTO>.downgradeCharacter(account: AccountDTO) {
-        val newLevel: Long = accountService.levelDownAccount(account.username, account.level)
+        var newLevel = account.level
+        val username = account.username
 
-        updateStatusValue(HP, calculateMaximumHealth(newLevel) - single{it.statusName == HP.dbName}.value)
-        updateStatusValue(EXP, -single { it.statusName == EXP.dbName }.value)
-        updateStatusValue(GOLD, calculateGoldLost(single { it.statusName == GOLD.dbName }.value))
+        if (account.level >= 2) {
+            accountLevelDown(username)
+            newLevel--
+        }
+
+        refillAccountHealth(username, newLevel)
+        resetAccountExperience(username)
+        decreaseAccountGold(username)
     }
+
+    private suspend fun decreaseAccountGold(accountUsername: String) =
+        accountStatusRepository.selectAccountStatusByName(accountUsername, GOLD.dbName).let {
+            var newGold = calculateNewGoldAfterPunish(it.value).toLong()
+            if (newGold <= 0)
+                newGold = 0
+            it.updateStatusValue(newGold)
+        }
+
+    private suspend fun resetAccountExperience(accountUsername: String) =
+        accountStatusRepository.selectAccountStatusByName(accountUsername, EXP.dbName).updateStatusValue(0)
+
 
     private suspend fun increaseAccountGold(
         accountUsername: String,
@@ -98,6 +116,8 @@ class AccountStatusService : KoinComponent {
     )
 
     private suspend fun accountLevelUp(accountUsername: String) = accountService.levelUp(accountUsername)
+
+    private suspend fun accountLevelDown(accountUsername: String) = accountService.levelDown(accountUsername)
 
     private suspend fun AccountStatusDTO.updateStatusValue(
         value: Long
