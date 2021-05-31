@@ -30,6 +30,8 @@ class AccountStatusService : KoinComponent {
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
         (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
+    private fun calculateNewGoldAfterPunish(gold: Long) = (gold - (gold * 0.10)).toLong()
+
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
         for (status in AccountStatusValue.values()) {
@@ -43,9 +45,44 @@ class AccountStatusService : KoinComponent {
         increaseAccountGold(account.username, account.level, difficultyMultiplier.value)
     }
 
-    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) =
-        accountStatusRepository.selectAccountStatus(account.username)
-            .updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
+    suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
+        takeDamage(account, difficultyMultiplier)
+    }
+
+    private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
+        val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)
+        val newHealth = currentHealth.value - calculateHealthLoss(account.level, difficultyMultiplier.value)
+
+        if (newHealth <= 0)
+            downgradeCharacter(account)
+        else
+            currentHealth.updateStatusValue(newHealth)
+    }
+
+    private suspend fun downgradeCharacter(account: AccountDTO) {
+        var newLevel = account.level
+        val username = account.username
+
+        if (account.level >= 2) {
+            accountLevelDown(username)
+            newLevel--
+        }
+
+        refillAccountHealth(username, newLevel)
+        resetAccountExperience(username)
+        decreaseAccountGold(username)
+    }
+
+    private suspend fun decreaseAccountGold(accountUsername: String) =
+        accountStatusRepository.selectAccountStatusByName(accountUsername, GOLD.dbName).let {
+            var newGold = calculateNewGoldAfterPunish(it.value)
+            if (newGold < 0)
+                newGold = 0
+            it.updateStatusValue(newGold)
+        }
+
+    private suspend fun resetAccountExperience(accountUsername: String) =
+        accountStatusRepository.selectAccountStatusByName(accountUsername, EXP.dbName).updateStatusValue(0)
 
     private suspend fun increaseAccountGold(
         accountUsername: String,
@@ -85,6 +122,8 @@ class AccountStatusService : KoinComponent {
 
     private suspend fun accountLevelUp(accountUsername: String) = accountService.levelUp(accountUsername)
 
+    private suspend fun accountLevelDown(accountUsername: String) = accountService.levelDown(accountUsername)
+
     private suspend fun AccountStatusDTO.updateStatusValue(
         value: Long
     ) = accountStatusRepository.updateStatus(
@@ -92,16 +131,4 @@ class AccountStatusService : KoinComponent {
         statusName,
         value
     )
-
-    private suspend fun List<AccountStatusDTO>.updateStatusValue(
-        accountStatusValue: AccountStatusValue,
-        valueDelta: Long
-    ) =
-        single { it.statusName == accountStatusValue.dbName }.let {
-            accountStatusRepository.updateStatus(
-                it.username,
-                it.statusName,
-                it.value + valueDelta
-            )
-        }
 }

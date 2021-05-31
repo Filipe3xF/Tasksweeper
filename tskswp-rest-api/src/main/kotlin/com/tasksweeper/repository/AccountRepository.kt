@@ -36,6 +36,14 @@ class AccountRepository {
         }
     }
 
+    suspend fun levelDown(accountUsername: String) = transaction {
+        Account.update({ Account.username eq accountUsername }) {
+            with(SqlExpressionBuilder) {
+                it[level] = level - 1
+            }
+        }
+    }
+
     suspend fun deleteAccount(accountUsername: String) = transaction {
         Account.deleteWhere {
             Account.username eq accountUsername
