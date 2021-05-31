@@ -55,10 +55,8 @@ class AccountService : KoinComponent {
     suspend fun levelUp(accountUsername: String) =
         accountRepository.levelUp(accountUsername)
 
-
     suspend fun levelDown(accountUsername: String) =
         accountRepository.levelDown(accountUsername)
-
 
     suspend fun getAccount(accountUsername: String): AccountDTO =
         accountRepository.selectAccount(accountUsername)

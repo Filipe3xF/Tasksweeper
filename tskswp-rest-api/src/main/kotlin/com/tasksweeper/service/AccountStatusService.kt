@@ -30,7 +30,7 @@ class AccountStatusService : KoinComponent {
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
         (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
-    private fun calculateNewGoldAfterPunish(gold: Long) = gold - (gold * 0.10)
+    private fun calculateNewGoldAfterPunish(gold: Long) = (gold - (gold * 0.10)).toLong()
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
         val list = mutableListOf<AccountStatusDTO?>()
@@ -46,14 +46,20 @@ class AccountStatusService : KoinComponent {
     }
 
     suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
-        val accountStatusList = accountStatusRepository.selectAccountStatus(account.username)
-        val currentHealth =
-            accountStatusList.updateStatusValue(HP, calculateHealthLoss(account.level, difficultyMultiplier.value))
-        if (currentHealth <= 0)
-            accountStatusList.downgradeCharacter(account)
+        takeDamage(account, difficultyMultiplier)
     }
 
-    private suspend fun List<AccountStatusDTO>.downgradeCharacter(account: AccountDTO) {
+    private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
+        val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)
+        val newHealth = (currentHealth.value - calculateHealthLoss(account.level, difficultyMultiplier.value))
+
+        if (newHealth <= 0)
+            downgradeCharacter(account)
+        else
+            currentHealth.updateStatusValue(newHealth)
+    }
+
+    private suspend fun downgradeCharacter(account: AccountDTO) {
         var newLevel = account.level
         val username = account.username
 
@@ -69,7 +75,7 @@ class AccountStatusService : KoinComponent {
 
     private suspend fun decreaseAccountGold(accountUsername: String) =
         accountStatusRepository.selectAccountStatusByName(accountUsername, GOLD.dbName).let {
-            var newGold = calculateNewGoldAfterPunish(it.value).toLong()
+            var newGold = calculateNewGoldAfterPunish(it.value)
             if (newGold <= 0)
                 newGold = 0
             it.updateStatusValue(newGold)
@@ -77,7 +83,6 @@ class AccountStatusService : KoinComponent {
 
     private suspend fun resetAccountExperience(accountUsername: String) =
         accountStatusRepository.selectAccountStatusByName(accountUsername, EXP.dbName).updateStatusValue(0)
-
 
     private suspend fun increaseAccountGold(
         accountUsername: String,
@@ -126,20 +131,4 @@ class AccountStatusService : KoinComponent {
         statusName,
         value
     )
-
-    private suspend fun List<AccountStatusDTO>.updateStatusValue(
-        accountStatusValue: AccountStatusValue,
-        valueDelta: Long
-    ): Long {
-        val newValue: Long
-        single { it.statusName == accountStatusValue.dbName }.let {
-            newValue = it.value + valueDelta
-            accountStatusRepository.updateStatus(
-                it.username,
-                it.statusName,
-                it.value + valueDelta
-            )
-        }
-        return newValue
-    }
 }
