@@ -83,19 +83,23 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Not allowed to make changes to this task"
+                      "example": "Error due to invalid credentials."
                     }
                   }
-                },
-                "examples": {
-                  "JWT": {
-                    "value": {
-                      "error": "Error due to invalid credentials."
-                    }
-                  },
-                  "Invalid Account": {
-                    "value": {
-                      "error": "The account username is trying to close a task from another account"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Tried to delete a task that belongs to another user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The account username is trying to close a task from another account"
                     }
                   }
                 }
