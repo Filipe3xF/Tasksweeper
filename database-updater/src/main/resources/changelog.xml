@@ -418,4 +418,60 @@
         <modifyDataType tableName="creminder" columnName="quest_id" newDataType="bigint"
                         schemaName="tskswp"/>
     </changeSet>
+    <changeSet id="32" author="sebas">
+        <insert tableName="consumable" schemaName="tskswp">
+            <column name="name" value="Health Potion"/>
+            <column name="price" value="20"/>
+            <column name="description" value="Restores 15% of your max HP"/>
+        </insert>
+        <insert tableName="consumable_status" schemaName="tskswp">
+            <column name="consumable_name" value="Health Potion"/>
+            <column name="status_name" value="Health"/>
+            <column name="value" value="15"/>
+            <column name="percentage" value="true"/>
+            <column name="instant" value="false"/>
+        </insert>
+    </changeSet>
+    <changeSet id="33" author="sebas">
+        <delete schemaName="tskswp" tableName="consumable_status"/>
+        <delete schemaName="tskswp" tableName="consumable"/>
+        <dropForeignKeyConstraint  baseTableName="account_consumable" baseTableSchemaName="tskswp"
+                                   constraintName="fk_consumable"/>
+        <dropForeignKeyConstraint  baseTableName="consumable_status" baseTableSchemaName="tskswp"
+                                   constraintName="fk_consumable"/>
+        <dropColumn tableName="consumable" schemaName="tskswp" columnName="name"/>
+        <addColumn tableName="consumable" schemaName="tskswp">
+            <column name="name" type="varchar(256)" >
+                <constraints unique="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="account_consumable" baseColumnNames="consumable_name" constraintName="fk_consumable"
+                                 referencedTableName="consumable"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+        <addForeignKeyConstraint baseTableName="consumable_status" baseColumnNames="consumable_name" constraintName="fk_consumable"
+                                 referencedTableName="consumable"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+        <addColumn tableName="consumable" schemaName="tskswp">
+            <column name="id" type="bigint"/>
+        </addColumn>
+        <addPrimaryKey tableName="consumable" columnNames="id" schemaName="tskswp" constraintName="key_consumable"/>
+        <addAutoIncrement tableName="consumable" columnName="id" schemaName="tskswp"/>
+        <insert tableName="consumable" schemaName="tskswp">
+            <column name="name" value="Health Potion"/>
+            <column name="price" value="20"/>
+            <column name="description" value="Restores 15% of your max HP"/>
+        </insert>
+        <insert tableName="consumable_status" schemaName="tskswp">
+            <column name="consumable_name" value="Health Potion"/>
+            <column name="status_name" value="Health"/>
+            <column name="value" value="15"/>
+            <column name="percentage" value="true"/>
+            <column name="instant" value="false"/>
+        </insert>
+    </changeSet>
+    <changeSet id="34" author="sebas">
+        <addNotNullConstraint tableName="consumable" columnName="name" schemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 
