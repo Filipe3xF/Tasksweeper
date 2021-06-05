@@ -24,6 +24,93 @@
     }
   ],
   "paths": {
+    "/consumable/{consumableId}/buy": {
+      "post": {
+        "tags": [
+          "Consumable"
+        ],
+        "summary": "Management of Consumables in the app",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consumableId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the consumable that the user wishes to buy"
+          }
+        ],
+        "operationId": "buyConsumable",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Information about the purchased Consumable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Health Potion"
+                    },
+                    "price": {
+                      "type": "integer",
+                      "example": 20
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Restores 15% of max HP"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tried to buy a non-existing item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The desired element was not found in the database."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Attempted purchase without having enough gold",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The user username doesn't have enough gold to purchase the item"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/task/{taskId}/failure": {
       "delete": {
         "tags": [
