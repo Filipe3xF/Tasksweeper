@@ -9,6 +9,7 @@ class DatabaseNotFoundException(entityName: String? = null) : TaskSweeperExcepti
     entityName?.let { "The desired element of type $entityName was not found in the database." }
         ?: "The desired element was not found in the database."
 )
+
 class InvalidEmailException(email: String) : TaskSweeperException("The email '$email' is not valid.")
 class InvalidUsernameException(username: String) : TaskSweeperException("The username '$username' is not valid.")
 class InvalidDueDateException(instant: String?) :
@@ -19,6 +20,10 @@ class InvalidDifficultyException(difficulty: String?) :
 
 class InvalidRepetitionException(repetition: String?) :
     TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'.")
+
 class InvalidTaskIdException(taskId: String) : TaskSweeperException("Task with id '$taskId' does not exist.")
-class NotAuthorizedTaskDeletion(username: String) : TaskSweeperException("The account $username is trying to close a task from another account.")
-class NotEnoughGoldException(username: String) : TaskSweeperException("The user $username doesn't have enough gold to purchase the item")
+class NotAuthorizedTaskDeletion(username: String) :
+    TaskSweeperException("The account $username is trying to close a task from another account.")
+
+class NotEnoughGoldException(username: String) :
+    TaskSweeperException("The user $username doesn't have enough gold to purchase the item")
