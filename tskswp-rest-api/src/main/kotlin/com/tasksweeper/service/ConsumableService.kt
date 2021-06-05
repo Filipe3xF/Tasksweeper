@@ -13,9 +13,9 @@ class ConsumableService : KoinComponent{
 
 
 
-    suspend fun buyItem(username: String, consumableId: Long): Any {
+    suspend fun obtainItem(username: String, consumableId: Long): Any {
         val consumable = consumableRepository.selectConsumable(consumableId)
-        accountStatusService.buyItem(username, consumable)
+        accountStatusService.purchaseItem(username, consumable)
         accountConsumableService.addItem( username, consumable)
         return consumable
     }

@@ -48,7 +48,7 @@ class AccountStatusService : KoinComponent {
         takeDamage(account, difficultyMultiplier)
     }
 
-    suspend fun buyItem(username: String, consumable: ConsumableDTO) {
+    suspend fun purchaseItem(username: String, consumable: ConsumableDTO) {
         decreaseAccountGold(username) { currentGold ->
             val updatedGold = currentGold - consumable.price
             if(updatedGold < 0)

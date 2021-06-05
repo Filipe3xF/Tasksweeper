@@ -21,5 +21,4 @@ class InvalidRepetitionException(repetition: String?) :
     TaskSweeperException("Repetition named $repetition does not exist! Please pick 'Daily', 'Weekly', 'Monthly' or 'Yearly'.")
 class InvalidTaskIdException(taskId: String) : TaskSweeperException("Task with id '$taskId' does not exist.")
 class NotAuthorizedTaskDeletion(username: String) : TaskSweeperException("The account $username is trying to close a task from another account.")
-class NonExistingConsumable(consumableName: String) : TaskSweeperException("The consumable $consumableName doesn't exist or was mistyped.")
 class NotEnoughGoldException(username: String) : TaskSweeperException("The user $username doesn't have enough gold to purchase the item")

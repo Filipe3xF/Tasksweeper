@@ -117,8 +117,8 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<NotAuthorizedTaskDeletion>{
         call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))
     }
-    exception<NonExistingConsumable> {
-        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    exception<NotEnoughGoldException> {
+        call.respond(HttpStatusCode.NotAcceptable, AppError(it.message!!))
     }
 }
 

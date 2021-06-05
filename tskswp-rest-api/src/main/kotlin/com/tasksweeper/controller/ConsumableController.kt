@@ -13,12 +13,12 @@ fun Routing.consumableController() {
     val consumableService: ConsumableService by inject()
     authenticate {
         post("/consumable/{consumableId}/buy") {
-            consumableService.buyItem(
+            consumableService.obtainItem(
                 call.getUsername(),
                 call.parameters["consumableId"]?.toLong()!!
             ).let { consumable ->
                 call.respond(
-                    HttpStatusCode.Created,
+                    HttpStatusCode.Accepted,
                     consumable
                 )
             }
