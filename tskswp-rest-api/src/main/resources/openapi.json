@@ -3,7 +3,7 @@
   "servers": [],
   "info": {
     "description": "Documentation for the Tasksweeper API.",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "title": "Tasksweeper API",
     "contact": {
       "email": "filipe3xf@gmail.com"
@@ -24,12 +24,12 @@
     }
   ],
   "paths": {
-    "/task/{taskId}/failure": {
+    "/task/{taskId}": {
       "delete": {
         "tags": [
           "Task"
         ],
-        "summary": "Closes a task and punishes the user",
+        "summary": "Deletes a task.",
         "parameters": [
           {
             "in": "path",
@@ -38,10 +38,10 @@
               "type": "integer"
             },
             "required": true,
-            "description": "ID of the task that the user wants to close"
+            "description": "ID of the task to be deleted"
           }
         ],
-        "operationId": "deleteFailedTask",
+        "operationId": "deleteTask",
         "security": [
           {
             "BearerAuth": []
@@ -49,7 +49,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Information about the task that was removed",
+            "description": "Task deleted successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -59,7 +59,7 @@
             }
           },
           "400": {
-            "description": "Didn t insert a valid taskId",
+            "description": "Didn't insert a valid taskId.",
             "content": {
               "application/json": {
                 "schema": {
@@ -75,7 +75,10 @@
             }
           },
           "401": {
-            "description": "Either not logged in an account, or tried to delete a task that belongs to another user",
+            "description": "JWT is invalid."
+          },
+          "403": {
+            "description": "User does not have permission to delete the desired task.",
             "content": {
               "application/json": {
                 "schema": {
@@ -83,19 +86,148 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Not allowed to make changes to this task"
+                      "example": "The account username is trying to delete a task from another account."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Didn t find a TaskId in the database that matched the one in the input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The desired element was not found in the database."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/task/{taskId}/failure": {
+      "patch": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Closes a task and punishes the user.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "taskId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the task that the user wants to close"
+          }
+        ],
+        "operationId": "failTask",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task was failed and user as punished",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Task Name"
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "example": "2021-05-22 16:03:30"
+                    },
+                    "dueDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "2032-10-01 06:10:25"
+                    },
+                    "difficultyName": {
+                      "type": "string",
+                      "example": "Easy/Medium/Hard"
+                    },
+                    "repetitionName": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Daily/Weekly/Monthly/Yearly"
+                    },
+                    "accountName": {
+                      "type": "string",
+                      "example": "username"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Description of said task"
+                    },
+                    "state": {
+                      "type": "string",
+                      "example": "Failed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Didn't insert a valid taskId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Details about which property was unproperly filled"
                     }
                   }
                 },
                 "examples": {
-                  "JWT": {
+                  "invalid task id": {
                     "value": {
-                      "error": "Error due to invalid credentials."
+                      "error": "Task with id something does not exist."
                     }
                   },
-                  "Invalid Account": {
+                  "task already closed": {
                     "value": {
-                      "error": "The account username is trying to close a task from another account"
+                      "error": "Task with id '1' is already closed."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          },
+          "403": {
+            "description": "User does not have permission to delete the desired task.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The account username is trying to close a task from another account."
                     }
                   }
                 }
@@ -122,7 +254,7 @@
       }
     },
     "/task/{taskId}/success": {
-      "delete": {
+      "patch": {
         "tags": [
           "Task"
         ],
@@ -138,7 +270,7 @@
             "description": "ID of the task that the user wants to close"
           }
         ],
-        "operationId": "deleteTask",
+        "operationId": "completeTask",
         "security": [
           {
             "BearerAuth": []
@@ -146,11 +278,52 @@
         ],
         "responses": {
           "200": {
-            "description": "Information about the task that was removed",
+            "description": "Task was completed and user received rewards",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Task"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Task Name"
+                    },
+                    "startDate": {
+                      "type": "string",
+                      "example": "2021-05-22 16:03:30"
+                    },
+                    "dueDate": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "2032-10-01 06:10:25"
+                    },
+                    "difficultyName": {
+                      "type": "string",
+                      "example": "Easy/Medium/Hard"
+                    },
+                    "repetitionName": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Daily/Weekly/Monthly/Yearly"
+                    },
+                    "accountName": {
+                      "type": "string",
+                      "example": "username"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Description of said task"
+                    },
+                    "state": {
+                      "type": "string",
+                      "example": "Done"
+                    }
+                  }
                 }
               }
             }
@@ -164,7 +337,19 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "example": "Task with id something does not exist."
+                      "example": "Details about which property was unproperly filled"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid task id": {
+                    "value": {
+                      "error": "Task with id something does not exist."
+                    }
+                  },
+                  "task already closed": {
+                    "value": {
+                      "error": "Task with id '1' is already closed."
                     }
                   }
                 }
@@ -172,20 +357,7 @@
             }
           },
           "401": {
-            "description": "JWT is invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Error due to invalid credentials."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "JWT is invalid."
           },
           "403": {
             "description": "User does not have permission to delete the desired task.",
@@ -501,20 +673,7 @@
             }
           },
           "401": {
-            "description": "User's password is incorrect.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "Login unsuccessful due to invalid credentials."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "JWT is invalid."
           },
           "404": {
             "description": "User was not found.",
@@ -681,6 +840,10 @@
             "type": "string",
             "nullable": true,
             "example": "Description of said task"
+          },
+          "state": {
+            "type": "string",
+            "example": "To Do"
           }
         }
       },

@@ -418,4 +418,35 @@
         <modifyDataType tableName="creminder" columnName="quest_id" newDataType="bigint"
                         schemaName="tskswp"/>
     </changeSet>
+    <changeSet id="32" author="filipe">
+        <comment>
+            Add task state and its possible values.
+        </comment>
+        <createTable tableName="task_state" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="To Do"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="In Progress"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="Done"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="Failed"/>
+        </insert>
+        <addColumn tableName="task" schemaName="tskswp">
+            <column name="state" type="varchar(256)" defaultValue="To Do">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="state" constraintName="fk_state"
+                                 referencedTableName="task_state"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 
