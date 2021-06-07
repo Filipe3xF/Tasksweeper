@@ -2,9 +2,7 @@ package com.tasksweeper.service
 
 import com.tasksweeper.controller.DateDTO
 import com.tasksweeper.controller.TimeDTO
-import com.tasksweeper.entities.DifficultyMultiplier
-import com.tasksweeper.entities.Repetitions
-import com.tasksweeper.entities.TaskDTO
+import com.tasksweeper.entities.*
 import com.tasksweeper.entities.TaskStateValue.*
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.TaskRepository
@@ -67,7 +65,18 @@ class TaskService : KoinComponent {
         taskRepository.deleteTask(taskId)
     }
 
-    suspend fun completeTaskSuccessfully(accountUsername: String, taskId: Long): TaskDTO {
+    suspend fun completeTaskSuccessfully(accountUsername: String, taskId: Long) =
+        completeTask(accountUsername, taskId, DONE, accountStatusService::reward)
+
+    suspend fun completeTaskUnsuccessfully(accountUsername: String, taskId: Long) =
+        completeTask(accountUsername, taskId, FAILED, accountStatusService::punish)
+
+    private suspend fun completeTask(
+        accountUsername: String,
+        taskId: Long,
+        taskStatus: TaskStateValue,
+        accountStatusAction: suspend (account: AccountDTO, difficulty: DifficultyMultiplier) -> Unit
+    ): TaskDTO {
         val task = getTask(taskId)
 
         if (task.accountName != accountUsername)
@@ -75,36 +84,12 @@ class TaskService : KoinComponent {
 
         task.checkIfItIsClosed()
 
-        taskRepository.updateTaskState(task.id, DONE)
+        taskRepository.updateTaskState(task.id, taskStatus)
 
         val account = accountService.getAccount(accountUsername)
         val difficulty = DifficultyMultiplier.valueOf(task.difficultyName.uppercase())
 
-        accountStatusService.reward(
-            account,
-            difficulty
-        )
-
-        return getTask(taskId)
-    }
-
-    suspend fun completeTaskUnsuccessfully(accountUsername: String, taskId: Long): TaskDTO {
-        val task = getTask(taskId)
-
-        if (task.accountName != accountUsername)
-            throw NotAuthorizedTaskCompletionException(accountUsername)
-
-        task.checkIfItIsClosed()
-
-        taskRepository.updateTaskState(task.id, FAILED)
-
-        val account = accountService.getAccount(accountUsername)
-        val difficulty = DifficultyMultiplier.valueOf(task.difficultyName.uppercase())
-
-        accountStatusService.punish(
-            account,
-            difficulty
-        )
+        accountStatusAction(account, difficulty)
 
         return getTask(taskId)
     }
