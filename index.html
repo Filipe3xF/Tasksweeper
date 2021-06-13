@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Swagger UI</title>
+    <title>Tasksweeper API Documentation</title>
     <link rel="stylesheet" type="text/css" href="swagger/swagger-ui.css" />
     <link rel="icon" type="image/png" href="swagger/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="swagger/favicon-16x16.png" sizes="16x16" />
@@ -39,10 +39,9 @@
     window.onload = function() {
       // Begin Swagger UI call region
       const ui = SwaggerUIBundle({
-        url: "../tskswp-rest-api/src/main/resources/openapi.json",
+        url: "./tskswp-rest-api/src/main/resources/openapi.json",
         dom_id: '#swagger-ui',
         deepLinking: true,
-        validatorUrl: null,
         presets: [
           SwaggerUIBundle.presets.apis,
           SwaggerUIStandalonePreset
@@ -51,9 +50,10 @@
           SwaggerUIBundle.plugins.DownloadUrl
         ],
         layout: "StandaloneLayout"
-      })
+      });
+      // End Swagger UI call region
 
-      window.ui = ui
+      window.ui = ui;
     };
   </script>
   </body>
