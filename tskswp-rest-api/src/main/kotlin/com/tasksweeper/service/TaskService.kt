@@ -91,7 +91,7 @@ class TaskService : KoinComponent {
 
         accountStatusAction(account, difficulty)
 
-        return getTask(taskId)
+        return task.copy(state = taskStatus.dbName)
     }
 
     private suspend fun getTask(taskId: Long) = taskRepository.selectTask(taskId)
