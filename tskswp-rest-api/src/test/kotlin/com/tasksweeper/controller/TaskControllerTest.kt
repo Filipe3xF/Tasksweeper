@@ -35,6 +35,7 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 import java.time.Instant
+import java.time.Year
 
 
 class TaskControllerTest : KoinTest {
@@ -62,7 +63,7 @@ class TaskControllerTest : KoinTest {
     fun `Insert a Task successfully with the correct parameters`() {
         val taskInfoDto = TaskInfoDTO(
             "someTask",
-            DateDTO("2021", "06", "14"),
+            DateDTO((Year.now().value + 1).toString(), "06", "14"),
             TimeDTO("23", "59", "59"),
             "Medium",
             "Weekly",
@@ -651,6 +652,64 @@ class TaskControllerTest : KoinTest {
                 addJwtHeader(get(), "username")
             }.apply {
                 response.status() shouldBe HttpStatusCode.NotFound
+            }
+        }
+    }
+
+    @Test
+    fun `Gets all open user tasks successfully`() {
+        val taskList = listOf(
+            TaskDTO(
+                id = 1,
+                name = "task 1",
+                startDate = Instant.now(),
+                difficultyName = "Hard",
+                accountName = "username",
+                state = "To Do",
+                dueDate = null,
+                repetitionName = null,
+                description = null
+            ),
+            TaskDTO(
+                id = 2,
+                name = "task 2",
+                startDate = Instant.now(),
+                difficultyName = "Hard",
+                accountName = "username",
+                state = "In Progress",
+                dueDate = null,
+                repetitionName = null,
+                description = null
+            )
+        )
+
+        val taskRepository = get<TaskRepository>()
+        coEvery {
+            taskRepository.getUserTasksWithStatus(any(), any())
+        } returns taskList
+
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Get, "/tasks") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.OK
+                response.content.let {
+                    taskList.forEach { task ->
+                        it shouldContain task.name
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Fails to get all open user tasks without a jwt`() {
+        withTestApplication(Application::module) {
+            handleRequest(HttpMethod.Get, "/tasks") {
+                addContentTypeHeader()
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
             }
         }
     }
