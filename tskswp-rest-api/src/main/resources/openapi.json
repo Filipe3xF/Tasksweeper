@@ -76,6 +76,34 @@
               }
             }
           },
+          "400": {
+            "description": "Badly Done Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The user username doesn't have enough gold to purchase the item"
+                    }
+                  }
+                },
+                "examples": {
+                  "not enough gold": {
+                    "value": {
+                      "error": "The user username doesn't have enough gold to purchase the item"
+                    }
+                  },
+                  "consumableId": {
+                    "value": {
+                      "error": "Consumable id something is not valid"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Tried to buy a non-existing item",
             "content": {
@@ -86,22 +114,6 @@
                     "error": {
                       "type": "string",
                       "example": "The desired element was not found in the database."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "406": {
-            "description": "Attempted purchase without having enough gold",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "The user username doesn't have enough gold to purchase the item"
                     }
                   }
                 }

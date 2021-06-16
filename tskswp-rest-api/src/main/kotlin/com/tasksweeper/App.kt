@@ -118,7 +118,10 @@ fun Application.installExceptionHandling() = install(StatusPages) {
         call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))
     }
     exception<NotEnoughGoldException> {
-        call.respond(HttpStatusCode.NotAcceptable, AppError(it.message!!))
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<InvalidConsumableIdException>{
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
 }
 

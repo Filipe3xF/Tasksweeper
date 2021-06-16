@@ -24,7 +24,6 @@ class AccountConsumableRepository {
             with(SqlExpressionBuilder) {
                 it[quantity] = quantity + 1
             }
-
         }
     }
 

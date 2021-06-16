@@ -1,6 +1,7 @@
 package com.tasksweeper.controller
 
 import com.tasksweeper.authentication.getUsername
+import com.tasksweeper.exceptions.InvalidConsumableIdException
 import com.tasksweeper.service.ConsumableService
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -15,7 +16,7 @@ fun Routing.consumableController() {
         post("/consumable/{consumableId}/buy") {
             consumableService.obtainItem(
                 call.getUsername(),
-                call.parameters["consumableId"]?.toLong()!!
+                call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it)}
             ).let { consumable ->
                 call.respond(
                     HttpStatusCode.Accepted,

@@ -474,4 +474,34 @@
     <changeSet id="34" author="sebas">
         <addNotNullConstraint tableName="consumable" columnName="name" schemaName="tskswp"/>
     </changeSet>
+    <changeSet id="35" author="sebas">
+        <dropForeignKeyConstraint  baseTableName="account_consumable"
+                                   baseTableSchemaName="tskswp"
+                                   constraintName="fk_consumable"/>
+        <dropForeignKeyConstraint  baseTableName="consumable_status"
+                                   baseTableSchemaName="tskswp"
+                                   constraintName="fk_consumable"/>
+        <dropColumn  columnName="consumable_name"
+                     schemaName="tskswp"
+                     tableName="account_consumable"/>
+        <dropColumn  columnName="consumable_name"
+                     schemaName="tskswp"
+                     tableName="consumable_status"/>
+        <addColumn schemaName= "tskswp"
+                   tableName="account_consumable" >
+            <column name="consumable_id" type="bigint"/>
+        </addColumn>
+        <addColumn schemaName= "tskswp"
+                   tableName="consumable_status" >
+            <column name="consumable_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="account_consumable" baseColumnNames="consumable_id" constraintName="fk_consumable"
+                                 referencedTableName="consumable"
+                                 referencedColumnNames="id" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+        <addForeignKeyConstraint baseTableName="consumable_status" baseColumnNames="consumable_id" constraintName="fk_consumable"
+                                 referencedTableName="consumable"
+                                 referencedColumnNames="id" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog> 
