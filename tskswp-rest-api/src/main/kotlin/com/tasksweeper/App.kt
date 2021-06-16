@@ -113,8 +113,14 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<InvalidTaskIdException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
-    exception<NotAuthorizedTaskDeletion>{
+    exception<NotAuthorizedTaskDeletionException> {
         call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))
+    }
+    exception<NotAuthorizedTaskCompletionException> {
+        call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))
+    }
+    exception<TaskAlreadyClosedException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
 }
 

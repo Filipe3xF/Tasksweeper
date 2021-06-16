@@ -2,13 +2,12 @@ package com.tasksweeper.repository
 
 import com.tasksweeper.entities.Task
 import com.tasksweeper.entities.TaskDTO
+import com.tasksweeper.entities.TaskStateValue
 import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.repository.DatabaseFactory.transaction
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
+
 
 class TaskRepository {
 
@@ -16,7 +15,7 @@ class TaskRepository {
         taskName: String, taskStartDate: Instant,
         taskDueDate: Instant?, taskDifficultyName: String,
         taskRepetition: String?, taskAccountName: String,
-        taskDescription: String?
+        taskDescription: String?, taskState: TaskStateValue
     ) = transaction {
         Task.insert {
             it[name] = taskName
@@ -26,6 +25,7 @@ class TaskRepository {
             it[repetitionName] = taskRepetition
             it[accountName] = taskAccountName
             it[description] = taskDescription
+            it[state] = taskState.dbName
         }.resultedValues?.first()?.let { toTask(it) } ?: throw DatabaseNotFoundException("Task")
     }
 
@@ -33,6 +33,12 @@ class TaskRepository {
         Task.select {
             Task.id eq taskId
         }.single().let { toTask(it) }
+    }
+
+    suspend fun updateTaskState(taskId: Long, taskState: TaskStateValue) = transaction {
+        Task.update({ Task.id eq taskId }) {
+            it[state] = taskState.dbName
+        }
     }
 
     private fun toTask(row: ResultRow) = TaskDTO(
@@ -43,7 +49,8 @@ class TaskRepository {
         difficultyName = row[Task.difficultyName],
         repetitionName = row[Task.repetitionName],
         accountName = row[Task.accountName],
-        description = row[Task.description]
+        description = row[Task.description],
+        state = row[Task.state]
     )
 
     suspend fun deleteTask(taskId: Long) = transaction {

@@ -6,7 +6,7 @@
 
     <groupId>com.tasksweeper</groupId>
     <artifactId>tskswp-rest-api</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>tskswp-rest-api</name>
@@ -25,7 +25,7 @@
         <kotest.version>4.4.3</kotest.version>
         <mockk.version>1.11.0</mockk.version>
         <logback.version>1.2.3</logback.version>
-        <kotlin.logging.version>1.12.5</kotlin.logging.version>
+        <kotlin.logging.version>2.0.8</kotlin.logging.version>
         <kotlin.coroutines.version>1.5.0</kotlin.coroutines.version>
         <main.class>io.ktor.server.netty.EngineMain</main.class>
     </properties>
@@ -123,7 +123,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.microutils</groupId>
-            <artifactId>kotlin-logging</artifactId>
+            <artifactId>kotlin-logging-jvm</artifactId>
             <version>${kotlin.logging.version}</version>
         </dependency>
         <dependency>

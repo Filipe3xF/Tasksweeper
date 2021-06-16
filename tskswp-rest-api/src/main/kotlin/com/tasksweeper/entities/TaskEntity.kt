@@ -6,10 +6,6 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
 
-enum class TaskResult {
-    SUCCESS,
-    FAILURE,
-}
 
 object Task : LongIdTable("tskswp.task") {
     val name = varchar("name", 256)
@@ -19,6 +15,7 @@ object Task : LongIdTable("tskswp.task") {
     val repetitionName = varchar("repetition_name", 256).references(Repetition.name).nullable()
     val accountName = varchar("account_name", 256).references(Account.username)
     val description = varchar("description", 512).nullable()
+    val state = varchar("state", 256).references(TaskState.name)
 }
 
 data class TaskDTO(
@@ -32,4 +29,5 @@ data class TaskDTO(
     val repetitionName: String?,
     val accountName: String,
     val description: String?,
+    val state: String
 )
