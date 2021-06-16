@@ -35,10 +35,18 @@
             "in": "query",
             "name": "state",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "to do",
+                "in progress",
+                "failed",
+                "done"
+              ]
             },
             "required": false,
-            "description": "State of the desired tasks. Case and space insensitive. Possible values: [open, to do, in progress, failed, done]."
+            "description": "State:\n (case and space insensitive)\n * `open` - In open states (i.e. To Do, In Progress)\n * `closed` - In closed states (i.e. Failed, Done)\n * `to do` - In 'To Do' state\n * `in progress` - In 'In Progress' state\n * `failed` - In 'Failed' state\n * `done` - In 'Done' state\n"
           }
         ],
         "operationId": "getTasks",
