@@ -62,6 +62,15 @@ fun Routing.taskController() {
                 )
             }
         }
+
+        get("/tasks") {
+            call.respond(
+                taskService.getOpenUserTasks(
+                    call.getUsername(),
+                    call.request.queryParameters["state"]
+                )
+            )
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import com.tasksweeper.entities.TaskStateValue.*
 import com.tasksweeper.exceptions.*
 import com.tasksweeper.repository.TaskRepository
 import com.tasksweeper.utils.instantOf
+import com.tasksweeper.utils.removeSpaces
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.Instant
@@ -17,6 +18,7 @@ class TaskService : KoinComponent {
     private val accountService: AccountService by inject()
     private val taskRepository: TaskRepository by inject()
 
+    private val openedStatus = listOf(TO_DO, IN_PROGRESS)
     private val closedStatus = listOf(DONE, FAILED)
 
     suspend fun createTask(
@@ -64,6 +66,16 @@ class TaskService : KoinComponent {
 
         taskRepository.deleteTask(taskId)
     }
+
+    suspend fun getOpenUserTasks(accountUsername: String, state: String?) =
+        when (val stateValue = state?.lowercase()?.removeSpaces()) {
+            "open" -> openedStatus
+            "closed" -> closedStatus
+            null -> TaskStateValue.values().toList()
+            else -> TaskStateValue.values().filter { it.dbName.lowercase().removeSpaces() == stateValue }
+        }.let {
+            taskRepository.getUserTasksWithStatus(accountUsername, it)
+        }
 
     suspend fun completeTaskSuccessfully(accountUsername: String, taskId: Long) =
         completeTask(accountUsername, taskId, DONE, accountStatusService::reward)

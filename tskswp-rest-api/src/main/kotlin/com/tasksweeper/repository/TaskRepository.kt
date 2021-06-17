@@ -6,6 +6,7 @@ import com.tasksweeper.entities.TaskStateValue
 import com.tasksweeper.exceptions.DatabaseNotFoundException
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder.ASC
 import java.time.Instant
 
 
@@ -41,6 +42,18 @@ class TaskRepository {
         }
     }
 
+    suspend fun deleteTask(taskId: Long) = transaction {
+        Task.deleteWhere {
+            Task.id eq taskId
+        }
+    }
+
+    suspend fun getUserTasksWithStatus(accountUsername: String, openedStatus: List<TaskStateValue>) = transaction {
+        Task.select {
+            (Task.accountName eq accountUsername) and (Task.state inList openedStatus.map { it.dbName })
+        }.orderBy(Task.startDate, ASC).map { toTask(it) }
+    }
+
     private fun toTask(row: ResultRow) = TaskDTO(
         id = row[Task.id].value,
         name = row[Task.name],
@@ -52,10 +65,4 @@ class TaskRepository {
         description = row[Task.description],
         state = row[Task.state]
     )
-
-    suspend fun deleteTask(taskId: Long) = transaction {
-        Task.deleteWhere {
-            Task.id eq taskId
-        }
-    }
 }
