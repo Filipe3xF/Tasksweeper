@@ -30,7 +30,7 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 
-class ConsumableController : KoinTest {
+class ConsumableControllerTest : KoinTest {
     @BeforeEach
     fun start() {
         startKoin {
@@ -77,18 +77,18 @@ class ConsumableController : KoinTest {
 
         val accountConsumableRepository = get<AccountConsumableRepository>()
         coEvery {
-            accountConsumableRepository.selectAccountConsumable(username, consumable.name)
-        } throws DatabaseNotFoundException()
+            accountConsumableRepository.increaseQuantity(username, consumable.id)
+        } returns 0
         coEvery {
-            accountConsumableRepository.insertAccountConsumable(username, consumable.name, 1)
-        } returns AccountConsumableDTO(username, consumable.name, 1)
+            accountConsumableRepository.insertAccountConsumable(username,consumable.id)
+        } returns AccountConsumableDTO(username, consumable.id, 1)
 
         withTestApplication(Application::module) {
             handleRequest(HttpMethod.Post, "/consumable/1/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
             }.apply {
-                response.status() shouldBe HttpStatusCode.Accepted
+                response.status() shouldBe HttpStatusCode.OK
                 response.content shouldContain consumable.id.toString()
                 response.content shouldContain consumable.name
                 response.content shouldContain consumable.price.toString()
@@ -123,7 +123,7 @@ class ConsumableController : KoinTest {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
             }.apply {
-                response.status() shouldBe HttpStatusCode.NotAcceptable
+                response.status() shouldBe HttpStatusCode.BadRequest
                 response.content shouldContain "The user $username doesn't have enough gold to purchase the item"
             }
         }

@@ -26,5 +26,5 @@ class NotAuthorizedTaskDeletion(username: String) :
     TaskSweeperException("The account $username is trying to close a task from another account.")
 
 class NotEnoughGoldException(username: String) :
-    TaskSweeperException("The user $username doesn't have enough gold to purchase the item")
-class InvalidConsumableIdException(consumableId: String) : TaskSweeperException("Consumable id $consumableId is not valid")
+    TaskSweeperException("The user $username doesn't have enough gold to purchase the item.")
+class InvalidConsumableIdException(consumableId: String) : TaskSweeperException("Consumable id $consumableId is not valid.")

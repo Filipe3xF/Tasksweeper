@@ -9,33 +9,32 @@ class AccountConsumableRepository {
 
     suspend fun insertAccountConsumable(
         accountUsername: String,
-        accountConsumableName: String,
-        consumableQuantity: Long
+        accountConsumableId: Long
     ) = transaction {
         AccountConsumable.insert {
             it[username] = accountUsername
-            it[consumableName] = accountConsumableName
-            it[quantity] = consumableQuantity
+            it[consumableId] = accountConsumableId
+            it[quantity] = 1
         }
     }.resultedValues?.first()?.let { toAccountConsumable(it) }
 
-    suspend fun increaseQuantity(username: String, consumableName: String) = transaction {
-        AccountConsumable.update({ (AccountConsumable.username eq username) and (AccountConsumable.consumableName eq consumableName) }) {
+    suspend fun increaseQuantity(username: String, consumableId: Long) = transaction {
+        AccountConsumable.update({ (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId) }) {
             with(SqlExpressionBuilder) {
                 it[quantity] = quantity + 1
             }
         }
     }
 
-    suspend fun selectAccountConsumable(username: String, consumableName: String) = transaction {
+    suspend fun selectAccountConsumable(username: String, consumableId: Long) = transaction {
         AccountConsumable.select {
-            (AccountConsumable.username eq username) and (AccountConsumable.consumableName eq consumableName)
+            (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId)
         }.single().let { toAccountConsumable(it) }
     }
 
     private fun toAccountConsumable(row: ResultRow): AccountConsumableDTO = AccountConsumableDTO(
         username = row[AccountConsumable.username],
-        consumableName = row[AccountConsumable.consumableName],
+        consumableId = row[AccountConsumable.consumableId],
         quantity = row[AccountConsumable.quantity],
     )
 }

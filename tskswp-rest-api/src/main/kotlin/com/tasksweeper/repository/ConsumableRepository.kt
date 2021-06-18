@@ -20,5 +20,4 @@ class ConsumableRepository {
         price = row[Consumable.price],
         description = row[Consumable.description]
     )
-
 }

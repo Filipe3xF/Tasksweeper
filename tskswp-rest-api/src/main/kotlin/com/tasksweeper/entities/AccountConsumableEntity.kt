@@ -11,6 +11,6 @@ object AccountConsumable : Table("tskswp.account_consumable") {
 
 data class AccountConsumableDTO(
     val username: String,
-    val consumableName: String,
+    val consumableId: Long,
     val quantity: Long
 )

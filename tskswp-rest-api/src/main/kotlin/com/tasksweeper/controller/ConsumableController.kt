@@ -19,11 +19,10 @@ fun Routing.consumableController() {
                 call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it)}
             ).let { consumable ->
                 call.respond(
-                    HttpStatusCode.Accepted,
+                    HttpStatusCode.OK,
                     consumable
                 )
             }
         }
     }
-
 }
