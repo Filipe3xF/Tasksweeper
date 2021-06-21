@@ -1,5 +1,6 @@
 package com.tasksweeper.service
 
+import com.tasksweeper.controller.AccountStatusResponseDTO
 import com.tasksweeper.entities.AccountDTO
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.AccountStatusValue
@@ -33,8 +34,8 @@ class AccountStatusService : KoinComponent {
 
     private fun calculateNewGoldAfterPunish(gold: Long) = (gold - (gold * 0.10)).toLong()
 
-    suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
-        val list = mutableListOf<AccountStatusDTO?>()
+    suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO> {
+        val list = mutableListOf<AccountStatusDTO>()
         for (status in AccountStatusValue.values()) {
             list.add(accountStatusRepository.insertAccountStatus(accountUsername, status.dbName, status.initialValue))
         }
@@ -49,6 +50,24 @@ class AccountStatusService : KoinComponent {
     suspend fun punish(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         takeDamage(account, difficultyMultiplier)
     }
+
+    suspend fun getAccountStatus(username: String): List<AccountStatusResponseDTO> =
+        accountService.getAccount(username).let { account ->
+            accountStatusRepository.selectAccountStatus(username)
+                .map {
+                    AccountStatusResponseDTO(
+                        it.statusName,
+                        it.value,
+                        when(it.statusName) {
+                            HP.dbName -> calculateMaximumHealth(account.level)
+                            EXP.dbName -> calculateMaximumExperience(account.level)
+                            GOLD.dbName -> maxGold
+                            else -> null
+                        }
+                    )
+                }
+        }
+
 
     private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)

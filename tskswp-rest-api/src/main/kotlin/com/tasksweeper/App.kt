@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.controller.accountController
+import com.tasksweeper.controller.accountStatusController
 import com.tasksweeper.controller.apiController
 import com.tasksweeper.controller.taskController
 import com.tasksweeper.exceptions.*
@@ -79,6 +80,7 @@ fun Application.module() {
         accountController()
         apiController()
         taskController()
+        accountStatusController()
     }
 }
 
@@ -121,6 +123,9 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     }
     exception<TaskAlreadyClosedException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<DatabaseInsertFailedException> {
+        call.respond(HttpStatusCode.InternalServerError, AppError(it.message!!))
     }
 }
 

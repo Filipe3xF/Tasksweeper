@@ -2,6 +2,7 @@ package com.tasksweeper.repository
 
 import com.tasksweeper.entities.AccountStatus
 import com.tasksweeper.entities.AccountStatusDTO
+import com.tasksweeper.exceptions.DatabaseInsertFailedException
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.*
 
@@ -18,7 +19,7 @@ class AccountStatusRepository {
             it[username] = accountName
             it[this.statusName] = statusName
             it[value] = parameter
-        }.resultedValues?.first()?.let { toAccountStatus(it) }
+        }.resultedValues?.first()?.let { toAccountStatus(it) } ?: throw DatabaseInsertFailedException("AccountStatus")
     }
 
     suspend fun selectAccountStatus(username: String) = transaction {

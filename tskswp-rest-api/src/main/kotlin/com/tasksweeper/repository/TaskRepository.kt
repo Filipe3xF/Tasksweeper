@@ -3,7 +3,7 @@ package com.tasksweeper.repository
 import com.tasksweeper.entities.Task
 import com.tasksweeper.entities.TaskDTO
 import com.tasksweeper.entities.TaskStateValue
-import com.tasksweeper.exceptions.DatabaseNotFoundException
+import com.tasksweeper.exceptions.DatabaseInsertFailedException
 import com.tasksweeper.repository.DatabaseFactory.transaction
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
@@ -26,7 +26,7 @@ class TaskRepository {
             it[accountName] = taskAccountName
             it[description] = taskDescription
             it[state] = taskState.dbName
-        }.resultedValues?.first()?.let { toTask(it) } ?: throw DatabaseNotFoundException("Task")
+        }.resultedValues?.first()?.let { toTask(it) } ?: throw DatabaseInsertFailedException("Task")
     }
 
     suspend fun selectTask(taskId: Long) = transaction {
