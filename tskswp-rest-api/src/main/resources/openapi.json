@@ -3,7 +3,7 @@
   "servers": [],
   "info": {
     "description": "Documentation for the Tasksweeper API.",
-    "version": "2.0.0",
+    "version": "2.3.0",
     "title": "Tasksweeper API",
     "contact": {
       "email": "filipe3xf@gmail.com"
@@ -21,9 +21,45 @@
     {
       "name": "Task",
       "description": "Tasks of the users"
+    },
+    {
+      "name": "Account Status",
+      "description": "Status of an Account"
     }
   ],
   "paths": {
+    "/accountStatus": {
+      "get": {
+        "tags": [
+          "Account Status"
+        ],
+        "summary": "Gets account status",
+        "operationId": "getAccountStatus",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of status of the account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccountStatus"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          }
+        }
+      }
+    },
     "/tasks": {
       "get": {
         "tags": [
@@ -765,6 +801,24 @@
       }
     },
     "schemas": {
+      "AccountStatus": {
+        "type": "object",
+        "properties": {
+          "statusName": {
+            "type": "string",
+            "example": "Health"
+          },
+          "value": {
+            "type": "number",
+            "example": 20
+          },
+          "maxValue": {
+            "type": "number",
+            "example": 100,
+            "nullable": true
+          }
+        }
+      },
       "LoginRequestBody": {
         "type": "object",
         "properties": {
