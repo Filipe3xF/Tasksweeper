@@ -6,23 +6,23 @@
 
     <groupId>com.tasksweeper</groupId>
     <artifactId>tskswp-rest-api</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
     <packaging>jar</packaging>
 
     <name>tskswp-rest-api</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <koin.version>3.0.2</koin.version>
-        <ktor.version>1.5.3</ktor.version>
-        <exposed.version>0.31.1</exposed.version>
+        <koin.version>3.1.0</koin.version>
+        <ktor.version>1.6.0</ktor.version>
+        <exposed.version>0.32.1</exposed.version>
         <hikari.version>4.0.3</hikari.version>
         <postgres.version>42.2.19</postgres.version>
         <kotlin.version>1.5.10</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
-        <junit.version>5.7.1</junit.version>
-        <kotest.version>4.4.3</kotest.version>
+        <junit.version>5.7.2</junit.version>
+        <kotest.version>4.6.0</kotest.version>
         <mockk.version>1.11.0</mockk.version>
         <logback.version>1.2.3</logback.version>
         <kotlin.logging.version>2.0.8</kotlin.logging.version>

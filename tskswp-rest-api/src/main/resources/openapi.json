@@ -24,6 +24,57 @@
     }
   ],
   "paths": {
+    "/tasks": {
+      "get": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Gets all open Tasks of the user",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "state",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "to do",
+                "in progress",
+                "failed",
+                "done"
+              ]
+            },
+            "required": false,
+            "description": "State:\n (case and space insensitive)\n * `open` - In open states (i.e. To Do, In Progress)\n * `closed` - In closed states (i.e. Failed, Done)\n * `to do` - In 'To Do' state\n * `in progress` - In 'In Progress' state\n * `failed` - In 'Failed' state\n * `done` - In 'Done' state\n"
+          }
+        ],
+        "operationId": "getTasks",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of the user's open Tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          }
+        }
+      }
+    },
     "/task/{taskId}": {
       "delete": {
         "tags": [
