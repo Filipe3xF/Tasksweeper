@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:tskswp_client/components/regular_button.dart';
+import 'package:tskswp_client/components/text_field.dart';
 
 import '../constants.dart';
 import 'HomePageScreen.dart';
@@ -15,23 +15,45 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
-  var _username;
-  var _password;
-  var _email;
-  var _error;
+  String? _username = '';
+  String? _password = '';
+  String? _email = '';
+  var _error = '';
 
   Future<void> _registerUser() async {
-    var body = jsonEncode({'username': _username, 'password': _password, 'email': _email});
+
+    if (_username == '' || _password == '' || _email == '') {
+      setState(() {
+        _error = 'Please fill all of the fields.';
+      });
+      return;
+    }
+
+    var body = jsonEncode(
+        {'username': _username, 'password': _password, 'email': _email});
     var url = Uri.http('10.0.2.2:8080', '/register');
     var response = await http.post(url,
         headers: {'content-type': 'application/json'}, body: body);
-    if (response.body.contains('error')) _error = response.body;
+    if (response.body.contains('error')){
+      setState(() {
+        _error = jsonDecode(response.body)['error'];
+      });
+      return;
+    }
+
+
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          jwt: jsonDecode(response.body)['jwt'],
+        ),
+      ),
+    );
   }
 
   void _toLoginPage() {
-    Navigator.pop(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
@@ -42,51 +64,28 @@ class _RegisterScreen extends State<RegisterScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      decoration: kEmailTextFieldInputDecoration,
-                      onChanged: (value) {
-                        _email = value;
-                      },
-                    ),
-                  ),
-                ),
-              ],
+            Center(
+              child: Text(
+                _error,
+                style: kTextRedColor,
+              ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      decoration: kUsernameTextFieldInputDecoration,
-                      onChanged: (value) {
-                        _username = value;
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: kPasswordTextFieldInputDecoration,
-                      onChanged: (value) {
-                        _password = value;
-                      },
-                    ),
-                  ),
-                ),
-              ],
+            StandardTextField(
+                onChange: (value) {
+                  _email = value;
+                },
+                fieldName: 'Email'),
+            StandardTextField(
+                onChange: (value) {
+                  _username = value;
+                },
+                fieldName: 'Username'),
+            StandardTextField(
+              onChange: (value) {
+                _password = value;
+              },
+              fieldName: 'Password',
+              obscureText: true,
             ),
             Row(
               children: [

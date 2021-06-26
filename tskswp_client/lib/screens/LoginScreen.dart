@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:tskswp_client/components/regular_button.dart';
+import 'package:tskswp_client/components/text_field.dart';
+import 'package:tskswp_client/constants.dart';
 import 'package:tskswp_client/screens/RegisterScreen.dart';
-import 'dart:convert';
 
-import '../constants.dart';
 import 'HomePageScreen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,31 +15,42 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
-  var _username;
-  var _password;
-  var _error;
+  String? _username = '';
+  String? _password = '';
+  var _error = '';
 
   Future<void> _loginUser() async {
-    var body = jsonEncode({'username': _username, 'password': _password});
-    var url = Uri.http('10.0.2.2:8080', '/login');
-    var response = await http.post(url,
-        headers: {'content-type': 'application/json'}, body: body);
+    if (_username == '' || _password == '') {
+      setState(() {
+        _error = 'Please add a username and a password.';
+      });
+      return;
+    }
 
-    if (response.body.contains('error')) {
-      _error = jsonDecode(response.body)['error'];
+    var responseBody = (await http.post(
+      Uri.http('10.0.2.2:8080', '/login'),
+      headers: {'content-type': 'application/json'},
+      body: jsonEncode({'username': _username, 'password': _password}),
+    ))
+        .body;
+
+    if (responseBody.contains('error')) {
+      setState(() {
+        _error = jsonDecode(responseBody)['error'];
+      });
       return;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(jwt: jsonDecode(response.body)['jwt']),
+        builder: (context) => HomeScreen(jwt: jsonDecode(responseBody)['jwt']),
       ),
     );
   }
 
   void _toRegisterPage() {
-    Navigator.push(
+    Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => RegisterScreen()));
   }
 
@@ -51,36 +61,23 @@ class _LoginScreen extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      decoration: kUsernameTextFieldInputDecoration,
-                      onChanged: (value) {
-                        _username = value;
-                      },
-                    ),
-                  ),
-                ),
-              ],
+            Center(
+              child: Text(
+                _error,
+                style: kTextRedColor,
+              ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: kPasswordTextFieldInputDecoration,
-                      onChanged: (value) {
-                        _password = value;
-                      },
-                    ),
-                  ),
-                ),
-              ],
+            StandardTextField(
+                onChange: (value) {
+                  _username = value;
+                },
+                fieldName: 'Username'),
+            StandardTextField(
+              onChange: (value) {
+                _password = value;
+              },
+              fieldName: 'Password',
+              obscureText: true,
             ),
             Row(
               children: [
