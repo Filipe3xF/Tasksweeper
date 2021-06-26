@@ -80,6 +80,7 @@ class _LoginScreen extends State<LoginScreen> {
               obscureText: true,
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(child: Container()),
                 Expanded(
@@ -93,16 +94,13 @@ class _LoginScreen extends State<LoginScreen> {
             ),
             Center(child: Text('or')),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(child: Container()),
-                Expanded(
-                  child: RegularButton(
-                    onTap: _toRegisterPage,
-                    buttonTitle: 'Register',
-                    defaultButtonColor: Colors.lightBlueAccent,
-                  ),
+                RegularButton(
+                  onTap: _toRegisterPage,
+                  buttonTitle: 'Create an account',
+                  defaultButtonColor: Colors.lightBlueAccent,
                 ),
-                Expanded(child: Container())
               ],
             ),
           ],

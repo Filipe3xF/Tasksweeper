@@ -101,15 +101,12 @@ class _RegisterScreen extends State<RegisterScreen> {
             ),
             Center(child: Text('or')),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(child: Container()),
-                Expanded(
-                  child: RegularButton(
-                      onTap: _toLoginPage,
-                      buttonTitle: 'Login',
-                      defaultButtonColor: Colors.lightBlueAccent),
-                ),
-                Expanded(child: Container())
+                RegularButton(
+                    onTap: _toLoginPage,
+                    buttonTitle: 'Go back to login',
+                    defaultButtonColor: Colors.lightBlueAccent),
               ],
             ),
           ],
