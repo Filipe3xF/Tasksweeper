@@ -25,6 +25,10 @@
     {
       "name": "Account Status",
       "description": "Status of an Account"
+    },
+    {
+      "name": "Consumable",
+      "description": "Items that benefit the user and disappear after one use"
     }
   ],
   "paths": {
@@ -56,6 +60,103 @@
           },
           "401": {
             "description": "JWT is invalid."
+          }
+        }
+      }
+    },
+    "/consumable/{consumableId}/buy": {
+      "post": {
+        "tags": [
+          "Consumable"
+        ],
+        "summary": "Management of Consumables in the app",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consumableId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the consumable that the user wishes to buy"
+          }
+        ],
+        "operationId": "buyConsumable",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Information about the purchased Consumable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Consumable"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly Done Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The user username doesn't have enough gold to purchase the item"
+                    }
+                  }
+                },
+                "examples": {
+                  "not enough gold": {
+                    "value": {
+                      "error": "The user username doesn't have enough gold to purchase the item"
+                    }
+                  },
+                  "consumableId": {
+                    "value": {
+                      "error": "Consumable id something is not valid"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not logged in an account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error due to invalid credentials."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tried to buy a non-existing item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The desired element was not found in the database."
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -801,6 +902,27 @@
       }
     },
     "schemas": {
+      "Consumable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Health Potion"
+          },
+          "price": {
+            "type": "integer",
+            "example": 20
+          },
+          "description": {
+            "type": "string",
+            "example": "Restores 15% of max HP"
+          }
+        }
+      },
       "AccountStatus": {
         "type": "object",
         "properties": {

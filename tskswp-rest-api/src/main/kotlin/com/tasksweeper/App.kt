@@ -3,18 +3,10 @@ package com.tasksweeper
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.tasksweeper.authentication.JWT
-import com.tasksweeper.controller.accountController
-import com.tasksweeper.controller.accountStatusController
-import com.tasksweeper.controller.apiController
-import com.tasksweeper.controller.taskController
+import com.tasksweeper.controller.*
 import com.tasksweeper.exceptions.*
-import com.tasksweeper.repository.AccountRepository
-import com.tasksweeper.repository.AccountStatusRepository
-import com.tasksweeper.repository.DatabaseFactory
-import com.tasksweeper.repository.TaskRepository
-import com.tasksweeper.service.AccountService
-import com.tasksweeper.service.AccountStatusService
-import com.tasksweeper.service.TaskService
+import com.tasksweeper.repository.*
+import com.tasksweeper.service.*
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -39,12 +31,16 @@ val serviceModule = module {
     single { AccountService() }
     single { AccountStatusService() }
     single { TaskService() }
+    single { ConsumableService() }
+    single { AccountConsumableService() }
 }
 
 val repositoryModule = module {
     single { AccountRepository() }
     single { AccountStatusRepository() }
     single { TaskRepository() }
+    single { ConsumableRepository() }
+    single { AccountConsumableRepository() }
 }
 
 val appModule = module {
@@ -80,6 +76,7 @@ fun Application.module() {
         accountController()
         apiController()
         taskController()
+        consumableController()
         accountStatusController()
     }
 }
@@ -117,6 +114,12 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     }
     exception<NotAuthorizedTaskDeletionException> {
         call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))
+    }
+    exception<NotEnoughGoldException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
+    exception<InvalidConsumableIdException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
     exception<NotAuthorizedTaskCompletionException> {
         call.respond(HttpStatusCode.Forbidden, AppError(it.message!!))

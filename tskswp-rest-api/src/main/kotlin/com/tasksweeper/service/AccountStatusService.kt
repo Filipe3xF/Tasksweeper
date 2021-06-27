@@ -1,11 +1,9 @@
 package com.tasksweeper.service
 
 import com.tasksweeper.controller.AccountStatusResponseDTO
-import com.tasksweeper.entities.AccountDTO
-import com.tasksweeper.entities.AccountStatusDTO
-import com.tasksweeper.entities.AccountStatusValue
+import com.tasksweeper.entities.*
 import com.tasksweeper.entities.AccountStatusValue.*
-import com.tasksweeper.entities.DifficultyMultiplier
+import com.tasksweeper.exceptions.NotEnoughGoldException
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,9 +28,9 @@ class AccountStatusService : KoinComponent {
     private fun calculateMaximumHealth(level: Long) = 100 + round(level.toDouble().pow(2.1) / 2).toLong()
 
     private fun calculateHealthLoss(level: Long, difficulty: Int) =
-        (-1) * (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
+        (20 + ((level.toDouble().pow(1.8)) / difficulty)).toLong()
 
-    private fun calculateNewGoldAfterPunish(gold: Long) = (gold - (gold * 0.10)).toLong()
+    private fun calculateGoldLostAfterDying(gold: Long) = (gold * 0.10).toLong()
 
     suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO> {
         val list = mutableListOf<AccountStatusDTO>()
@@ -51,6 +49,15 @@ class AccountStatusService : KoinComponent {
         takeDamage(account, difficultyMultiplier)
     }
 
+    suspend fun purchaseItem(username: String, consumable: ConsumableDTO) {
+        decreaseAccountGold(username) { currentGold ->
+            val updatedGold = currentGold - consumable.price
+            if (updatedGold < 0)
+                throw NotEnoughGoldException(username)
+            updatedGold
+        }
+    }
+
     suspend fun getAccountStatus(username: String): List<AccountStatusResponseDTO> =
         accountService.getAccount(username).let { account ->
             accountStatusRepository.selectAccountStatus(username)
@@ -58,7 +65,7 @@ class AccountStatusService : KoinComponent {
                     AccountStatusResponseDTO(
                         it.statusName,
                         it.value,
-                        when(it.statusName) {
+                        when (it.statusName) {
                             HP.dbName -> calculateMaximumHealth(account.level)
                             EXP.dbName -> calculateMaximumExperience(account.level)
                             GOLD.dbName -> maxGold
@@ -67,7 +74,6 @@ class AccountStatusService : KoinComponent {
                     )
                 }
         }
-
 
     private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)
@@ -90,15 +96,12 @@ class AccountStatusService : KoinComponent {
 
         refillAccountHealth(username, newLevel)
         resetAccountExperience(username)
-        decreaseAccountGold(username)
+        decreaseAccountGold(username) { currentGold -> currentGold - calculateGoldLostAfterDying(currentGold) }
     }
 
-    private suspend fun decreaseAccountGold(accountUsername: String) =
+    private suspend fun decreaseAccountGold(accountUsername: String, newGold: (currentGold: Long) -> Long) =
         accountStatusRepository.selectAccountStatusByName(accountUsername, GOLD.dbName).let {
-            var newGold = calculateNewGoldAfterPunish(it.value)
-            if (newGold < 0)
-                newGold = 0
-            it.updateStatusValue(newGold)
+            it.updateStatusValue(newGold(it.value))
         }
 
     private suspend fun resetAccountExperience(accountUsername: String) =
