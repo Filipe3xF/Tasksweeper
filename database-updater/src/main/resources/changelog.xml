@@ -418,7 +418,38 @@
         <modifyDataType tableName="creminder" columnName="quest_id" newDataType="bigint"
                         schemaName="tskswp"/>
     </changeSet>
-    <changeSet id="32" author="sebas">
+    <changeSet id="32" author="filipe">
+        <comment>
+            Add task state and its possible values.
+        </comment>
+        <createTable tableName="task_state" schemaName="tskswp">
+            <column name="name" type="varchar(256)">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="To Do"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="In Progress"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="Done"/>
+        </insert>
+        <insert tableName="task_state" schemaName="tskswp">
+            <column name="name" value="Failed"/>
+        </insert>
+        <addColumn tableName="task" schemaName="tskswp">
+            <column name="state" type="varchar(256)" defaultValue="To Do">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="state" constraintName="fk_state"
+                                 referencedTableName="task_state"
+                                 referencedColumnNames="name" referencedTableSchemaName="tskswp"
+                                 baseTableSchemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="33" author="sebas">
         <insert tableName="consumable" schemaName="tskswp">
             <column name="name" value="Health Potion"/>
             <column name="price" value="20"/>
@@ -432,7 +463,7 @@
             <column name="instant" value="false"/>
         </insert>
     </changeSet>
-    <changeSet id="33" author="sebas">
+    <changeSet id="34" author="sebas">
         <delete schemaName="tskswp" tableName="consumable_status"/>
         <delete schemaName="tskswp" tableName="consumable"/>
         <dropForeignKeyConstraint  baseTableName="account_consumable" baseTableSchemaName="tskswp"
@@ -471,10 +502,10 @@
             <column name="instant" value="false"/>
         </insert>
     </changeSet>
-    <changeSet id="34" author="sebas">
+    <changeSet id="35" author="sebas">
         <addNotNullConstraint tableName="consumable" columnName="name" schemaName="tskswp"/>
     </changeSet>
-    <changeSet id="35" author="sebas">
+    <changeSet id="36" author="sebas">
         <dropForeignKeyConstraint  baseTableName="account_consumable"
                                    baseTableSchemaName="tskswp"
                                    constraintName="fk_consumable"/>
@@ -504,4 +535,4 @@
                                  referencedColumnNames="id" referencedTableSchemaName="tskswp"
                                  baseTableSchemaName="tskswp"/>
     </changeSet>
-</databaseChangeLog> 
+</databaseChangeLog>
