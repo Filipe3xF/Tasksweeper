@@ -10,6 +10,11 @@ class DatabaseNotFoundException(entityName: String? = null) : TaskSweeperExcepti
         ?: "The desired element was not found in the database."
 )
 
+class DatabaseInsertFailedException(entityName: String? = null) : TaskSweeperException(
+    entityName?.let { "An error occurred while inserting the desired $entityName. Please try again." }
+        ?: "An error occurred while inserting the desired entity. Please try again."
+)
+
 class InvalidEmailException(email: String) : TaskSweeperException("The email '$email' is not valid.")
 class InvalidUsernameException(username: String) : TaskSweeperException("The username '$username' is not valid.")
 class InvalidDueDateException(instant: String?) :

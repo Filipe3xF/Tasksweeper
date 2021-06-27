@@ -1,12 +1,12 @@
 package com.tasksweeper.service
 
+import com.tasksweeper.controller.AccountStatusResponseDTO
 import com.tasksweeper.entities.*
 import com.tasksweeper.entities.AccountStatusValue.*
 import com.tasksweeper.exceptions.NotEnoughGoldException
 import com.tasksweeper.repository.AccountStatusRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.function.Function
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
@@ -32,8 +32,8 @@ class AccountStatusService : KoinComponent {
 
     private fun calculateGoldLostAfterDying(gold: Long) = (gold * 0.10).toLong()
 
-    suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO?> {
-        val list = mutableListOf<AccountStatusDTO?>()
+    suspend fun insertInitialStatus(accountUsername: String): List<AccountStatusDTO> {
+        val list = mutableListOf<AccountStatusDTO>()
         for (status in AccountStatusValue.values()) {
             list.add(accountStatusRepository.insertAccountStatus(accountUsername, status.dbName, status.initialValue))
         }
@@ -52,11 +52,28 @@ class AccountStatusService : KoinComponent {
     suspend fun purchaseItem(username: String, consumable: ConsumableDTO) {
         decreaseAccountGold(username) { currentGold ->
             val updatedGold = currentGold - consumable.price
-            if(updatedGold < 0)
+            if (updatedGold < 0)
                 throw NotEnoughGoldException(username)
             updatedGold
         }
     }
+
+    suspend fun getAccountStatus(username: String): List<AccountStatusResponseDTO> =
+        accountService.getAccount(username).let { account ->
+            accountStatusRepository.selectAccountStatus(username)
+                .map {
+                    AccountStatusResponseDTO(
+                        it.statusName,
+                        it.value,
+                        when (it.statusName) {
+                            HP.dbName -> calculateMaximumHealth(account.level)
+                            EXP.dbName -> calculateMaximumExperience(account.level)
+                            GOLD.dbName -> maxGold
+                            else -> null
+                        }
+                    )
+                }
+        }
 
     private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)

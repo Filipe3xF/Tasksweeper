@@ -5,10 +5,9 @@ import com.typesafe.config.ConfigFactory
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.config.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 object DatabaseFactory {
     private val appConfig = HoconApplicationConfig(ConfigFactory.load())
@@ -31,16 +30,14 @@ object DatabaseFactory {
         HikariDataSource(it)
     }
 
-    suspend fun <T> transaction(block: () -> T): T = withContext(Dispatchers.IO) {
-        org.jetbrains.exposed.sql.transactions.transaction {
-            try {
-                block()
-            } catch (exception: Exception) {
-                logger.error(exception) { "Transaction failed due to the following exception:" }
-                when (exception) {
-                    is NoSuchElementException -> throw DatabaseNotFoundException()
-                    else -> throw exception
-                }
+    suspend fun <T> transaction(block: suspend () -> T): T = newSuspendedTransaction {
+        try {
+            block()
+        } catch (exception: Exception) {
+            logger.error(exception) { "Transaction failed due to the following exception:" }
+            when (exception) {
+                is NoSuchElementException -> throw DatabaseNotFoundException()
+                else -> throw exception
             }
         }
     }
