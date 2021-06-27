@@ -11,7 +11,7 @@ class RegularButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.all(5.0),
       child: TextButton(
         onPressed: onTap,
@@ -20,6 +20,7 @@ class RegularButton extends StatelessWidget {
           textScaleFactor: 1.5,
         ),
         style: ButtonStyle(
+          elevation: MaterialStateProperty.all(5.0),
           backgroundColor: _applyColorsForBackground(context),
           foregroundColor: MaterialStateProperty.all(Colors.white),
           shape: MaterialStateProperty.all(

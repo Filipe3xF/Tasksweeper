@@ -21,7 +21,6 @@ class _RegisterScreen extends State<RegisterScreen> {
   var _error = '';
 
   Future<void> _registerUser() async {
-
     if (_username == '' || _password == '' || _email == '') {
       setState(() {
         _error = 'Please fill all of the fields.';
@@ -34,13 +33,12 @@ class _RegisterScreen extends State<RegisterScreen> {
     var url = Uri.http('10.0.2.2:8080', '/register');
     var response = await http.post(url,
         headers: {'content-type': 'application/json'}, body: body);
-    if (response.body.contains('error')){
+    if (response.body.contains('error')) {
       setState(() {
         _error = jsonDecode(response.body)['error'];
       });
       return;
     }
-
 
     Navigator.push(
       context,
@@ -60,6 +58,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: kTitle),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,24 +69,34 @@ class _RegisterScreen extends State<RegisterScreen> {
                 style: kTextRedColor,
               ),
             ),
-            StandardTextField(
+            Padding(
+              padding: EdgeInsets.all(5.0),
+              child: StandardTextField(
+                  onChange: (value) {
+                    _email = value;
+                  },
+                  fieldName: 'Email'),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5.0),
+              child: StandardTextField(
+                  onChange: (value) {
+                    _username = value;
+                  },
+                  fieldName: 'Username'),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5.0),
+              child: StandardTextField(
                 onChange: (value) {
-                  _email = value;
+                  _password = value;
                 },
-                fieldName: 'Email'),
-            StandardTextField(
-                onChange: (value) {
-                  _username = value;
-                },
-                fieldName: 'Username'),
-            StandardTextField(
-              onChange: (value) {
-                _password = value;
-              },
-              fieldName: 'Password',
-              obscureText: true,
+                fieldName: 'Password',
+                obscureText: true,
+              )
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(child: Container()),
                 Expanded(
@@ -103,10 +112,14 @@ class _RegisterScreen extends State<RegisterScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RegularButton(
-                    onTap: _toLoginPage,
-                    buttonTitle: 'Go back to login',
-                    defaultButtonColor: Colors.lightBlueAccent),
+                Expanded(child: Container()),
+                Expanded(
+                    child: RegularButton(
+                  onTap: _toLoginPage,
+                  buttonTitle: 'Go back to login',
+                  defaultButtonColor: Colors.lightBlueAccent,
+                )),
+                Expanded(child: Container())
               ],
             ),
           ],
