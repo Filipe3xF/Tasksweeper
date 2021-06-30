@@ -27,10 +27,12 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Text(jwt)
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Text(jwt)
+          ],
+        ),
       ),
     );
   }

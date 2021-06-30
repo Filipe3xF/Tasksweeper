@@ -15,9 +15,13 @@ class RegularButton extends StatelessWidget {
       padding: EdgeInsets.all(5.0),
       child: TextButton(
         onPressed: onTap,
-        child: Text(
-          buttonTitle,
-          textScaleFactor: 1.5,
+        child: Padding(
+          padding: EdgeInsets.all(5.0),
+          child: Text(
+            buttonTitle,
+            softWrap: false,
+            textScaleFactor: 1.5,
+          ),
         ),
         style: ButtonStyle(
           elevation: MaterialStateProperty.all(5.0),

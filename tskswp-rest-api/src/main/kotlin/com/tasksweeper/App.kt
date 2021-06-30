@@ -153,12 +153,22 @@ fun Application.installCORS() = install(CORS) {
     method(HttpMethod.Options)
     method(HttpMethod.Get)
     method(HttpMethod.Post)
-    method(HttpMethod.Put)
     method(HttpMethod.Delete)
+    method(HttpMethod.Put)
     method(HttpMethod.Patch)
+
+    header(HttpHeaders.ContentType)
+    header(HttpHeaders.Accept)
     header(HttpHeaders.Authorization)
-    allowCredentials = true
+    header(HttpHeaders.Allow)
+    header(HttpHeaders.AccessControlAllowHeaders)
+    header(HttpHeaders.AccessControlAllowOrigin)
+    header(HttpHeaders.AccessControlAllowMethods)
+    header(HttpHeaders.AccessControlAllowCredentials)
+
     anyHost()
+    allowCredentials = true
+    allowNonSimpleContentTypes = true
 }
 
 fun Application.installDefaultHeaders() = install(DefaultHeaders) {

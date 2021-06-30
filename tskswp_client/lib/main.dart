@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tskswp_client/Screens/LoginScreen.dart';
+import 'package:tskswp_client/Screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
