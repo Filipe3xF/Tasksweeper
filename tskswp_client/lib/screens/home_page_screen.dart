@@ -1,21 +1,17 @@
-
-
-
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
+import '../constants.dart';
 
+class HomeScreen extends StatefulWidget {
   HomeScreen({required this.jwt});
 
   final String jwt;
 
   @override
   _HomeScreen createState() => _HomeScreen(jwt: this.jwt);
-
 }
 
 class _HomeScreen extends State<HomeScreen> {
-
   _HomeScreen({required this.jwt});
 
   final String jwt;
@@ -27,11 +23,10 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: kTitle),
       body: SafeArea(
         child: Column(
-          children: [
-            Text(jwt)
-          ],
+          children: [Text(jwt)],
         ),
       ),
     );

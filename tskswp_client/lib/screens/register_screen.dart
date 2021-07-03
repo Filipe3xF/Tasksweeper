@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/text_field.dart';
 import 'package:tskswp_client/services/http_request_handler.dart';
@@ -41,7 +40,7 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => HomeScreen(

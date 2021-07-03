@@ -2,12 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tskswp_client/services/http_request_handler.dart';
-import 'package:http/http.dart' as http;
 import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/text_field.dart';
 import 'package:tskswp_client/constants.dart';
 import 'package:tskswp_client/screens/register_screen.dart';
+import 'package:tskswp_client/services/http_request_handler.dart';
 
 import 'home_page_screen.dart';
 
@@ -39,7 +38,7 @@ class _LoginScreen extends State<LoginScreen> {
       return;
     }
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => HomeScreen(jwt: jsonDecode(responseBody)['jwt']),
