@@ -3,7 +3,7 @@ import 'package:tskswp_client/services/http_requests/http_request_handler.dart';
 class AccountHandler {
 
   static Future<String> login(String? username, String? password) async {
-    return HttpHandler().postRequest({'username': username, 'password': password}, '/login');
+    return await HttpHandler().postRequest({'username': username, 'password': password}, '/login');
   }
 
   static Future<String> register(String? email, String? username, String? password) async {

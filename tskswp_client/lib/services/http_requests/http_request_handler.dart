@@ -9,7 +9,7 @@ class HttpHandler {
 
   Future<String> postRequest(Object? body, String path) async {
     return (await http.post(
-      Uri.http(webHost, path),
+      Uri.http(emulatorHost, path),
       headers: {'content-type': 'application/json'},
       body: jsonEncode(body),
     )).body;

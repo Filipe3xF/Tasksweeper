@@ -23,7 +23,7 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: kTitle),
+      appBar: AppBar(title: Center(child: kTitle)),
       body: SafeArea(
         child: Column(
           children: [Text(jwt)],
