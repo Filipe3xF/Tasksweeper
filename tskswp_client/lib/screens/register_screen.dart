@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/text_field.dart';
-import 'package:tskswp_client/services/http_request_handler.dart';
+import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 
 import '../constants.dart';
 import 'home_page_screen.dart';
@@ -29,9 +29,7 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
 
-    var responseBody = await HttpHandler().postRequest(
-        {'username': _username, 'password': _password, 'email': _email},
-        '/register');
+    var responseBody = await AccountHandler.register(_email, _username, _password);
 
     if (responseBody.contains('error')) {
       setState(() {

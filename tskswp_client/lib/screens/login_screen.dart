@@ -6,7 +6,8 @@ import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/text_field.dart';
 import 'package:tskswp_client/constants.dart';
 import 'package:tskswp_client/screens/register_screen.dart';
-import 'package:tskswp_client/services/http_request_handler.dart';
+import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
+import 'package:tskswp_client/services/http_requests/http_request_handler.dart';
 
 import 'home_page_screen.dart';
 
@@ -28,8 +29,7 @@ class _LoginScreen extends State<LoginScreen> {
       return;
     }
 
-    var responseBody = await HttpHandler()
-        .postRequest({'username': _username, 'password': _password}, '/login');
+    var responseBody = await AccountHandler.login(_username, _password);
 
     if (responseBody.contains('error')) {
       setState(() {
