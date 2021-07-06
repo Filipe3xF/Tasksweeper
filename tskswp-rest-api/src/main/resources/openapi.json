@@ -32,38 +32,6 @@
     }
   ],
   "paths": {
-    "/consumables": {
-      "get": {
-        "tags": [
-          "Consumable"
-        ],
-        "summary": "Gets a list of all Consumables",
-        "operationId": "getConsumables",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of all consumables",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Consumable"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "JWT is invalid."
-          }
-        }
-      }
-    },
     "/accountStatus": {
       "get": {
         "tags": [
@@ -85,6 +53,38 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/AccountStatus"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          }
+        }
+      }
+    },
+    "/consumables": {
+      "get": {
+        "tags": [
+          "Consumable"
+        ],
+        "summary": "Gets a list of all Consumables",
+        "operationId": "getConsumables",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all consumables",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Consumable"
                   }
                 }
               }
