@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
+import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
@@ -19,13 +20,16 @@ class _HomeScreen extends State<HomeScreen> {
   _HomeScreen({required this.jwt});
 
   final String jwt;
-  Status status = Status.empty();
+  Status status = Status();
 
   Future<void> setStatusValues() async {
-    var response = jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
-    print(response);
+    var statusValues = jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
+    var statusLevel = jsonDecode(await AccountHandler.getAccountDetails(jwt));
+    //Uncomment the line below to see the response
+    //print(response);
     setState(() {
-      status = Status(response);
+      status.setNewLevel(statusLevel);
+      status.setNewStatusValues(statusValues);
     });
   }
 
@@ -40,13 +44,7 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: Center(child: kTitle)),
       body: SafeArea(
-        child: AccountStatusTable(
-          health: status.getCurrentHealth(),
-          maxHealth: status.getMaxHealth(),
-          gold: status.getCurrentGold(),
-          experience: status.getCurrentExperience(),
-          maxExperience: status.getMaxExperience(),
-        ),
+        child: AccountStatusTable(status),
       ),
     );
   }

@@ -15,7 +15,7 @@ class HttpHandler {
     )).body;
   }
 
-  Future<String> getRequestWithAuth(String path, String jwt) async {
+  Future<String> getRequestWithAuth(String jwt, String path) async {
     return (await http.get(
       Uri.http(emulatorHost, path),
       headers: {'content-type': 'application/json', 'Authorization': 'Bearer $jwt'},

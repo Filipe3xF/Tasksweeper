@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 class AccountStatusTable extends StatelessWidget {
-  AccountStatusTable(
-      {//required this.level,
-      required this.health,
-      required this.maxHealth,
-      required this.gold,
-      required this.experience,
-      required this.maxExperience});
 
-  //final int level;
-  final int health, maxHealth;
-  final int gold;
-  final int experience, maxExperience;
+
+  AccountStatusTable(Status status){
+    setNewStatus(status);
+  }
+
+  void setNewStatus(Status status){
+    level = status.getLevel();
+    health = status.getCurrentHealth();
+    maxHealth = status.getMaxHealth();
+    gold = status.getCurrentGold();
+    experience = status.getCurrentExperience();
+    maxExperience = status.getMaxExperience();
+  }
+
+  int level = 1;
+  int health = 1, maxHealth = 1;
+  int gold = 0;
+  int experience = 0, maxExperience = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +33,12 @@ class AccountStatusTable extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(padding: EdgeInsets.only(top: 5), child: Text(' Lvl $level' , style: TextStyle(color: Colors.orange))),
+            ],
+          ),
           Row(children: [
             Padding(padding: EdgeInsets.only(top: 5),child: Text(' HP:', style: TextStyle(color: Colors.white))),
             Expanded(child: Container()),
