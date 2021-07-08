@@ -56,7 +56,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: kTitle),
+      appBar: AppBar(title: Center(child: kTitle)),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(

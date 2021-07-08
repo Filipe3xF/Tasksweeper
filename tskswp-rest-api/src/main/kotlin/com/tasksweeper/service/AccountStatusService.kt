@@ -77,7 +77,7 @@ class AccountStatusService : KoinComponent {
 
     private suspend fun takeDamage(account: AccountDTO, difficultyMultiplier: DifficultyMultiplier) {
         val currentHealth = accountStatusRepository.selectAccountStatusByName(account.username, HP.dbName)
-        val newHealth = currentHealth.value + calculateHealthLoss(account.level, difficultyMultiplier.value)
+        val newHealth = currentHealth.value - calculateHealthLoss(account.level, difficultyMultiplier.value)
 
         if (newHealth <= 0)
             downgradeCharacter(account)
