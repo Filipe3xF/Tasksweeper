@@ -16,8 +16,8 @@ class Status {
     'Experience': CurrMax(current: 0, max: 1)
   };
 
-  void setNewLevel(var body){
-    parameterValues['Level'] = CurrMax(current: body['level'], max: body['level']);
+  void setNewLevel(int level){
+    parameterValues['Level'] = CurrMax(current: level, max: level);
   }
 
   void setNewStatusValues (var body) {

@@ -24,7 +24,7 @@ class _HomeScreen extends State<HomeScreen> {
 
   Future<void> setStatusValues() async {
     var statusValues = jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
-    var statusLevel = jsonDecode(await AccountHandler.getAccountDetails(jwt));
+    var statusLevel = jsonDecode(await AccountHandler.getAccountDetails(jwt))['level'];
     //Uncomment the line below to see the response
     //print(response);
     setState(() {
