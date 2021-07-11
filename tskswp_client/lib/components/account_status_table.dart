@@ -28,7 +28,7 @@ class AccountStatusTable extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
-          color: Colors.deepPurpleAccent
+          color: Color(0xFF0E1A29)
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

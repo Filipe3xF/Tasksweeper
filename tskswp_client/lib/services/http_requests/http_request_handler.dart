@@ -7,7 +7,7 @@ const webHost = 'localhost:8080';
 class HttpHandler {
 
 
-  Future<String> postRequest(Object? body, String path) async {
+  static Future<String> postRequest(Object? body, String path) async {
     return (await http.post(
       Uri.http(emulatorHost, path),
       headers: {'content-type': 'application/json'},
@@ -15,7 +15,14 @@ class HttpHandler {
     )).body;
   }
 
-  Future<String> getRequestWithAuth(String jwt, String path) async {
+  static Future<String> getRequestWithQuery(String jwt, String path, var query) async {
+    return (await http.get(
+      Uri.http(emulatorHost, path, query),
+      headers: {'content-type': 'application/json', 'Authorization': 'Bearer $jwt'},
+    )).body;
+  }
+
+  static Future<String> getRequest(String jwt, String path) async {
     return (await http.get(
       Uri.http(emulatorHost, path),
       headers: {'content-type': 'application/json', 'Authorization': 'Bearer $jwt'},
