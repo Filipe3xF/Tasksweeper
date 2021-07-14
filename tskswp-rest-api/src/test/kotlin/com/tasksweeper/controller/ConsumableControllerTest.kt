@@ -5,7 +5,6 @@ import com.tasksweeper.entities.AccountConsumableDTO
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.ConsumableDTO
 import com.tasksweeper.exceptions.DatabaseNotFoundException
-import com.tasksweeper.module
 import com.tasksweeper.repository.AccountConsumableRepository
 import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.ConsumableRepository
@@ -14,6 +13,7 @@ import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.service.ConsumableService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
+import com.tasksweeper.utils.unitTestModule
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -83,7 +83,7 @@ class ConsumableControllerTest : KoinTest {
             accountConsumableRepository.insertAccountConsumable(username, consumable.id)
         } returns AccountConsumableDTO(username, consumable.id, 1)
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/1/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
@@ -118,7 +118,7 @@ class ConsumableControllerTest : KoinTest {
             accountStatusRepository.selectAccountStatusByName(username, "Gold")
         } returns AccountStatusDTO(username, "Gold", 0)
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/${consumable.id}/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
@@ -145,7 +145,7 @@ class ConsumableControllerTest : KoinTest {
             consumableRepository.selectConsumable(consumable.id)
         } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/${consumable.id}/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
@@ -172,7 +172,7 @@ class ConsumableControllerTest : KoinTest {
             consumableRepository.getAllConsumables()
         } returns consumableList
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/consumables") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -189,7 +189,7 @@ class ConsumableControllerTest : KoinTest {
 
     @Test
     fun `Fails to get all consumables without a jwt`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/consumables") {
                 addContentTypeHeader()
             }.apply {

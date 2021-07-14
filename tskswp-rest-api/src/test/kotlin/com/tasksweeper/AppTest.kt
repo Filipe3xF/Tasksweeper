@@ -2,6 +2,7 @@ package com.tasksweeper
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
+import com.tasksweeper.utils.unitTestModule
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
@@ -33,7 +34,7 @@ class AppTest : KoinTest {
 
     @Test
     fun `hello world endpoint is working`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/").apply {
                 response.status() shouldBe HttpStatusCode.OK
                 get<ObjectMapper>().readValue(
