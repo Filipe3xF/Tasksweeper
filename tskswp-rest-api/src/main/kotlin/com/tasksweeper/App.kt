@@ -49,7 +49,7 @@ val appModule = module {
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
-fun Application.module(testing: Boolean = false) {
+fun Application.mainModule(testing: Boolean = false) {
 
     if(!testing) {
         startKoin {

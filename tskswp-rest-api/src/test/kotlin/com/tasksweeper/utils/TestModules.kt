@@ -1,20 +1,20 @@
 package com.tasksweeper.utils
 
 import com.tasksweeper.it.TasksweeperIT
-import com.tasksweeper.module
+import com.tasksweeper.mainModule
 import io.ktor.application.*
 import io.ktor.config.*
 
 fun Application.integrationTestModule() {
     (environment.config as MapApplicationConfig).apply {
-        put("db.jdbcUrl", TasksweeperIT.postgresContainer.jdbcUrl)
-        put("db.dbUser", TasksweeperIT.postgresContainer.username)
-        put("db.dbPassword", TasksweeperIT.postgresContainer.password)
+        put(
+            "db.jdbcUrl",
+            "${TasksweeperIT.postgresContainer.jdbcUrl}&user=${TasksweeperIT.postgresContainer.username}&password=${TasksweeperIT.postgresContainer.password}"
+        )
     }
-
-    module()
+    mainModule()
 }
 
 fun Application.unitTestModule() {
-    module(true)
+    mainModule(true)
 }
