@@ -8,13 +8,13 @@ import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.AccountStatusValue
 import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
-import com.tasksweeper.module
 import com.tasksweeper.repository.AccountRepository
 import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.service.AccountService
 import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
+import com.tasksweeper.utils.unitTestModule
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -108,7 +108,7 @@ class AccountControllerTest : KoinTest {
             AccountStatusValue.EXP.initialValue
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/register") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(register))
@@ -142,7 +142,7 @@ class AccountControllerTest : KoinTest {
             1
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/login") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(login))
@@ -184,7 +184,7 @@ class AccountControllerTest : KoinTest {
             every { cause } returns mockk<PSQLException>()
         }
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/register") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(register))
@@ -214,7 +214,7 @@ class AccountControllerTest : KoinTest {
             every { cause } returns mockk<PSQLException>()
         }
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/login") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(login))
@@ -239,7 +239,7 @@ class AccountControllerTest : KoinTest {
         val accountRepository = get<AccountRepository>()
         coEvery { accountRepository.selectAccount(login.username) } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/login") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(login))
@@ -269,7 +269,7 @@ class AccountControllerTest : KoinTest {
             1
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/login") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(login))
@@ -301,7 +301,7 @@ class AccountControllerTest : KoinTest {
             1
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/account") {
                 addJwtHeader(get(), account.username)
             }.apply {
@@ -321,7 +321,7 @@ class AccountControllerTest : KoinTest {
             "password"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/register") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(register))
@@ -344,7 +344,7 @@ class AccountControllerTest : KoinTest {
             "password"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/register") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(register))
