@@ -90,10 +90,15 @@ class _HomeScreen extends State<HomeScreen> {
                   children: listOfTaskRow,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(Icons.add),
+          tooltip: 'Create a new task'),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
