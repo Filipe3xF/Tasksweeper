@@ -1,0 +1,6 @@
+{
+  "name": "Tasksweeper Web API",
+  "description": "The Web API for the Tasksweeper application.",
+  "image": "heroku/java",
+  "addons": [ "heroku-postgresql" ]
+}
