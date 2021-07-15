@@ -74,8 +74,7 @@ class TaskService : KoinComponent {
             null -> TaskStateValue.values().toList()
             else -> TaskStateValue.values().filter { it.dbName.lowercase().removeSpaces() == stateValue }
         }.let {
-            val taskList = taskRepository.getUserTasksWithStatus(accountUsername, it)
-            TasksDTO(taskList.size, taskList)
+            taskRepository.getUserTasksWithStatus(accountUsername, it)
         }
 
     suspend fun completeTaskSuccessfully(accountUsername: String, taskId: Long) =
@@ -114,5 +113,3 @@ class TaskService : KoinComponent {
             throw TaskAlreadyClosedException(id)
     }
 }
-
-data class TasksDTO(val length: Int,val tasks: List<TaskDTO>)

@@ -34,16 +34,18 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   Future<void> fillTaskRowList() async {
-    var userOpenTasks =
+    List userOpenTasks =
         jsonDecode(await TaskHandler.getAccountTasks(jwt, {'state': 'open'}));
-    for (int i = 0; i < userOpenTasks['length']; ++i) {
-      var task = userOpenTasks['tasks'][i];
-      listOfTaskRow.add(TaskRow(
-          taskTitle: task['name'],
-          onSuccess: onSuccessfulCompletion,
-          onFail: onFailCompletion,
-          onDelete: onDelete));
-    }
+
+    userOpenTasks.forEach(
+      (task) => listOfTaskRow.add(
+        TaskRow(
+            taskTitle: task['name'],
+            onSuccess: onSuccessfulCompletion,
+            onFail: onFailCompletion,
+            onDelete: onDelete),
+      ),
+    );
   }
 
   Future<void> setStatusValues() async {
@@ -74,7 +76,8 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: kAppBarColor,title: Center(child: kTitle)),
+      appBar:
+          AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
