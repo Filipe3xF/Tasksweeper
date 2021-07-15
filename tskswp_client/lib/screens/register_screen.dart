@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/regular_button.dart';
-import 'package:tskswp_client/components/text_field.dart';
+import 'package:tskswp_client/components/standard_text_field.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 
 import '../constants.dart';
@@ -16,10 +16,15 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
+
+
+  // Used Parameters
   String? _username = '';
   String? _password = '';
   String? _email = '';
   var _error = '';
+
+  //Helping Methods
 
   Future<void> _registerUser() async {
     if (_username == '' || _password == '' || _email == '') {
@@ -29,7 +34,8 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
 
-    var responseBody = await AccountHandler.register(_email, _username, _password);
+    var responseBody = await AccountHandler.register(
+        _email, _username, _password);
 
     if (responseBody.contains('error')) {
       setState(() {
@@ -41,10 +47,21 @@ class _RegisterScreen extends State<RegisterScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          jwt: jsonDecode(responseBody)['jwt'],
-        ),
+        builder: (context) =>
+            HomeScreen(
+              jwt: jsonDecode(responseBody)['jwt'],
+            ),
       ),
+    );
+  }
+
+  Widget _createTextFieldRow(StandardTextField standardTextField) {
+    return Row(
+      children: [
+        Expanded(flex: 2, child: Container()),
+        Expanded(flex: 5, child: standardTextField),
+        Expanded(flex: 2, child: Container())
+      ],
     );
   }
 
@@ -53,10 +70,12 @@ class _RegisterScreen extends State<RegisterScreen> {
         context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
+  // Building the screen with the help of the methods
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: kTitle),
+      appBar: AppBar(title: Center(child: kTitle)),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(
@@ -71,58 +90,28 @@ class _RegisterScreen extends State<RegisterScreen> {
                     style: kTextRedColor,
                   ),
                 ),
-                Row(
-                  children: [
-                    Expanded(flex: 2, child: Container()),
-                    Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child: StandardTextField(
-                            onChange: (value) {
-                              _email = value;
-                            },
-                            fieldName: 'Email'),
-                      ),
-                    ),
-                    Expanded(flex: 2, child: Container())
-                  ],
+                _createTextFieldRow(
+                    StandardTextField(
+                        onChange: (value) {
+                          _email = value;
+                        },
+                        fieldName: kEmail)
                 ),
-                Row(
-                  children: [
-                    Expanded(flex: 2, child: Container()),
-                    Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child: StandardTextField(
-                            onChange: (value) {
-                              _username = value;
-                            },
-                            fieldName: 'Username'),
-                      ),
-                    ),
-                    Expanded(flex: 2, child: Container())
-                  ],
+                _createTextFieldRow(
+                  StandardTextField(
+                      onChange: (value) {
+                        _username = value;
+                      },
+                      fieldName: kUsername),
                 ),
-                Row(
-                  children: [
-                    Expanded(flex: 2, child: Container()),
-                    Expanded(
-                      flex: 5,
-                      child: Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child: StandardTextField(
-                          onChange: (value) {
-                            _password = value;
-                          },
-                          fieldName: 'Password',
-                          obscureText: true,
-                        ),
-                      ),
-                    ),
-                    Expanded(flex: 2, child: Container())
-                  ],
+                _createTextFieldRow(
+                  StandardTextField(
+                    onChange: (value) {
+                      _password = value;
+                    },
+                    fieldName: kPassword,
+                    obscureText: true,
+                  ),
                 ),
                 RegularButton(
                   onTap: _registerUser,

@@ -10,4 +10,7 @@ class AccountHandler {
     return await HttpHandler().postRequest({'email': email, 'username': username, 'password': password}, '/register');
   }
 
+  static Future<String> getAccountDetails(String jwt) async {
+    return await HttpHandler().getRequestWithAuth(jwt, '/account');
+  }
 }

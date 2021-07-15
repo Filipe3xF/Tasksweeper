@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tskswp_client/Screens/login_screen.dart';
+import 'package:tskswp_client/screens/home_page_screen.dart';
+import 'package:tskswp_client/screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());

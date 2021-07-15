@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tskswp_client/constants.dart';
 
 class StandardTextField extends StatelessWidget {
 
@@ -15,7 +16,7 @@ class StandardTextField extends StatelessWidget {
       children: [
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(5.0),
+            padding: EdgeInsets.all(7.0),
             child: TextField(
               obscureText: obscureText,
               decoration: InputDecoration(
@@ -23,12 +24,7 @@ class StandardTextField extends StatelessWidget {
                 fillColor: Colors.white,
                 hintText: fieldName,
                 hintStyle: TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10.0),
-                  ),
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
-                ),
+                border: kOutlineInputBorder,
               ),
               onChanged: onChange,
             ),

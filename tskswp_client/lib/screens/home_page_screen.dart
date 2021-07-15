@@ -1,4 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:tskswp_client/components/account_status_table.dart';
+import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
+import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
+import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
 
@@ -15,9 +20,23 @@ class _HomeScreen extends State<HomeScreen> {
   _HomeScreen({required this.jwt});
 
   final String jwt;
+  Status status = Status();
 
-  Future<String?>? _toRegisterPage(String name) async {
-    return 'something';
+  Future<void> setStatusValues() async {
+    var statusValues = jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
+    var statusLevel = jsonDecode(await AccountHandler.getAccountDetails(jwt))['level'];
+    //Uncomment the line below to see the response
+    //print(response);
+    setState(() {
+      status.setNewLevel(statusLevel);
+      status.setNewStatusValues(statusValues);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setStatusValues();
   }
 
   @override
@@ -25,9 +44,7 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: Center(child: kTitle)),
       body: SafeArea(
-        child: Column(
-          children: [Text(jwt)],
-        ),
+        child: AccountStatusTable(status),
       ),
     );
   }
