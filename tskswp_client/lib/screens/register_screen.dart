@@ -16,8 +16,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
-
-
   // Used Parameters
   String? _username = '';
   String? _password = '';
@@ -25,7 +23,6 @@ class _RegisterScreen extends State<RegisterScreen> {
   var _error = '';
 
   //Helping Methods
-
   Future<void> _registerUser() async {
     if (_username == '' || _password == '' || _email == '') {
       setState(() {
@@ -34,8 +31,8 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
 
-    var responseBody = await AccountHandler.register(
-        _email, _username, _password);
+    var responseBody =
+        await AccountHandler.register(_email, _username, _password);
 
     if (responseBody.contains('error')) {
       setState(() {
@@ -47,10 +44,9 @@ class _RegisterScreen extends State<RegisterScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            HomeScreen(
-              jwt: jsonDecode(responseBody)['jwt'],
-            ),
+        builder: (context) => HomeScreen(
+          jwt: jsonDecode(responseBody)['jwt'],
+        ),
       ),
     );
   }
@@ -71,11 +67,11 @@ class _RegisterScreen extends State<RegisterScreen> {
   }
 
   // Building the screen with the help of the methods
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: kAppBarColor,title: Center(child: kTitle)),
+      appBar:
+          AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(
@@ -90,13 +86,11 @@ class _RegisterScreen extends State<RegisterScreen> {
                     style: kTextRedColor,
                   ),
                 ),
-                _createTextFieldRow(
-                    StandardTextField(
-                        onChange: (value) {
-                          _email = value;
-                        },
-                        fieldName: kEmail)
-                ),
+                _createTextFieldRow(StandardTextField(
+                    onChange: (value) {
+                      _email = value;
+                    },
+                    fieldName: kEmail)),
                 _createTextFieldRow(
                   StandardTextField(
                       onChange: (value) {
