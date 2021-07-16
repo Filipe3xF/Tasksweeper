@@ -5,7 +5,6 @@ import com.tasksweeper.entities.AccountConsumableDTO
 import com.tasksweeper.entities.AccountStatusDTO
 import com.tasksweeper.entities.ConsumableDTO
 import com.tasksweeper.exceptions.DatabaseNotFoundException
-import com.tasksweeper.module
 import com.tasksweeper.repository.AccountConsumableRepository
 import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.ConsumableRepository
@@ -14,6 +13,7 @@ import com.tasksweeper.service.AccountStatusService
 import com.tasksweeper.service.ConsumableService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
+import com.tasksweeper.utils.unitTestModule
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -80,10 +80,10 @@ class ConsumableControllerTest : KoinTest {
             accountConsumableRepository.increaseQuantity(username, consumable.id)
         } returns 0
         coEvery {
-            accountConsumableRepository.insertAccountConsumable(username,consumable.id)
+            accountConsumableRepository.insertAccountConsumable(username, consumable.id)
         } returns AccountConsumableDTO(username, consumable.id, 1)
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/1/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
@@ -98,7 +98,7 @@ class ConsumableControllerTest : KoinTest {
     }
 
     @Test
-    fun `The user tries to buy an item without having the currency`(){
+    fun `The user tries to buy an item without having the currency`() {
         val username = "John"
 
         val consumable = ConsumableDTO(
@@ -118,7 +118,7 @@ class ConsumableControllerTest : KoinTest {
             accountStatusRepository.selectAccountStatusByName(username, "Gold")
         } returns AccountStatusDTO(username, "Gold", 0)
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/${consumable.id}/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
@@ -130,7 +130,7 @@ class ConsumableControllerTest : KoinTest {
     }
 
     @Test
-    fun `The user tries to buy a non-existing item`(){
+    fun `The user tries to buy a non-existing item`() {
         val username = "John"
 
         val consumable = ConsumableDTO(
@@ -145,13 +145,55 @@ class ConsumableControllerTest : KoinTest {
             consumableRepository.selectConsumable(consumable.id)
         } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/consumable/${consumable.id}/buy") {
                 addContentTypeHeader()
                 addJwtHeader(get(), username)
             }.apply {
                 response.status() shouldBe HttpStatusCode.NotFound
                 response.content shouldContain "The desired element was not found in the database."
+            }
+        }
+    }
+
+    @Test
+    fun `Gets all consumables`() {
+        val consumableList = listOf(
+            ConsumableDTO(
+                1,
+                "Health Potion",
+                20,
+                "Restores 15% of your max HP"
+            )
+        )
+
+        val consumableRepository = get<ConsumableRepository>()
+        coEvery {
+            consumableRepository.getAllConsumables()
+        } returns consumableList
+
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "/consumables") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.OK
+                response.content.let {
+                    consumableList.forEach { consumable ->
+                        it shouldContain consumable.name
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Fails to get all consumables without a jwt`() {
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "/consumables") {
+                addContentTypeHeader()
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
             }
         }
     }

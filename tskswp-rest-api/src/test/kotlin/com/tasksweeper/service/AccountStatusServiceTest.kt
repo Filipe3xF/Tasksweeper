@@ -80,18 +80,18 @@ class AccountStatusServiceTest : KoinTest {
         runBlocking {
             val list = accountStatusService.insertInitialStatus(username)
 
-            list.single { it?.statusName == "Health" }!!.let {
+            list.single { it.statusName == "Health" }.let {
                 it.username shouldBe username
                 it.statusName shouldBe AccountStatusValue.HP.dbName
                 it.value shouldBe AccountStatusValue.HP.initialValue
             }
-            list.single { it?.statusName == "Gold" }!!.let {
+            list.single { it.statusName == "Gold" }.let {
                 it.username shouldBe username
                 it.statusName shouldBe AccountStatusValue.GOLD.dbName
                 it.value shouldBe AccountStatusValue.GOLD.initialValue
 
             }
-            list.single { it?.statusName == "Experience" }!!.let {
+            list.single { it.statusName == "Experience" }.let {
                 it.username shouldBe username
                 it.statusName shouldBe AccountStatusValue.EXP.dbName
                 it.value shouldBe AccountStatusValue.EXP.initialValue

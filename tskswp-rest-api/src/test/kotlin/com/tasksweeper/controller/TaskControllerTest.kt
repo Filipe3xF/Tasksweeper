@@ -9,7 +9,6 @@ import com.tasksweeper.entities.TaskDTO
 import com.tasksweeper.entities.TaskStateValue.*
 import com.tasksweeper.exceptions.AppError
 import com.tasksweeper.exceptions.DatabaseNotFoundException
-import com.tasksweeper.module
 import com.tasksweeper.repository.AccountRepository
 import com.tasksweeper.repository.AccountStatusRepository
 import com.tasksweeper.repository.TaskRepository
@@ -19,6 +18,7 @@ import com.tasksweeper.service.TaskService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import com.tasksweeper.utils.instantOf
+import com.tasksweeper.utils.unitTestModule
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.ktor.application.*
@@ -95,7 +95,7 @@ class TaskControllerTest : KoinTest {
             TO_DO.dbName
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -122,7 +122,7 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -148,7 +148,7 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -174,7 +174,7 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -205,7 +205,7 @@ class TaskControllerTest : KoinTest {
 
         val timestamp = "${date.year}-${date.month}-${date.day}T${time.hour}:${time.minute}:${time.second}.000Z"
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -230,7 +230,7 @@ class TaskControllerTest : KoinTest {
             "Just a test Task"
         )
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Post, "/task") {
                 addContentTypeHeader()
                 setBody(get<ObjectMapper>().writeValueAsString(taskInfoDto))
@@ -282,7 +282,7 @@ class TaskControllerTest : KoinTest {
             accountStatusRepository.updateStatus(task.accountName, EXP.dbName, any())
         } returns 20
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/success") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -301,7 +301,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Closing a task successfully gives out an error when taskId is not a number`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/NotANumber/success") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -313,7 +313,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Fails to deliver rewards because the user isn't logged in `() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/1/success") {
                 addContentTypeHeader()
             }.let {
@@ -330,7 +330,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(taskId)
         } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/$taskId/success") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -359,7 +359,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(task.id)
         } returns task
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/success") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "MyAccount")
@@ -388,7 +388,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(task.id)
         } returns task
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/success") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -433,7 +433,7 @@ class TaskControllerTest : KoinTest {
             accountStatusRepository.updateStatus(task.accountName, HP.dbName, any())
         } returns 80
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/failure") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -452,7 +452,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Closing a task unsuccessfully gives out an error when taskId is not a number`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/NotANumber/failure") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -464,7 +464,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Fails to punish account because the user isn't logged in `() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/1/failure") {
                 addContentTypeHeader()
             }.let {
@@ -481,7 +481,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(taskId)
         } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/$taskId/failure") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -510,7 +510,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(task.id)
         } returns task
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/failure") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "MyAccount")
@@ -539,7 +539,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(task.id)
         } returns task
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Patch, "/task/${task.id}/failure") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -572,7 +572,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.deleteTask(task.id)
         } returns 1
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Delete, "/task/${task.id}") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -605,7 +605,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(task.id)
         } returns task
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Delete, "/task/${task.id}") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "MyAccount")
@@ -617,7 +617,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Deleting a task gives out an error when taskId is not a number`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Delete, "/task/NotANumber") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -629,7 +629,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Fails to delete task because the user isn't logged in`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Delete, "/task/1") {
                 addContentTypeHeader()
             }.let {
@@ -647,7 +647,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.selectTask(taskId)
         } throws DatabaseNotFoundException()
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Delete, "/task/$taskId") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -689,7 +689,7 @@ class TaskControllerTest : KoinTest {
             taskRepository.getUserTasksWithStatus(any(), any())
         } returns taskList
 
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/tasks") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
@@ -706,7 +706,7 @@ class TaskControllerTest : KoinTest {
 
     @Test
     fun `Fails to get all open user tasks without a jwt`() {
-        withTestApplication(Application::module) {
+        withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/tasks") {
                 addContentTypeHeader()
             }.apply {

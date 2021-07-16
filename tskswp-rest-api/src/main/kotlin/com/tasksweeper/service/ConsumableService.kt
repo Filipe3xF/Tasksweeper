@@ -17,4 +17,6 @@ class ConsumableService : KoinComponent {
         accountConsumableService.addItem(username, consumable)
         return consumable
     }
+
+    suspend fun getAllConsumables(): List<ConsumableDTO> = consumableRepository.getAllConsumables()
 }

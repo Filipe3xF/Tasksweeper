@@ -47,18 +47,18 @@ val appModule = module {
     single { JWT() }
 }
 
-fun main(args: Array<String>) {
-    startKoin {
-        slf4jLogger()
-        modules(appModule, serviceModule, repositoryModule)
+fun main(args: Array<String>) = EngineMain.main(args)
+
+fun Application.mainModule(testing: Boolean = false) {
+
+    if(!testing) {
+        startKoin {
+            slf4jLogger()
+            modules(appModule, serviceModule, repositoryModule)
+        }
+
+        DatabaseFactory.init(environment.config)
     }
-
-    DatabaseFactory.init()
-
-    EngineMain.main(args)
-}
-
-fun Application.module() {
 
     installContentNegotiation()
     installAuthentication()

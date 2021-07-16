@@ -1,6 +1,8 @@
 package com.tasksweeper.entities
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.tasksweeper.utils.InstantDeserializer
 import com.tasksweeper.utils.InstantSerializer
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.`java-time`.timestamp
@@ -22,8 +24,10 @@ data class TaskDTO(
     val id: Long,
     val name: String,
     @JsonSerialize(using = InstantSerializer::class)
+    @JsonDeserialize(using = InstantDeserializer::class)
     val startDate: Instant,
     @JsonSerialize(using = InstantSerializer::class)
+    @JsonDeserialize(using = InstantDeserializer::class)
     val dueDate: Instant?,
     val difficultyName: String,
     val repetitionName: String?,
