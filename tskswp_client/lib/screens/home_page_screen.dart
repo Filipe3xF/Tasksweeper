@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
 import 'package:tskswp_client/components/task_row.dart';
@@ -53,8 +54,6 @@ class _HomeScreen extends State<HomeScreen> {
         jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
     var statusLevel =
         jsonDecode(await AccountHandler.getAccountDetails(jwt))['level'];
-    //Uncomment the line below to see the response
-    //print(response);
     setState(() {
       status.setNewLevel(statusLevel);
       status.setNewStatusValues(statusValues);
