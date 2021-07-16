@@ -15,7 +15,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreen extends State<LoginScreen> {
-
   // Used Parameters
   String? _username = '';
   String? _password = '';
@@ -62,12 +61,12 @@ class _LoginScreen extends State<LoginScreen> {
     );
   }
 
-
   // Building the screen with the help of the methods
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Center(child: kTitle)),
+      appBar:
+          AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Center(

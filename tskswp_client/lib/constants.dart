@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const kAppBarColor = Color(0xFF2186C8);
+
+
 const kTextRedColor = TextStyle(color: Colors.red);
 
 const kEmail = 'Email';
