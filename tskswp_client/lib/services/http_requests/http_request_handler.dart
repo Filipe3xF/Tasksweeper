@@ -39,7 +39,7 @@ class HttpHandler {
         .body;
   }
 
-  static Future<String> getRequest(String jwt, String path) async {
+  static Future<String> getRequestWithAuthentication(String jwt, String path) async {
     return (await http.get(
       Uri.https(webHost, path),
       headers: {

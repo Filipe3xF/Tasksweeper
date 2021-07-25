@@ -26,8 +26,12 @@ class _HomeScreen extends State<HomeScreen> {
 
   final String jwt;
 
+  final String taskName = 'name';
+  final String accountLevel = 'level';
+
   Status status = Status();
-  var listOfTaskRow = <TaskRow>[];
+  final listOfTaskRow = <TaskRow>[];
+  final Map<String, dynamic> openTaskStateQuery = {'state': 'open'};
 
   @override
   void initState() {
@@ -38,12 +42,12 @@ class _HomeScreen extends State<HomeScreen> {
 
   Future<void> fillTaskRowList() async {
     List userOpenTasks =
-        jsonDecode(await TaskHandler.getAccountTasks(jwt, {'state': 'open'}));
+        jsonDecode(await TaskHandler.getAccountTasks(jwt, openTaskStateQuery));
     setState(() {
       userOpenTasks.forEach(
             (task) => listOfTaskRow.add(
           TaskRow(
-              taskTitle: task['name'],
+              taskTitle: task[taskName],
               onSuccess: onSuccessfulCompletion,
               onFail: onFailCompletion,
               onDelete: onDelete),
@@ -57,7 +61,7 @@ class _HomeScreen extends State<HomeScreen> {
     var statusValues =
         jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
     var statusLevel =
-        jsonDecode(await AccountHandler.getAccountDetails(jwt))['level'];
+        jsonDecode(await AccountHandler.getAccountDetails(jwt))[accountLevel];
     setState(() {
       status.setNewLevel(statusLevel);
       status.setNewStatusValues(statusValues);
@@ -105,7 +109,7 @@ class _HomeScreen extends State<HomeScreen> {
                     MaterialPageRoute(
                         builder: (context) => TaskCreationScreen(jwt: jwt)))
                 .then((value) {
-              listOfTaskRow = [];
+              listOfTaskRow.removeRange(0, listOfTaskRow.length);
               fillTaskRowList();
             });
           },
