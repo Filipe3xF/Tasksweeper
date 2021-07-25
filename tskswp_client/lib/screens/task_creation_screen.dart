@@ -51,7 +51,7 @@ class _TaskCreationScreen extends State<TaskCreationScreen> {
     Map<String,dynamic> body = {};
 
 
-    if(name == null || difficulty == null){
+    if(name == null || name == '' || difficulty == null){
       setState(() {
         error = 'Both name and difficulty must be filled!';
       });
