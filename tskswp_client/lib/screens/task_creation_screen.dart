@@ -141,11 +141,11 @@ class _TaskCreationScreen extends State<TaskCreationScreen> {
       return dueTime?.format(context);
   }
 
-  Widget _createRow(Widget standardTextField) {
+  Widget _createRow(Widget widget) {
     return Row(
       children: [
         Expanded(flex: 2, child: Container()),
-        Expanded(flex: 5, child: standardTextField),
+        Expanded(flex: 5, child: widget),
         Expanded(flex: 2, child: Container())
       ],
     );
