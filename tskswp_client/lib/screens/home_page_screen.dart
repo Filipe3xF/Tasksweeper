@@ -1,7 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
+import 'package:tskswp_client/components/app_bottom_bar.dart';
 import 'package:tskswp_client/components/task_row.dart';
+import 'package:tskswp_client/screens/task_creation_screen.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/task_requests/task_request_handler.dart';
@@ -36,16 +39,18 @@ class _HomeScreen extends State<HomeScreen> {
   Future<void> fillTaskRowList() async {
     List userOpenTasks =
         jsonDecode(await TaskHandler.getAccountTasks(jwt, {'state': 'open'}));
+    setState(() {
+      userOpenTasks.forEach(
+            (task) => listOfTaskRow.add(
+          TaskRow(
+              taskTitle: task['name'],
+              onSuccess: onSuccessfulCompletion,
+              onFail: onFailCompletion,
+              onDelete: onDelete),
+        ),
+      );
+    });
 
-    userOpenTasks.forEach(
-      (task) => listOfTaskRow.add(
-        TaskRow(
-            taskTitle: task['name'],
-            onSuccess: onSuccessfulCompletion,
-            onFail: onFailCompletion,
-            onDelete: onDelete),
-      ),
-    );
   }
 
   Future<void> setStatusValues() async {
@@ -76,6 +81,7 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar:
           AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
+      bottomNavigationBar: BottomMenu(),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -93,7 +99,16 @@ class _HomeScreen extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TaskCreationScreen(jwt: jwt)))
+                .then((value) {
+              listOfTaskRow = [];
+              fillTaskRowList();
+            });
+          },
           child: const Icon(Icons.add),
           tooltip: 'Create a new task'),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -14,6 +14,14 @@ class HttpHandler {
     )).body;
   }
 
+  static Future<String> postRequestWithAuthentication( Object? body,  String jwt, String path) async {
+    return (await http.post(
+      Uri.http(webHost, path),
+      headers: {'content-type': 'application/json', 'Authorization': 'Bearer $jwt'},
+      body: jsonEncode(body),
+    )).body;
+  }
+
   static Future<String> getRequestWithQuery(String jwt, String path, var query) async {
     return (await http.get(
       Uri.http(webHost, path, query),
