@@ -3,7 +3,7 @@
   "servers": [],
   "info": {
     "description": "Documentation for the Tasksweeper API.",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "title": "Tasksweeper API",
     "contact": {
       "email": "filipe3xf@gmail.com"
@@ -53,6 +53,38 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/AccountStatus"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "JWT is invalid."
+          }
+        }
+      }
+    },
+    "/consumables": {
+      "get": {
+        "tags": [
+          "Consumable"
+        ],
+        "summary": "Gets a list of all Consumables",
+        "operationId": "getConsumables",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all consumables",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Consumable"
                   }
                 }
               }

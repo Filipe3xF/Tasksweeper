@@ -10,4 +10,8 @@ fun TestApplicationRequest.addJwtHeader(jwt: JWT, username: String) = addHeader(
     }"
 )
 
+fun TestApplicationRequest.addJwtHeader(jwt: String) = addHeader(
+    "Authorization", "Bearer $jwt"
+)
+
 fun TestApplicationRequest.addContentTypeHeader() = addHeader("content-type", "application/json")
