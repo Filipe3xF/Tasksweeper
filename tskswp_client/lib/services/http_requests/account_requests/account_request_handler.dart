@@ -11,6 +11,6 @@ class AccountHandler {
   }
 
   static Future<String> getAccountDetails(String jwt) async {
-    return await HttpHandler.getRequest(jwt, '/account');
+    return await HttpHandler.getRequestWithAuthentication(jwt, '/account');
   }
 }
