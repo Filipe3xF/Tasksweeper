@@ -26,6 +26,7 @@ class _HomeScreen extends State<HomeScreen> {
 
   final String jwt;
 
+  final String taskId = 'id';
   final String taskName = 'name';
   final String accountLevel = 'level';
 
@@ -45,16 +46,16 @@ class _HomeScreen extends State<HomeScreen> {
         jsonDecode(await TaskHandler.getAccountTasks(jwt, openTaskStateQuery));
     setState(() {
       userOpenTasks.forEach(
-            (task) => listOfTaskRow.add(
+        (task) => listOfTaskRow.add(
           TaskRow(
+              jwt: jwt,
+              taskId: task['id'],
               taskTitle: task[taskName],
-              onSuccess: onSuccessfulCompletion,
-              onFail: onFailCompletion,
-              onDelete: onDelete),
+              afterRequest: afterRequest,
+              ),
         ),
       );
     });
-
   }
 
   Future<void> setStatusValues() async {
@@ -68,16 +69,10 @@ class _HomeScreen extends State<HomeScreen> {
     });
   }
 
-  void onSuccessfulCompletion() {
-    print('Successful');
-  }
-
-  void onFailCompletion() {
-    print('Fail');
-  }
-
-  void onDelete() {
-    print('Delete');
+  void afterRequest() {
+    setStatusValues();
+    listOfTaskRow.removeRange(0, listOfTaskRow.length);
+    fillTaskRowList();
   }
 
   @override
