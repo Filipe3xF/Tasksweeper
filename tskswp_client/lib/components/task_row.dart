@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:tskswp_client/services/http_requests/task_requests/task_request_handler.dart';
 
@@ -12,7 +15,7 @@ class TaskRow extends StatelessWidget {
   final int taskId;
   final String taskTitle;
   final String jwt;
-  final Function() afterRequest;
+  final Function(String?) afterRequest;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +57,11 @@ class TaskRow extends StatelessWidget {
                 onPressed: () async {
                   var response = await TaskHandler.closeTaskSuccessfully(jwt, taskId);
                   if(response.contains('error')){
-                    print(response);
+                    afterRequest(jsonDecode(response)['error']);
                     return;
                   }
-                  afterRequest();
-                  print(response);
+                  afterRequest(null);
+
                 },
               ),
             ),
@@ -66,7 +69,7 @@ class TaskRow extends StatelessWidget {
               decoration: BoxDecoration(color: Colors.red),
               child: IconButton(
                 icon: const Icon(Icons.close),
-                onPressed: (){afterRequest();},
+                onPressed: (){afterRequest(null);},
               ),
             ),
             Container(
@@ -77,7 +80,7 @@ class TaskRow extends StatelessWidget {
                       bottomRight: Radius.circular(20))),
               child: IconButton(
                 icon: const Icon(Icons.delete_outline_outlined),
-                onPressed: (){afterRequest();},
+                onPressed: (){afterRequest(null);},
               ),
             )
           ],

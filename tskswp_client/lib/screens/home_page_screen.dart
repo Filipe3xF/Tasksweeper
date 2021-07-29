@@ -69,7 +69,23 @@ class _HomeScreen extends State<HomeScreen> {
     });
   }
 
-  void afterRequest() {
+  void afterRequest(String? error) {
+    if(error != null){
+      showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('An error occurred.'),
+            content: Text('$error'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          ));
+      return;
+    }
+
     setStatusValues();
     listOfTaskRow.removeRange(0, listOfTaskRow.length);
     fillTaskRowList();
