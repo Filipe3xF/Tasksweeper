@@ -87,7 +87,10 @@ class TaskRow extends StatelessWidget {
                       bottomRight: Radius.circular(20))),
               child: IconButton(
                 icon: const Icon(Icons.delete_outline_outlined),
-                onPressed: (){afterRequest(null);},
+                onPressed: () async {
+                  var response = await TaskHandler.deleteTask(jwt, taskId);
+                  _processResult(response);
+                  },
               ),
             )
           ],

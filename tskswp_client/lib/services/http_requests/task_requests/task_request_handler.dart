@@ -2,6 +2,10 @@ import '../http_request_handler.dart';
 
 class TaskHandler {
 
+  static Future<String> deleteTask(String jwt, int taskId) {
+    return HttpHandler.deleteRequest(jwt, '/task/$taskId');
+  }
+
   static Future<String> closeTaskUnsuccessfully(String jwt, int taskId) {
     return HttpHandler.patchRequest(jwt, '/task/$taskId/failure');
   }
