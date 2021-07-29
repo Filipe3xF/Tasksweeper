@@ -17,6 +17,15 @@ class TaskRow extends StatelessWidget {
   final String jwt;
   final Function(String?) afterRequest;
 
+
+  void _processResult(dynamic response) {
+    if(response.contains('error')){
+      afterRequest(jsonDecode(response)['error']);
+      return;
+    }
+    afterRequest(null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -56,12 +65,7 @@ class TaskRow extends StatelessWidget {
                 icon: const Icon(Icons.done),
                 onPressed: () async {
                   var response = await TaskHandler.closeTaskSuccessfully(jwt, taskId);
-                  if(response.contains('error')){
-                    afterRequest(jsonDecode(response)['error']);
-                    return;
-                  }
-                  afterRequest(null);
-
+                  _processResult(response);
                 },
               ),
             ),
@@ -69,7 +73,10 @@ class TaskRow extends StatelessWidget {
               decoration: BoxDecoration(color: Colors.red),
               child: IconButton(
                 icon: const Icon(Icons.close),
-                onPressed: (){afterRequest(null);},
+                onPressed: () async {
+                  var response = await TaskHandler.closeTaskUnsuccessfully(jwt, taskId);
+                  _processResult(response);
+                },
               ),
             ),
             Container(
