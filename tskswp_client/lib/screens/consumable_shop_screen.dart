@@ -13,16 +13,18 @@ import '../constants.dart';
 import 'home_page_screen.dart';
 
 class ConsumableShopScreen extends StatefulWidget {
-  ConsumableShopScreen({required this.jwt});
+  ConsumableShopScreen({required this.jwt, required this.status});
 
   final String jwt;
 
+  final Status status;
+
   @override
-  _ConsumableShopScreen createState() => _ConsumableShopScreen(jwt: this.jwt);
+  _ConsumableShopScreen createState() => _ConsumableShopScreen(jwt: this.jwt, status: status);
 }
 
 class _ConsumableShopScreen extends State<ConsumableShopScreen> {
-  _ConsumableShopScreen({required this.jwt});
+  _ConsumableShopScreen({required this.jwt,required this.status});
 
   final String jwt;
 
@@ -32,7 +34,7 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
 
   final List<Widget> listOfConsumables = [];
 
-  Status status = Status();
+  Status status;
 
   @override
   void initState() {
@@ -102,7 +104,7 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomeScreen(jwt: jwt)));
+                        builder: (context) => HomeScreen(jwt: jwt, status: status,)));
               })
         ],
       ),

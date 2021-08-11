@@ -14,16 +14,21 @@ import '../constants.dart';
 import 'consumable_shop_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({required this.jwt});
+  HomeScreen({required this.jwt, required this.status});
 
   final String jwt;
 
+  final Status status;
+
   @override
-  _HomeScreen createState() => _HomeScreen(jwt: this.jwt);
+  _HomeScreen createState() => _HomeScreen(jwt: this.jwt, status: status);
 }
 
 class _HomeScreen extends State<HomeScreen> {
-  _HomeScreen({required this.jwt});
+  _HomeScreen({required this.jwt, required this.status}){
+    setStatusValues();
+    fillTaskRowList();
+  }
 
   final String jwt;
 
@@ -35,12 +40,13 @@ class _HomeScreen extends State<HomeScreen> {
   final listOfTaskRow = <TaskRow>[];
   final Map<String, dynamic> openTaskStateQuery = {'state': 'open'};
 
+  /*
   @override
   void initState() {
     super.initState();
     setStatusValues();
     fillTaskRowList();
-  }
+  }*/
 
   Future<void> fillTaskRowList() async {
     List userOpenTasks =
@@ -105,7 +111,10 @@ class _HomeScreen extends State<HomeScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ConsumableShopScreen(jwt: jwt)));
+                        builder: (context) => ConsumableShopScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
               })
         ],
       ),
