@@ -8,6 +8,7 @@ import 'package:tskswp_client/constants.dart';
 import 'package:tskswp_client/screens/home_page_screen.dart';
 import 'package:tskswp_client/screens/register_screen.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
+import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -41,7 +42,7 @@ class _LoginScreen extends State<LoginScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(jwt: jsonDecode(responseBody)['jwt']),
+        builder: (context) => HomeScreen(jwt: jsonDecode(responseBody)['jwt'], status: Status(),),
       ),
     );
   }

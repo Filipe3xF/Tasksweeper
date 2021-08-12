@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/standard_text_field.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
+import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
 import 'home_page_screen.dart';
@@ -46,6 +47,7 @@ class _RegisterScreen extends State<RegisterScreen> {
       MaterialPageRoute(
         builder: (context) => HomeScreen(
           jwt: jsonDecode(responseBody)['jwt'],
+          status: Status(),
         ),
       ),
     );

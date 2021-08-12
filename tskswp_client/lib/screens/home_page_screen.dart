@@ -11,18 +11,24 @@ import 'package:tskswp_client/services/http_requests/task_requests/task_request_
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
+import 'consumable_shop_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({required this.jwt});
+  HomeScreen({required this.jwt, required this.status});
 
   final String jwt;
 
+  final Status status;
+
   @override
-  _HomeScreen createState() => _HomeScreen(jwt: this.jwt);
+  _HomeScreen createState() => _HomeScreen(jwt: this.jwt, status: status);
 }
 
 class _HomeScreen extends State<HomeScreen> {
-  _HomeScreen({required this.jwt});
+  _HomeScreen({required this.jwt, required this.status}){
+    setStatusValues();
+    fillTaskRowList();
+  }
 
   final String jwt;
 
@@ -34,12 +40,13 @@ class _HomeScreen extends State<HomeScreen> {
   final listOfTaskRow = <TaskRow>[];
   final Map<String, dynamic> openTaskStateQuery = {'state': 'open'};
 
+  /*
   @override
   void initState() {
     super.initState();
     setStatusValues();
     fillTaskRowList();
-  }
+  }*/
 
   Future<void> fillTaskRowList() async {
     List userOpenTasks =
@@ -48,11 +55,11 @@ class _HomeScreen extends State<HomeScreen> {
       userOpenTasks.forEach(
         (task) => listOfTaskRow.add(
           TaskRow(
-              jwt: jwt,
-              taskId: task['id'],
-              taskTitle: task[taskName],
-              afterRequest: afterRequest,
-              ),
+            jwt: jwt,
+            taskId: task['id'],
+            taskTitle: task[taskName],
+            afterRequest: afterRequest,
+          ),
         ),
       );
     });
@@ -70,19 +77,19 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   void afterRequest(String? error) {
-    if(error != null){
+    if (error != null) {
       showDialog<String>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('An error occurred.'),
-            content: Text('$error'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'OK'),
-                child: const Text('OK'),
-              ),
-            ],
-          ));
+                title: const Text('An error occurred.'),
+                content: Text('$error'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'OK'),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ));
       return;
     }
 
@@ -96,7 +103,21 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar:
           AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
-      bottomNavigationBar: BottomMenu(),
+      bottomNavigationBar: BottomMenu(
+        bottomAppBarOptions: [
+          IconButton(
+              icon: Icon(Icons.shopping_bag),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConsumableShopScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
+              })
+        ],
+      ),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,

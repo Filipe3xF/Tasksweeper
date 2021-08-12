@@ -33,6 +33,18 @@ class HttpHandler {
         .body;
   }
 
+  static Future<String> postRequestWithAuthenticationAndNoBody(
+      String jwt, String path) async {
+    return (await http.post(
+      Uri.https(webHost, path),
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': 'Bearer $jwt'
+      }
+    ))
+        .body;
+  }
+
   static Future<String> postRequestWithAuthentication(
       Object? body, String jwt, String path) async {
     return (await http.post(
