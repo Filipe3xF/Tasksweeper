@@ -32,6 +32,12 @@ class AccountConsumableRepository {
         }.single().let { toAccountConsumable(it) }
     }
 
+    suspend fun selectAccountConsumables(username: String) = transaction {
+        AccountConsumable.select {
+            AccountConsumable.username eq username
+        }.map { toAccountConsumable(it) }
+    }
+
     private fun toAccountConsumable(row: ResultRow): AccountConsumableDTO = AccountConsumableDTO(
         username = row[AccountConsumable.username],
         consumableId = row[AccountConsumable.consumableId],
