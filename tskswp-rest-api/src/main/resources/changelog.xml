@@ -535,4 +535,7 @@
                                  referencedColumnNames="id" referencedTableSchemaName="tskswp"
                                  baseTableSchemaName="tskswp"/>
     </changeSet>
+    <changeSet id="34" author="sebas">
+        <addNotNullConstraint tableName="consumable_status" columnName="consumable_id" schemaName="tskswp"/>
+    </changeSet>
 </databaseChangeLog>

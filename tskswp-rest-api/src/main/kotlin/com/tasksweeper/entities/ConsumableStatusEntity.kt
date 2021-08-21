@@ -12,7 +12,7 @@ object ConsumableStatus : Table("tskswp.consumable_status") {
 }
 
 data class ConsumableStatusDTO(
-    val consumableName: String,
+    val consumableId: Long,
     val statusName: String,
     val value: Long,
     val percentage: Boolean,
