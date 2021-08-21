@@ -130,6 +130,10 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<DatabaseInsertFailedException> {
         call.respond(HttpStatusCode.InternalServerError, AppError(it.message!!))
     }
+
+    exception<NoConsumablesToUseException> {
+        call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
+    }
 }
 
 fun Application.installAuthentication() = install(Authentication) {

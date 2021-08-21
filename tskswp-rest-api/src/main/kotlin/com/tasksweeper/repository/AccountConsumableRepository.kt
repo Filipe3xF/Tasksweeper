@@ -26,10 +26,30 @@ class AccountConsumableRepository {
         }
     }
 
+    suspend fun decreaseQuantity(username: String, consumableId: Long) = transaction {
+        AccountConsumable.update({ (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId) }) {
+            with(SqlExpressionBuilder) {
+                it[quantity] = quantity + 1
+            }
+        }
+    }
+
+    suspend fun deleteAccountConsumable(username: String, consumableId: Long) = transaction {
+        AccountConsumable.deleteWhere {
+            (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId)
+        }.let { it }
+    }
+
     suspend fun selectAccountConsumable(username: String, consumableId: Long) = transaction {
         AccountConsumable.select {
             (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId)
-        }.single().let { toAccountConsumable(it) }
+        }.let { getAccountConsumableOrNull(it) }
+    }
+
+    private fun getAccountConsumableOrNull(query : Query): AccountConsumableDTO?{
+        if(query.empty())
+            return null;
+        return toAccountConsumable(query.single())
     }
 
     private fun toAccountConsumable(row: ResultRow): AccountConsumableDTO = AccountConsumableDTO(

@@ -40,3 +40,6 @@ class NotEnoughGoldException(username: String) :
 
 class InvalidConsumableIdException(consumableId: String) :
     TaskSweeperException("Consumable id $consumableId is not valid.")
+
+class NoConsumablesToUseException(username : String) :
+    TaskSweeperException("User: $username does not possess the consumable.")
