@@ -22,6 +22,14 @@ fun Routing.consumableController() {
             }
         }
 
+        get("/consumable/{consumableId}") {
+            consumableService.getConsumable(
+                call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it) }
+            ).let {
+                call.respond(it)
+            }
+        }
+
         get("/consumables") {
             consumableService.getAllConsumables().let {
                 call.respond(it)
