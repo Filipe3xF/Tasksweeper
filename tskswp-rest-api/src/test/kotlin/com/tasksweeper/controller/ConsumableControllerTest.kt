@@ -31,6 +31,7 @@ import org.koin.test.KoinTest
 import org.koin.test.get
 
 class ConsumableControllerTest : KoinTest {
+
     @BeforeEach
     fun start() {
         startKoin {

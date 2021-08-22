@@ -11,6 +11,7 @@ import org.koin.ktor.ext.inject
 
 fun Routing.consumableController() {
     val consumableService: ConsumableService by inject()
+
     authenticate {
         post("/consumable/{consumableId}/buy") {
             consumableService.obtainItem(

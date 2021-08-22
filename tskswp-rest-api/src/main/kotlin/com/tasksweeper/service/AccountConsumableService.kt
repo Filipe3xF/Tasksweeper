@@ -12,4 +12,7 @@ class AccountConsumableService : KoinComponent {
         if (accountConsumableRepository.increaseQuantity(username, consumable.id) <= 0)
             accountConsumableRepository.insertAccountConsumable(username, consumable.id)
     }
+
+    suspend fun getAccountConsumables(username: String) =
+        accountConsumableRepository.selectAccountConsumables(username)
 }

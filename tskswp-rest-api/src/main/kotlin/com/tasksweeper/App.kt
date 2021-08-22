@@ -27,7 +27,7 @@ import org.slf4j.event.Level
 import java.time.format.DateTimeParseException
 
 
-val serviceModule = module {
+val serviceModule = module(createdAtStart = true) {
     single { AccountService() }
     single { AccountStatusService() }
     single { TaskService() }
@@ -35,7 +35,7 @@ val serviceModule = module {
     single { AccountConsumableService() }
 }
 
-val repositoryModule = module {
+val repositoryModule = module(createdAtStart = true) {
     single { AccountRepository() }
     single { AccountStatusRepository() }
     single { TaskRepository() }
@@ -43,7 +43,7 @@ val repositoryModule = module {
     single { AccountConsumableRepository() }
 }
 
-val appModule = module {
+val appModule = module(createdAtStart = true) {
     single { JWT() }
 }
 
@@ -78,6 +78,7 @@ fun Application.mainModule(testing: Boolean = false) {
         taskController()
         consumableController()
         accountStatusController()
+        accountConsumableController()
     }
 }
 
