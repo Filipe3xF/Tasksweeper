@@ -4,6 +4,7 @@ import com.tasksweeper.authentication.getUsername
 import com.tasksweeper.service.AccountConsumableService
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import org.koin.ktor.ext.inject
 
@@ -12,7 +13,9 @@ fun Routing.accountConsumableController() {
 
     authenticate {
         get("account/consumables") {
-            accountConsumableService.getAccountConsumables(call.getUsername())
+            call.respond(
+                accountConsumableService.getAccountConsumables(call.getUsername())
+            )
         }
     }
 }

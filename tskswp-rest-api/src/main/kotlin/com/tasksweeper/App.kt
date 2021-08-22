@@ -78,6 +78,7 @@ fun Application.mainModule(testing: Boolean = false) {
         taskController()
         consumableController()
         accountStatusController()
+        accountConsumableController()
     }
 }
 
