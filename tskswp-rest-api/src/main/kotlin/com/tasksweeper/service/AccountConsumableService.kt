@@ -22,7 +22,7 @@ class AccountConsumableService : KoinComponent {
             accountConsumableRepository.insertAccountConsumable(username, consumable.id)
     }
 
-    suspend fun useItem(username: String, consumableId: Long): Any {
+    suspend fun useItem(username: String, consumableId: Long): AccountConsumableDTO {
         val accountConsumable: AccountConsumableDTO =
             accountConsumableRepository.selectAccountConsumable(username, consumableId)
                 ?: throw NoConsumablesToUseException(username);
@@ -38,6 +38,6 @@ class AccountConsumableService : KoinComponent {
 
         accountStatusService.affectStatusWithConsumable(username, level, consumableStatus)
 
-        return accountConsumable
+        return accountConsumable.copy(quantity = accountConsumable.quantity -1)
     }
 }

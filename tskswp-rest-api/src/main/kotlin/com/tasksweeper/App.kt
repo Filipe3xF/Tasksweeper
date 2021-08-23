@@ -42,7 +42,7 @@ val repositoryModule = module {
     single { TaskRepository() }
     single { ConsumableRepository() }
     single { AccountConsumableRepository() }
-    single { ConsumableStatusRepository()}
+    single { ConsumableStatusRepository() }
 }
 
 val appModule = module {
@@ -53,7 +53,7 @@ fun main(args: Array<String>) = EngineMain.main(args)
 
 fun Application.mainModule(testing: Boolean = false) {
 
-    if(!testing) {
+    if (!testing) {
         startKoin {
             slf4jLogger()
             modules(appModule, serviceModule, repositoryModule)
@@ -133,7 +133,6 @@ fun Application.installExceptionHandling() = install(StatusPages) {
     exception<DatabaseInsertFailedException> {
         call.respond(HttpStatusCode.InternalServerError, AppError(it.message!!))
     }
-
     exception<NoConsumablesToUseException> {
         call.respond(HttpStatusCode.BadRequest, AppError(it.message!!))
     }
