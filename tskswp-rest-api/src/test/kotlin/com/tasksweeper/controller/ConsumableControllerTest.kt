@@ -1,5 +1,6 @@
 package com.tasksweeper.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.tasksweeper.authentication.JWT
 import com.tasksweeper.entities.AccountConsumableDTO
 import com.tasksweeper.entities.AccountStatusDTO
@@ -192,6 +193,61 @@ class ConsumableControllerTest : KoinTest {
     fun `Fails to get all consumables without a jwt`() {
         withTestApplication(Application::unitTestModule) {
             handleRequest(HttpMethod.Get, "/consumables") {
+                addContentTypeHeader()
+            }.apply {
+                response.status() shouldBe HttpStatusCode.Unauthorized
+            }
+        }
+    }
+
+    @Test
+    fun `Gets a consumable by id`() {
+        val consumable = ConsumableDTO(
+            1,
+            "Health Potion",
+            20,
+            "Restores 15% of your max HP"
+        )
+
+        val consumableRepository = get<ConsumableRepository>()
+        coEvery {
+            consumableRepository.selectConsumable(consumable.id)
+        } returns consumable
+
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "/consumable/${consumable.id}") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.OK
+                get<ObjectMapper>().readValue(response.content, ConsumableDTO::class.java) shouldBe consumable
+            }
+        }
+    }
+
+    @Test
+    fun `Gives out an error when consumable doesn't exist`() {
+        val consumableId = 2L
+
+        val consumableRepository = get<ConsumableRepository>()
+        coEvery {
+            consumableRepository.selectConsumable(consumableId)
+        } throws DatabaseNotFoundException()
+
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "/consumable/${consumableId}") {
+                addContentTypeHeader()
+                addJwtHeader(get(), "username")
+            }.apply {
+                response.status() shouldBe HttpStatusCode.NotFound
+            }
+        }
+    }
+
+    @Test
+    fun `Gives out an error when there is no JWT trying to get a consumable`() {
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "/consumable/1") {
                 addContentTypeHeader()
             }.apply {
                 response.status() shouldBe HttpStatusCode.Unauthorized
