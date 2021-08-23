@@ -14,6 +14,13 @@ import com.tasksweeper.service.ConsumableStatusService
 import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import com.tasksweeper.utils.unitTestModule
+import com.tasksweeper.entities.AccountConsumableDTO
+import com.tasksweeper.repository.AccountConsumableRepository
+import com.tasksweeper.service.AccountConsumableService
+import com.tasksweeper.utils.addContentTypeHeader
+import com.tasksweeper.utils.addJwtHeader
+import com.tasksweeper.utils.unitTestModule
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
 import io.ktor.http.*
@@ -29,7 +36,6 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.get
 import kotlin.test.assertEquals
-
 
 class AccountConsumableControllerTest : KoinTest {
 
@@ -105,6 +111,35 @@ class AccountConsumableControllerTest : KoinTest {
                         assertEquals(1, response.consumableId)
                         assertEquals(0, response.quantity)
                     }
+    @Test     
+    fun `should retrieve the user's consumable list`() {
+        val username = "username"
+        val firstConsumable = AccountConsumableDTO(
+            username,
+            1,
+            3
+        )
+        val secondConsumable = AccountConsumableDTO(
+            username,
+            2,
+            1
+        )
+
+        val accountConsumableRepository = get<AccountConsumableRepository>()
+        coEvery {
+            accountConsumableRepository.selectAccountConsumables(username)
+        } returns listOf(firstConsumable, secondConsumable)
+
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "account/consumables") {
+                addContentTypeHeader()
+                addJwtHeader(get(), username)
+            }
+        }.apply {
+            response.status() shouldBe HttpStatusCode.OK
+            get<ObjectMapper>().readValue(response.content, Array<AccountConsumableDTO>::class.java).let { list ->
+                list.first { it.consumableId == firstConsumable.consumableId }.quantity shouldBe firstConsumable.quantity
+                list.first { it.consumableId == secondConsumable.consumableId }.quantity shouldBe secondConsumable.quantity
             }
         }
     }
@@ -123,6 +158,24 @@ class AccountConsumableControllerTest : KoinTest {
                 addJwtHeader(get(), "username")
             }.apply {
                 response.status() shouldBe HttpStatusCode.BadRequest
+    @Test
+    fun `should retrieve an empty list when user has no consumables`() {
+        val username = "username"
+
+        val accountConsumableRepository = get<AccountConsumableRepository>()
+        coEvery {
+            accountConsumableRepository.selectAccountConsumables(username)
+        } returns emptyList()
+
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "account/consumables") {
+                addContentTypeHeader()
+                addJwtHeader(get(), username)
+            }
+        }.apply {
+            response.status() shouldBe HttpStatusCode.OK
+            get<ObjectMapper>().readValue(response.content, Array<AccountConsumableDTO>::class.java).let { list ->
+                list.shouldBeEmpty()
             }
         }
     }
@@ -140,4 +193,14 @@ class AccountConsumableControllerTest : KoinTest {
         }
     }
 
+    @Tests
+    fun `should give an error when fetching a user's consumables without JWT`() {
+        withTestApplication(Application::unitTestModule) {
+            handleRequest(HttpMethod.Get, "account/consumables") {
+                addContentTypeHeader()
+            }
+        }.apply {
+            response.status() shouldBe HttpStatusCode.Unauthorized
+        }
+    }
 }

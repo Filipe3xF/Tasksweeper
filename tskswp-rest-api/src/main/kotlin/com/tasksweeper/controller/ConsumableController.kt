@@ -11,10 +11,19 @@ import org.koin.ktor.ext.inject
 
 fun Routing.consumableController() {
     val consumableService: ConsumableService by inject()
+
     authenticate {
         post("/consumable/{consumableId}/buy") {
             consumableService.obtainItem(
                 call.getUsername(),
+                call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it) }
+            ).let {
+                call.respond(it)
+            }
+        }
+
+        get("/consumable/{consumableId}") {
+            consumableService.getConsumable(
                 call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it) }
             ).let {
                 call.respond(it)

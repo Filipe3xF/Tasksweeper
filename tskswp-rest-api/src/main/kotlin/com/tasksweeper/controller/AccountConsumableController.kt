@@ -25,5 +25,11 @@ fun Routing.accountConsumableController() {
         }
 
     }
+        get("account/consumables") {
+            call.respond(
+                accountConsumableService.getAccountConsumables(call.getUsername())
+            )
+        }
+    }
 
 }

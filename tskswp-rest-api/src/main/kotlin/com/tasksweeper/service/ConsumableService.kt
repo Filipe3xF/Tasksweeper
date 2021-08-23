@@ -19,4 +19,6 @@ class ConsumableService : KoinComponent {
     }
 
     suspend fun getAllConsumables(): List<ConsumableDTO> = consumableRepository.getAllConsumables()
+
+    suspend fun getConsumable(consumableId: Long): ConsumableDTO = consumableRepository.selectConsumable(consumableId)
 }

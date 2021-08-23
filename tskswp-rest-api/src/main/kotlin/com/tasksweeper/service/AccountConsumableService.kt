@@ -40,4 +40,6 @@ class AccountConsumableService : KoinComponent {
 
         return accountConsumable.copy(quantity = accountConsumable.quantity -1)
     }
+    suspend fun getAccountConsumables(username: String) =
+        accountConsumableRepository.selectAccountConsumables(username)
 }
