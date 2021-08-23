@@ -33,6 +33,7 @@ val serviceModule = module {
     single { TaskService() }
     single { ConsumableService() }
     single { AccountConsumableService() }
+    single { ConsumableStatusService() }
 }
 
 val repositoryModule = module {
@@ -41,6 +42,7 @@ val repositoryModule = module {
     single { TaskRepository() }
     single { ConsumableRepository() }
     single { AccountConsumableRepository() }
+    single { ConsumableStatusRepository()}
 }
 
 val appModule = module {
@@ -78,6 +80,7 @@ fun Application.mainModule(testing: Boolean = false) {
         taskController()
         consumableController()
         accountStatusController()
+        accountConsumableController()
     }
 }
 

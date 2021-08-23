@@ -6,7 +6,7 @@
 
     <groupId>com.tasksweeper</groupId>
     <artifactId>tskswp-rest-api</artifactId>
-    <version>3.0.0</version>
+    <version>3.3.0</version>
     <packaging>jar</packaging>
 
     <name>tskswp-rest-api</name>

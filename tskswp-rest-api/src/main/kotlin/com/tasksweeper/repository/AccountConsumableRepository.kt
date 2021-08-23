@@ -29,7 +29,7 @@ class AccountConsumableRepository {
     suspend fun decreaseQuantity(username: String, consumableId: Long) = transaction {
         AccountConsumable.update({ (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId) }) {
             with(SqlExpressionBuilder) {
-                it[quantity] = quantity + 1
+                it[quantity] = quantity - 1
             }
         }
     }
