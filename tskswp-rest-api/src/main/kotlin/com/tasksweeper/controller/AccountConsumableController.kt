@@ -15,7 +15,7 @@ fun Routing.accountConsumableController() {
     val accountConsumableService: AccountConsumableService by inject()
 
     authenticate {
-        post("/accountConsumable/{consumableId}/use") {
+        post("/account/consumable/{consumableId}") {
             accountConsumableService.useItem(
                 call.getUsername(),
                 call.parameters["consumableId"]!!.let { it.toLongOrNull() ?: throw InvalidConsumableIdException(it) }
@@ -23,7 +23,6 @@ fun Routing.accountConsumableController() {
                 call.respond(it)
             }
         }
-
 
         get("account/consumables") {
             call.respond(

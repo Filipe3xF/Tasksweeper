@@ -98,7 +98,7 @@ class AccountConsumableControllerTest : KoinTest {
         coEvery { accountStatusRepository.updateStatus("username", "Health", any()) } returns 1
 
         withTestApplication(Application::unitTestModule) {
-            handleRequest(HttpMethod.Post, "/accountConsumable/1/use") {
+            handleRequest(HttpMethod.Post, "/account/consumable/1") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
             }.apply {
@@ -157,7 +157,7 @@ class AccountConsumableControllerTest : KoinTest {
         } returns null
 
         withTestApplication(Application::unitTestModule) {
-            handleRequest(HttpMethod.Post, "/accountConsumable/1/use") {
+            handleRequest(HttpMethod.Post, "/account/consumable/1") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
             }.apply {
@@ -196,7 +196,7 @@ class AccountConsumableControllerTest : KoinTest {
     fun `Try to use a consumable that doesn't exist`() {
 
         withTestApplication(Application::unitTestModule) {
-            handleRequest(HttpMethod.Post, "/accountConsumable/something/use") {
+            handleRequest(HttpMethod.Post, "/account/consumable/something") {
                 addContentTypeHeader()
                 addJwtHeader(get(), "username")
             }.apply {
