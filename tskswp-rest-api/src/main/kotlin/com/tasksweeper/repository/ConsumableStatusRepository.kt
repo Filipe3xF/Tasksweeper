@@ -9,17 +9,25 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class ConsumableStatusRepository {
 
     suspend fun selectConsumableStatus(consumableId: Long) = transaction {
-        ConsumableStatus.select { ConsumableStatus.consumableId eq consumableId }.single().let { toConsumableStatus(it) }
+        ConsumableStatus.select { ConsumableStatus.consumableId eq consumableId }
+            .let {
+                val list: MutableList<ConsumableStatusDTO> = mutableListOf()
+                var i = 0
+                it.forEach{row: ResultRow ->
+                    run {
+                        list.add(i, toConsumableStatus(row))
+                        ++i
+                    }
+                }
+                list
+            }
     }
 
-    private fun toConsumableStatus(row : ResultRow) : ConsumableStatusDTO = ConsumableStatusDTO(
+    private fun toConsumableStatus(row: ResultRow): ConsumableStatusDTO = ConsumableStatusDTO(
         consumableId = row[ConsumableStatus.consumableId],
         statusName = row[ConsumableStatus.statusName],
         value = row[ConsumableStatus.value],
         percentage = row[ConsumableStatus.percentage],
         instant = row[ConsumableStatus.instant]
     )
-
-
-
 }

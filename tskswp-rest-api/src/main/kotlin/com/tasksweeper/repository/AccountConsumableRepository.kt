@@ -40,7 +40,7 @@ class AccountConsumableRepository {
         }.let { it }
     }
 
-    suspend fun selectAccountConsumable(username: String, consumableId: Long) = transaction {
+    suspend fun selectAccountConsumableOrNull(username: String, consumableId: Long) = transaction {
         AccountConsumable.select {
             (AccountConsumable.username eq username) and (AccountConsumable.consumableId eq consumableId)
         }.let { getAccountConsumableOrNull(it) }

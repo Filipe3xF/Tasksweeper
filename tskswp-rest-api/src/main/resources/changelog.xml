@@ -536,16 +536,16 @@
                                  baseTableSchemaName="tskswp"/>
     </changeSet>
     <changeSet id="37" author="sebas">
-        <delete schemaName="tskswp" tableName="consumable_status"/>
+        <update schemaName="tskswp" tableName="consumable_status">
+            <column name="consumable_id" value="1"/>
+            <where>status_name = 'Health'</where>
+        </update>
         <addNotNullConstraint tableName="consumable_status" columnName="consumable_id" schemaName="tskswp"/>
     </changeSet>
     <changeSet id="38" author="sebas">
-        <insert tableName="consumable_status" schemaName="tskswp">
-            <column name="consumable_id" value="1"/>
-            <column name="status_name" value="Health"/>
-            <column name="value" value="15"/>
-            <column name="percentage" value="true"/>
-            <column name="instant" value="false"/>
-        </insert>
+        <update schemaName="tskswp" tableName="consumable_status">
+            <column name="instant" value="true"/>
+            <where>consumable_id = '1' and status_name = 'Health'</where>
+        </update>
     </changeSet>
 </databaseChangeLog>

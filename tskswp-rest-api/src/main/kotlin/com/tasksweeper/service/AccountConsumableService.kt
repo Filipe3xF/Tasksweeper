@@ -24,15 +24,15 @@ class AccountConsumableService : KoinComponent {
 
     suspend fun useItem(username: String, consumableId: Long): AccountConsumableDTO {
         val accountConsumable: AccountConsumableDTO =
-            accountConsumableRepository.selectAccountConsumable(username, consumableId)
-                ?: throw NoConsumablesToUseException(username);
+            accountConsumableRepository.selectAccountConsumableOrNull(username, consumableId)
+                ?: throw NoConsumablesToUseException(username, consumableId);
 
         if ((accountConsumable.quantity - 1) >= 1)
             accountConsumableRepository.decreaseQuantity(username, consumableId)
         else
             accountConsumableRepository.deleteAccountConsumable(username, consumableId)
 
-        val consumableStatus: ConsumableStatusDTO = consumableStatusService.getConsumableStatus(consumableId)
+        val consumableStatus: List<ConsumableStatusDTO> = consumableStatusService.getConsumableStatus(consumableId)
 
         val level: Long = accountService.getAccount(username).level
 

@@ -9,7 +9,7 @@ class ConsumableStatusService : KoinComponent {
 
     private val consumableStatusRepository: ConsumableStatusRepository by inject()
 
-    suspend fun getConsumableStatus(consumableId: Long) : ConsumableStatusDTO {
+    suspend fun getConsumableStatus(consumableId: Long) : List<ConsumableStatusDTO> {
         return consumableStatusRepository.selectConsumableStatus(consumableId)
     }
 

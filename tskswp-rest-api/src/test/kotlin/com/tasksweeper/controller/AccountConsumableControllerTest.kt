@@ -15,9 +15,6 @@ import com.tasksweeper.utils.addContentTypeHeader
 import com.tasksweeper.utils.addJwtHeader
 import com.tasksweeper.utils.unitTestModule
 import com.tasksweeper.entities.AccountConsumableDTO
-import com.tasksweeper.utils.addContentTypeHeader
-import com.tasksweeper.utils.addJwtHeader
-import com.tasksweeper.utils.unitTestModule
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.ktor.application.*
@@ -70,7 +67,7 @@ class AccountConsumableControllerTest : KoinTest {
         val consumableStatusRepository = get<ConsumableStatusRepository>()
 
         coEvery {
-            accountConsumableRepository.selectAccountConsumable(username = "username", consumableId = 1)
+            accountConsumableRepository.selectAccountConsumableOrNull(username = "username", consumableId = 1)
         } returns AccountConsumableDTO("username", 1, 1)
 
         coEvery {
@@ -79,13 +76,13 @@ class AccountConsumableControllerTest : KoinTest {
 
         coEvery {
             consumableStatusRepository.selectConsumableStatus(1)
-        } returns ConsumableStatusDTO(
+        } returns mutableListOf(ConsumableStatusDTO(
             consumableId = 1,
             statusName = "Health",
             value = 15,
             percentage = true,
             instant = false
-        )
+        ))
 
         coEvery {
             accountRepository.selectAccount("username")
@@ -153,7 +150,7 @@ class AccountConsumableControllerTest : KoinTest {
         val accountConsumableRepository = get<AccountConsumableRepository>()
 
         coEvery {
-            accountConsumableRepository.selectAccountConsumable(username = "username", consumableId = 1)
+            accountConsumableRepository.selectAccountConsumableOrNull(username = "username", consumableId = 1)
         } returns null
 
         withTestApplication(Application::unitTestModule) {

@@ -36,7 +36,7 @@
     }
   ],
   "paths": {
-    "/accountConsumable/{consumableId}/use": {
+    "/account/consumable/{consumableId}": {
       "post": {
         "tags": [
           "Account Consumable"
@@ -195,69 +195,12 @@
         }
       }
     },
-    "/consumable/{consumableId}": {
-      "get": {
-        "tags": [
-          "Consumable"
-        ],
-        "summary": "Gets a consumable by its id",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "consumableId",
-            "schema": {
-              "type": "integer"
-            },
-            "required": true,
-            "description": "ID of the desired consumable",
-            "example": 1
-          }
-        ],
-        "operationId": "getConsumable",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of all consumables",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Consumable"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "JWT is invalid."
-          },
-          "404": {
-            "description": "Consumable with the id in path doesn't exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "example": "The desired element was not found in the database."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/consumable/{consumableId}/buy": {
       "post": {
         "tags": [
           "Consumable"
         ],
-        "summary": "Buy a consumable",
+        "summary": "Management of Consumables in the app",
         "parameters": [
           {
             "in": "path",
@@ -276,7 +219,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "202": {
             "description": "Information about the purchased Consumable",
             "content": {
               "application/json": {
@@ -345,38 +288,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/account/consumables": {
-      "get": {
-        "tags": [
-          "Consumable"
-        ],
-        "summary": "Get the list of consumables that the account owns",
-        "operationId": "getAccountConsumable",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of all consumables that an account owns",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AccountConsumable"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "JWT is invalid."
           }
         }
       }
@@ -1122,23 +1033,6 @@
       }
     },
     "schemas": {
-      "AccountConsumable": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "username"
-          },
-          "consumableId": {
-            "type": "integer",
-            "example": 1
-          },
-          "quantity": {
-            "type": "integer",
-            "example": 2
-          }
-        }
-      },
       "Consumable": {
         "type": "object",
         "properties": {
