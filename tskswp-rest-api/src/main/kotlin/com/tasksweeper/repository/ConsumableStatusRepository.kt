@@ -11,15 +11,7 @@ class ConsumableStatusRepository {
     suspend fun selectConsumableStatus(consumableId: Long) = transaction {
         ConsumableStatus.select { ConsumableStatus.consumableId eq consumableId }
             .let {
-                val list: MutableList<ConsumableStatusDTO> = mutableListOf()
-                var i = 0
-                it.forEach{row: ResultRow ->
-                    run {
-                        list.add(i, toConsumableStatus(row))
-                        ++i
-                    }
-                }
-                list
+                it.map { row: ResultRow -> toConsumableStatus(row) }
             }
     }
 

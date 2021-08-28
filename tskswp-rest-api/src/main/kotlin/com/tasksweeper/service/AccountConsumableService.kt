@@ -32,11 +32,11 @@ class AccountConsumableService : KoinComponent {
         else
             accountConsumableRepository.deleteAccountConsumable(username, consumableId)
 
-        val consumableStatus: List<ConsumableStatusDTO> = consumableStatusService.getConsumableStatus(consumableId)
+        val consumableStatusList: List<ConsumableStatusDTO> = consumableStatusService.getConsumableStatus(consumableId)
 
         val level: Long = accountService.getAccount(username).level
 
-        accountStatusService.affectStatusWithConsumable(username, level, consumableStatus)
+        accountStatusService.affectStatusWithConsumable(username, level, consumableStatusList)
 
         return accountConsumable.copy(quantity = accountConsumable.quantity -1)
     }

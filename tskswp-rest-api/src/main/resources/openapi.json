@@ -200,7 +200,7 @@
         "tags": [
           "Consumable"
         ],
-        "summary": "Management of Consumables in the app",
+        "summary": "Buy a consumable",
         "parameters": [
           {
             "in": "path",
