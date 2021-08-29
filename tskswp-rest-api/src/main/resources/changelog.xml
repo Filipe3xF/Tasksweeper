@@ -535,4 +535,17 @@
                                  referencedColumnNames="id" referencedTableSchemaName="tskswp"
                                  baseTableSchemaName="tskswp"/>
     </changeSet>
+    <changeSet id="37" author="sebas">
+        <update schemaName="tskswp" tableName="consumable_status">
+            <column name="consumable_id" value="1"/>
+            <where>status_name = 'Health'</where>
+        </update>
+        <addNotNullConstraint tableName="consumable_status" columnName="consumable_id" schemaName="tskswp"/>
+    </changeSet>
+    <changeSet id="38" author="sebas">
+        <update schemaName="tskswp" tableName="consumable_status">
+            <column name="instant" value="true"/>
+            <where>consumable_id = '1' and status_name = 'Health'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

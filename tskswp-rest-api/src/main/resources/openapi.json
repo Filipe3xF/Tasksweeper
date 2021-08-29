@@ -3,7 +3,7 @@
   "servers": [],
   "info": {
     "description": "Documentation for the Tasksweeper API.",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "title": "Tasksweeper API",
     "contact": {
       "email": "filipe3xf@gmail.com"
@@ -29,9 +29,108 @@
     {
       "name": "Consumable",
       "description": "Items that benefit the user and disappear after one use"
+    },
+    {
+      "name": "Account Consumable",
+      "description": "Interaction with the Consumables associated with an Account"
     }
   ],
   "paths": {
+    "/account/consumable/{consumableId}": {
+      "post": {
+        "tags": [
+          "Account Consumable"
+        ],
+        "summary": "Activates the effects of the consumable with the specified Id, if it's associated with the account making the request",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "consumableId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the consumable that the user wishes to use, it is assumed that the account possesses the consumable and it will launch exception if it finds none"
+          }
+        ],
+        "operationId": "AccountConsumableUse",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Amount of Consumables the Account has remaining",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "example": "username"
+                    },
+                    "consumableId": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Badly done request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Consumable id someId is not valid."
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid consumableId": {
+                    "value": {
+                      "error": "Consumable id someId is not valid."
+                    }
+                  },
+                  "no consumables associated with account": {
+                    "value": {
+                      "error": "User username does not possess the consumable."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not logged in an account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error due to invalid credentials."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/accountStatus": {
       "get": {
         "tags": [

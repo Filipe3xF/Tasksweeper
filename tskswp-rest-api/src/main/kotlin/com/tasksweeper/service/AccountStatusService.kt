@@ -154,4 +154,30 @@ class AccountStatusService : KoinComponent {
         statusName,
         value
     )
+
+    suspend fun affectStatusWithConsumable(
+        username: String,
+        level: Long,
+        consumableStatusList: List<ConsumableStatusDTO>
+    ) {
+
+        consumableStatusList.forEach { consumableStatus ->
+            when (consumableStatus.statusName) {
+                HP.dbName -> {
+                    if (consumableStatus.percentage) {
+                        val maximumHealth: Long = calculateMaximumHealth(level)
+                        val accountStatus: AccountStatusDTO =
+                            accountStatusRepository.selectAccountStatusByName(username, HP.dbName)
+                        val newValue =
+                            ((consumableStatus.value.toDouble() / 100) * maximumHealth.toDouble()).toLong() + accountStatus.value
+                        if (newValue >= maximumHealth)
+                            accountStatus.updateStatusValue(maximumHealth)
+                        else
+                            accountStatus.updateStatusValue(newValue)
+                    }
+                    return
+                }
+            }
+        }
+    }
 }
