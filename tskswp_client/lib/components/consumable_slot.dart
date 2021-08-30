@@ -4,10 +4,10 @@ class ConsumableSlot extends StatelessWidget {
   ConsumableSlot(
       {required this.onPressed,
       required this.consumableName,
-      required this.consumablePrice});
+      required this.consumablePriceOrQuantity});
 
   final String consumableName;
-  final int consumablePrice;
+  final String consumablePriceOrQuantity;
 
   final onPressed;
 
@@ -26,7 +26,7 @@ class ConsumableSlot extends StatelessWidget {
               onPressed: onPressed,
             ),
             Padding(padding: EdgeInsets.only(left: 5, right: 5), child: Text(consumableName, style: TextStyle(color: Colors.white),)),
-            Padding(padding: EdgeInsets.all(5),child: Text('$consumablePrice G', style: TextStyle(color: Colors.white)))
+            Padding(padding: EdgeInsets.all(5),child: Text(consumablePriceOrQuantity, style: TextStyle(color: Colors.white)))
           ]),
         ));
   }

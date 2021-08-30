@@ -12,6 +12,7 @@ import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
 import 'consumable_shop_screen.dart';
+import 'inventory_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({required this.jwt, required this.status});
@@ -26,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   _HomeScreen({required this.jwt, required this.status}){
-    setStatusValues();
+    status.updateStatusValues(jwt);
     fillTaskRowList();
   }
 
@@ -39,14 +40,6 @@ class _HomeScreen extends State<HomeScreen> {
   Status status = Status();
   final listOfTaskRow = <TaskRow>[];
   final Map<String, dynamic> openTaskStateQuery = {'state': 'open'};
-
-  /*
-  @override
-  void initState() {
-    super.initState();
-    setStatusValues();
-    fillTaskRowList();
-  }*/
 
   Future<void> fillTaskRowList() async {
     List userOpenTasks =
@@ -62,17 +55,6 @@ class _HomeScreen extends State<HomeScreen> {
           ),
         ),
       );
-    });
-  }
-
-  Future<void> setStatusValues() async {
-    var statusValues =
-        jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
-    var statusLevel =
-        jsonDecode(await AccountHandler.getAccountDetails(jwt))[accountLevel];
-    setState(() {
-      status.setNewLevel(statusLevel);
-      status.setNewStatusValues(statusValues);
     });
   }
 
@@ -93,7 +75,7 @@ class _HomeScreen extends State<HomeScreen> {
       return;
     }
 
-    setStatusValues();
+    status.updateStatusValues(jwt);
     listOfTaskRow.removeRange(0, listOfTaskRow.length);
     fillTaskRowList();
   }
@@ -115,6 +97,17 @@ class _HomeScreen extends State<HomeScreen> {
                               jwt: jwt,
                               status: status,
                             )));
+              }),
+          IconButton(
+              icon: Icon(Icons.backpack),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => InventoryScreen(
+                          jwt: jwt,
+                          status: status,
+                        )));
               })
         ],
       ),
