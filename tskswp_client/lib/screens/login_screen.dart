@@ -39,10 +39,16 @@ class _LoginScreen extends State<LoginScreen> {
       return;
     }
 
+    String jwt = jsonDecode(responseBody)['jwt'];
+
+    Status status = Status(jwt);
+
+    await status.updateStatusValues();
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(jwt: jsonDecode(responseBody)['jwt'], status: Status(),),
+        builder: (context) => HomeScreen(jwt: jwt, status: status),
       ),
     );
   }

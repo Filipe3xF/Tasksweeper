@@ -27,17 +27,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   _HomeScreen({required this.jwt, required this.status}){
-    status.updateStatusValues(jwt);
     fillTaskRowList();
   }
 
   final String jwt;
 
+  Status status;
+
   final String taskId = 'id';
   final String taskName = 'name';
   final String accountLevel = 'level';
 
-  Status status = Status();
   final listOfTaskRow = <TaskRow>[];
   final Map<String, dynamic> openTaskStateQuery = {'state': 'open'};
 
@@ -58,7 +58,7 @@ class _HomeScreen extends State<HomeScreen> {
     });
   }
 
-  void afterRequest(String? error) {
+  void afterRequest(String? error) async {
     if (error != null) {
       showDialog<String>(
           context: context,
@@ -75,9 +75,14 @@ class _HomeScreen extends State<HomeScreen> {
       return;
     }
 
-    status.updateStatusValues(jwt);
-    listOfTaskRow.removeRange(0, listOfTaskRow.length);
-    fillTaskRowList();
+    await status.updateStatusValues();
+
+    setState(() {
+      listOfTaskRow.removeRange(0, listOfTaskRow.length);
+      fillTaskRowList();
+    });
+
+
   }
 
   @override

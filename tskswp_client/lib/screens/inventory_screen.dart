@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
 import 'package:tskswp_client/components/app_bottom_bar.dart';
 import 'package:tskswp_client/components/consumable_slot.dart';
+import 'package:tskswp_client/components/error_alert_window.dart';
 import 'package:tskswp_client/services/http_requests/account_consumable_requests/account_consumable_handler.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
@@ -22,11 +23,12 @@ class InventoryScreen extends StatefulWidget {
   final Status status;
 
   @override
-  _InventoryScreen createState() => _InventoryScreen(jwt: this.jwt, status: status);
+  _InventoryScreen createState() =>
+      _InventoryScreen(jwt: this.jwt, status: status);
 }
 
 class _InventoryScreen extends State<InventoryScreen> {
-  _InventoryScreen({required this.jwt,required this.status});
+  _InventoryScreen({required this.jwt, required this.status});
 
   final String jwt;
 
@@ -36,7 +38,7 @@ class _InventoryScreen extends State<InventoryScreen> {
 
   final List<ConsumableSlot> listOfAccountConsumables = [];
 
-  Status status = Status();
+  Status status;
 
   @override
   void initState() {
@@ -44,52 +46,47 @@ class _InventoryScreen extends State<InventoryScreen> {
     buildConsumableRow();
   }
 
-  void errorAlertWindow(String error){
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Warning!'),
-          content: Text('$error'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        ));
-  }
-
   Future<void> buildConsumableRow() async {
-    List accountConsumables =
-    jsonDecode(await AccountConsumableHandler.getAllAccountConsumables(jwt));
-    print(accountConsumables);
+    List accountConsumables = jsonDecode(
+        await AccountConsumableHandler.getAllAccountConsumables(jwt));
 
-    accountConsumables.forEach((element) async {
-      print(element);
-      dynamic consumable = jsonDecode(await ConsumableHandler.getConsumableById(jwt, element['consumableId']));
-      listOfAccountConsumables.add(ConsumableSlot(
-          onPressed: () async {
-            Map response = jsonDecode(await AccountConsumableHandler.useAccountConsumable(jwt, consumable['id']));
-            setState(() {
-              if(response.containsKey('error')){
-                errorAlertWindow(response['error']);
-                return;
-              }
-              status.updateStatusValues(jwt);
-              listOfAccountConsumables.removeWhere((consumableSlot) => consumableSlot.consumableName == consumable['name']);
-            });
-          },
-          consumableName: consumable['name'],
-          consumablePriceOrQuantity: 'X ${element['quantity']}'));
+    accountConsumables.forEach((element) {
+      ConsumableHandler.getConsumableById(jwt, element['consumableId'])
+          .then((consumable) =>
+      {
+        buildConsumableSlot(element, jsonDecode(consumable))
+      });
     });
 
+  }
+
+  void buildConsumableSlot(dynamic element, dynamic consumable){
+    print(element);
+    listOfAccountConsumables.add(ConsumableSlot(
+        onPressed: () async {
+          Map response = jsonDecode(
+              await AccountConsumableHandler.useAccountConsumable(
+                  jwt, consumable['id']));
+
+          if (response.containsKey('error')) {
+            ErrorAlertWindow.showErrorWindow(context, response['error']);
+            return;
+          }
+          await status.updateStatusValues();
+          listOfAccountConsumables.removeWhere((consumableSlot) =>
+          consumableSlot.consumableName == consumable['name']);
+          setState(() {});
+        },
+        consumableName: consumable['name'],
+        consumablePriceOrQuantity: 'X ${element['quantity']}'));
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:
-      AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
+          AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
       bottomNavigationBar: BottomMenu(
         bottomAppBarOptions: [
           IconButton(
@@ -98,7 +95,10 @@ class _InventoryScreen extends State<InventoryScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomeScreen(jwt: jwt, status: status,)));
+                        builder: (context) => HomeScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
               }),
           IconButton(
               icon: Icon(Icons.shopping_bag),
@@ -107,9 +107,9 @@ class _InventoryScreen extends State<InventoryScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConsumableShopScreen(
-                          jwt: jwt,
-                          status: status,
-                        )));
+                              jwt: jwt,
+                              status: status,
+                            )));
               })
         ],
       ),

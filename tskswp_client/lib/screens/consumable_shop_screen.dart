@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
 import 'package:tskswp_client/components/app_bottom_bar.dart';
 import 'package:tskswp_client/components/consumable_slot.dart';
-import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
-import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
+import 'package:tskswp_client/components/error_alert_window.dart';
 import 'package:tskswp_client/services/http_requests/consumable_requests/consumable_request_handler.dart';
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
@@ -21,15 +20,17 @@ class ConsumableShopScreen extends StatefulWidget {
   final Status status;
 
   @override
-  _ConsumableShopScreen createState() => _ConsumableShopScreen(jwt: this.jwt, status: status);
+  _ConsumableShopScreen createState() =>
+      _ConsumableShopScreen(jwt: this.jwt, status: status);
 }
 
 class _ConsumableShopScreen extends State<ConsumableShopScreen> {
-  _ConsumableShopScreen({required this.jwt,required this.status}){
-    setState(() {
-      buildConsumableRow();
-      status.updateStatusValues(jwt);
-    });
+  _ConsumableShopScreen({required this.jwt, required this.status});
+
+  @override
+  void initState() {
+    super.initState();
+    buildConsumableRow();
   }
 
   final String jwt;
@@ -40,43 +41,30 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
 
   final List<Widget> listOfConsumables = [];
 
-  Status status = Status();
+  Status status;
 
-  void errorAlertWindow(String error){
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Warning!'),
-          content: Text('$error'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        ));
-  }
-
-  Future<void> buildConsumableRow() async {
+  void buildConsumableRow() async {
     List consumables =
         jsonDecode(await ConsumableHandler.getListOfConsumables(jwt));
 
     consumables.forEach((element) {
       listOfConsumables.add(ConsumableSlot(
           onPressed: () async {
-            Map response = jsonDecode(await ConsumableHandler.buyConsumable(jwt, element['id']));
-            setState(() {
-              if(response.containsKey('error')){
-                errorAlertWindow(response['error']);
-                return;
-              }
-              status.updateStatusValues(jwt);
-            });
+            Map response = jsonDecode(
+                await ConsumableHandler.buyConsumable(jwt, element['id']));
+
+            if (response.containsKey('error')) {
+              ErrorAlertWindow.showErrorWindow(context, response['error']);
+              return;
+            }
+            await status.updateStatusValues();
+
+            setState(() {});
           },
           consumableName: element['name'],
           consumablePriceOrQuantity: '${element['price']} G'));
     });
-
+    setState(() {});
   }
 
   @override
@@ -92,7 +80,10 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomeScreen(jwt: jwt, status: status,)));
+                        builder: (context) => HomeScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
               }),
           IconButton(
               icon: Icon(Icons.backpack),
@@ -101,9 +92,9 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => InventoryScreen(
-                          jwt: jwt,
-                          status: status,
-                        )));
+                              jwt: jwt,
+                              status: status,
+                            )));
               })
         ],
       ),
