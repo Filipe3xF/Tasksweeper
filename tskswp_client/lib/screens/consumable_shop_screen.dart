@@ -62,7 +62,8 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
             setState(() {});
           },
           consumableName: element['name'],
-          consumablePriceOrQuantity: '${element['price']} G'));
+          consumablePriceOrQuantityDisplayMessage: '${element['price']} G'),
+      );
     });
     setState(() {});
   }

@@ -36,7 +36,7 @@ class _InventoryScreen extends State<InventoryScreen> {
   final String taskName = 'name';
   final String accountLevel = 'level';
 
-  final List<ConsumableSlot> listOfAccountConsumables = [];
+  List<ConsumableSlot> listOfAccountConsumables = [];
 
   Status status;
 
@@ -51,34 +51,57 @@ class _InventoryScreen extends State<InventoryScreen> {
         await AccountConsumableHandler.getAllAccountConsumables(jwt));
 
     accountConsumables.forEach((element) {
-      ConsumableHandler.getConsumableById(jwt, element['consumableId'])
-          .then((consumable) =>
-      {
-        buildConsumableSlot(element, jsonDecode(consumable))
-      });
+      ConsumableHandler.getConsumableById(jwt, element['consumableId']).then(
+          (consumable) =>
+              {buildConsumableSlot(element, jsonDecode(consumable))});
     });
-
   }
 
-  void buildConsumableSlot(dynamic element, dynamic consumable){
-    print(element);
-    listOfAccountConsumables.add(ConsumableSlot(
-        onPressed: () async {
-          Map response = jsonDecode(
-              await AccountConsumableHandler.useAccountConsumable(
-                  jwt, consumable['id']));
+  void buildConsumableSlot(dynamic element, dynamic consumable) {
+    ConsumableSlot consumableSlot = ConsumableSlot(onPressed: () {});
 
-          if (response.containsKey('error')) {
-            ErrorAlertWindow.showErrorWindow(context, response['error']);
-            return;
-          }
-          await status.updateStatusValues();
-          listOfAccountConsumables.removeWhere((consumableSlot) =>
+    consumableSlot.consumableName = consumable['name'];
+    consumableSlot.consumablePriceOrQuantityValue = element['quantity'];
+    consumableSlot.consumablePriceOrQuantityDisplayMessage =
+        'X ${element['quantity']}';
+
+    listOfAccountConsumables.add(consumableSlot);
+
+    consumableSlot.onPressed = () async {
+      Map response = jsonDecode(
+          await AccountConsumableHandler.useAccountConsumable(
+              jwt, consumable['id']));
+
+      if (response.containsKey('error')) {
+        ErrorAlertWindow.showErrorWindow(context, response['error']);
+        return;
+      }
+
+      await status.updateStatusValues();
+
+      ConsumableSlot thisConsumableSlot = listOfAccountConsumables
+          .where((consumableSlot) =>
+              consumableSlot.consumableName == consumable['name'])
+          .single;
+
+      listOfAccountConsumables.removeWhere((consumableSlot) =>
           consumableSlot.consumableName == consumable['name']);
-          setState(() {});
-        },
-        consumableName: consumable['name'],
-        consumablePriceOrQuantity: 'X ${element['quantity']}'));
+
+      if (thisConsumableSlot.consumablePriceOrQuantityValue - 1 > 0)
+        listOfAccountConsumables.add(
+          ConsumableSlot(
+            onPressed: thisConsumableSlot.onPressed,
+            consumableName: thisConsumableSlot.consumableName,
+            consumablePriceOrQuantityDisplayMessage:
+                'X ${thisConsumableSlot.consumablePriceOrQuantityValue - 1}',
+            consumablePriceOrQuantityValue:
+                thisConsumableSlot.consumablePriceOrQuantityValue - 1,
+          ),
+        );
+
+      setState(() {});
+    };
+
     setState(() {});
   }
 
