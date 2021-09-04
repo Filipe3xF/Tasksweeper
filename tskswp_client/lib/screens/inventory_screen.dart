@@ -6,8 +6,6 @@ import 'package:tskswp_client/components/app_bottom_bar.dart';
 import 'package:tskswp_client/components/consumable_slot.dart';
 import 'package:tskswp_client/components/error_alert_window.dart';
 import 'package:tskswp_client/services/http_requests/account_consumable_requests/account_consumable_handler.dart';
-import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
-import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/consumable_requests/consumable_request_handler.dart';
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
