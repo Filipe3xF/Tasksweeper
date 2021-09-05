@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
 import 'package:tskswp_client/components/app_bottom_bar.dart';
 import 'package:tskswp_client/components/consumable_slot.dart';
-import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
-import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
+import 'package:tskswp_client/components/error_alert_window.dart';
 import 'package:tskswp_client/services/http_requests/consumable_requests/consumable_request_handler.dart';
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
 import 'home_page_screen.dart';
+import 'inventory_screen.dart';
 
 class ConsumableShopScreen extends StatefulWidget {
   ConsumableShopScreen({required this.jwt, required this.status});
@@ -20,11 +20,18 @@ class ConsumableShopScreen extends StatefulWidget {
   final Status status;
 
   @override
-  _ConsumableShopScreen createState() => _ConsumableShopScreen(jwt: this.jwt, status: status);
+  _ConsumableShopScreen createState() =>
+      _ConsumableShopScreen(jwt: this.jwt, status: status);
 }
 
 class _ConsumableShopScreen extends State<ConsumableShopScreen> {
-  _ConsumableShopScreen({required this.jwt,required this.status});
+  _ConsumableShopScreen({required this.jwt, required this.status});
+
+  @override
+  void initState() {
+    super.initState();
+    buildConsumableRow();
+  }
 
   final String jwt;
 
@@ -36,59 +43,29 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
 
   Status status;
 
-  @override
-  void initState() {
-    super.initState();
-    setStatusValues();
-    buildConsumableRow();
-  }
-
-  void errorAlertWindow(String error){
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Warning!'),
-          content: Text('$error'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'OK'),
-              child: const Text('OK'),
-            ),
-          ],
-        ));
-  }
-
-  Future<void> buildConsumableRow() async {
+  void buildConsumableRow() async {
     List consumables =
         jsonDecode(await ConsumableHandler.getListOfConsumables(jwt));
 
     consumables.forEach((element) {
       listOfConsumables.add(ConsumableSlot(
           onPressed: () async {
-            Map response = jsonDecode(await ConsumableHandler.buyConsumable(jwt, element['id']));
-            setState(() {
-              if(response.containsKey('error')){
-                errorAlertWindow(response['error']);
-                return;
-              }
-              setStatusValues();
-            });
+            Map response = jsonDecode(
+                await ConsumableHandler.buyConsumable(jwt, element['id']));
+
+            if (response.containsKey('error')) {
+              ErrorAlertWindow.showErrorWindow(context, response['error']);
+              return;
+            }
+            await status.updateStatusValues();
+
+            setState(() {});
           },
           consumableName: element['name'],
-          consumablePrice: element['price']));
+          consumablePriceOrQuantityDisplayMessage: '${element['price']} G'),
+      );
     });
-
-  }
-
-  Future<void> setStatusValues() async {
-    var statusValues =
-        jsonDecode(await AccountStatusHandler.getAccountStatus(jwt));
-    var statusLevel =
-        jsonDecode(await AccountHandler.getAccountDetails(jwt))[accountLevel];
-    setState(() {
-      status.setNewLevel(statusLevel);
-      status.setNewStatusValues(statusValues);
-    });
+    setState(() {});
   }
 
   @override
@@ -104,7 +81,21 @@ class _ConsumableShopScreen extends State<ConsumableShopScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => HomeScreen(jwt: jwt, status: status,)));
+                        builder: (context) => HomeScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
+              }),
+          IconButton(
+              icon: Icon(Icons.backpack),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => InventoryScreen(
+                              jwt: jwt,
+                              status: status,
+                            )));
               })
         ],
       ),

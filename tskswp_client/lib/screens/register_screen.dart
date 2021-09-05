@@ -42,12 +42,18 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
 
+    String jwt = jsonDecode(responseBody)['jwt'];
+
+    Status status = Status(jwt);
+
+    await status.updateStatusValues();
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => HomeScreen(
           jwt: jsonDecode(responseBody)['jwt'],
-          status: Status(),
+          status: status,
         ),
       ),
     );
