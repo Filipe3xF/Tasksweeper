@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tskswp_client/screens/home_page_screen.dart';
 import 'package:tskswp_client/screens/login_screen.dart';
+import 'package:tskswp_client/services/notifications/notification_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
   runApp(MyApp());
 }
 
