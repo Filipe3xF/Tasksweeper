@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
@@ -62,7 +63,7 @@ class _HomeScreen extends State<HomeScreen> {
 
         String? dueDate = task['dueDate'];
 
-        if(dueDate != null)
+        if (!kIsWeb && dueDate != null)
           registerNotification(task['id'], task[taskName], dueDate);
       }
     });
@@ -77,13 +78,11 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   void afterRequest(String? error, int taskId) async {
-
-    if(error != null)
-      ErrorAlertWindow.showErrorWindow(context, error);
+    if (error != null) ErrorAlertWindow.showErrorWindow(context, error);
 
     NotificationService notificationService = NotificationService();
 
-    if(await notificationService.hasScheduledAndroidNotification(taskId))
+    if (!kIsWeb && await notificationService.hasScheduledAndroidNotification(taskId))
       notificationService.removeNotification(taskId);
 
     await status.updateStatusValues();
