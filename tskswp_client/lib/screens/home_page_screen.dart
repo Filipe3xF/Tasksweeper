@@ -60,7 +60,10 @@ class _HomeScreen extends State<HomeScreen> {
           ),
         );
 
-        registerNotification(task['id'], task[taskName], task['dueDate']);
+        String? dueDate = task['dueDate'];
+
+        if(dueDate != null)
+          registerNotification(task['id'], task[taskName], dueDate);
       }
     });
   }
