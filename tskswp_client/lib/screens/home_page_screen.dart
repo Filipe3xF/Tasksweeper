@@ -72,8 +72,8 @@ class _HomeScreen extends State<HomeScreen> {
   void registerNotification(int taskId, String taskName, String dueDate) async {
     NotificationService notificationService = NotificationService();
 
-    if (!(await notificationService.hasScheduledAndroidNotification(taskId)))
-      notificationService.createScheduledAndroidNotification(
+    if (!(await notificationService.hasScheduledNotification(taskId)))
+      notificationService.createScheduledNotification(
           taskId, taskName, dueDate);
   }
 
@@ -82,7 +82,7 @@ class _HomeScreen extends State<HomeScreen> {
 
     NotificationService notificationService = NotificationService();
 
-    if (!kIsWeb && await notificationService.hasScheduledAndroidNotification(taskId))
+    if (!kIsWeb && await notificationService.hasScheduledNotification(taskId))
       notificationService.removeNotification(taskId);
 
     await status.updateStatusValues();

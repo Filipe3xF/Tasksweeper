@@ -36,15 +36,27 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  void createScheduledAndroidNotification(
+  void createScheduledNotification(
       int taskId, String taskName, String dueDate) async {
+
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
             '1', 'TaskSweeper', 'One of your tasks is about to expire!',
             importance: Importance.max, priority: Priority.max);
 
+    const IOSNotificationDetails iOSPlatformChannelSpecifics =
+    IOSNotificationDetails(
+        presentAlert: false,
+        presentBadge: false,
+        presentSound: false,
+        subtitle: 'TaskSweeper',
+        threadIdentifier: '1'
+    );
+
+
     const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+        NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
     tz.TZDateTime scheduledDueDate = tz.TZDateTime.parse(tz.local, dueDate)
         .subtract(const Duration(days: 1));
@@ -71,14 +83,13 @@ class NotificationService {
               UILocalNotificationDateInterpretation.absoluteTime);
   }
 
-  Future<bool> hasScheduledAndroidNotification(int taskId) async {
+  Future<bool> hasScheduledNotification(int taskId) async {
     final List<PendingNotificationRequest> pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
     return pendingNotificationRequests
             .where((notification) => notification.id == taskId)
-            .length ==
-        1;
+            .length == 1;
   }
 
   void removeNotification(int taskId) async {
