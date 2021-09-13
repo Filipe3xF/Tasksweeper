@@ -58,16 +58,25 @@ class NotificationService {
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
 
-    tz.TZDateTime scheduledDueDate = tz.TZDateTime.parse(tz.local, dueDate)
+    tz.TZDateTime maxDueDate = tz.TZDateTime.parse(tz.local, dueDate);
+
+    tz.TZDateTime scheduledDueDate = maxDueDate
         .subtract(const Duration(days: 1));
 
-    tz.TZDateTime currentDueDate = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime currentDate = tz.TZDateTime.now(tz.local);
 
-    if (currentDueDate.isAfter(scheduledDueDate)) {
+
+    if (currentDate.isAfter(scheduledDueDate)) {
+      String description = "$taskName with id $taskId finishes in less than 1 day!";
+
+      if(currentDate.isAfter(maxDueDate)){
+        description = "$taskName with id $taskId has expired!";
+      }
+
       await flutterLocalNotificationsPlugin.show(
           taskId,
           "Tasksweeper",
-          "$taskName with id $taskId finishes in less than 1 day!",
+          description,
           platformChannelSpecifics,
           );
 
