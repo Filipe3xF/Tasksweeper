@@ -15,14 +15,9 @@ class NotificationService {
 
     final IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-      //define this later for older IOS versions
-      onDidReceiveLocalNotification:
-          (int id, String? title, String? body, String? payload) async {
-        return 0;
-      },
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
     );
 
     final InitializationSettings initializationSettings =
@@ -38,48 +33,43 @@ class NotificationService {
 
   void createScheduledNotification(
       int taskId, String taskName, String dueDate) async {
-
-
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
             '1', 'TaskSweeper', 'One of your tasks is about to expire!',
             importance: Importance.max, priority: Priority.max);
 
     const IOSNotificationDetails iOSPlatformChannelSpecifics =
-    IOSNotificationDetails(
-        presentAlert: false,
-        presentBadge: false,
-        presentSound: false,
-        subtitle: 'TaskSweeper',
-        threadIdentifier: '1'
-    );
+        IOSNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+            threadIdentifier: '1');
 
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
 
     tz.TZDateTime maxDueDate = tz.TZDateTime.parse(tz.local, dueDate);
 
-    tz.TZDateTime scheduledDueDate = maxDueDate
-        .subtract(const Duration(days: 1));
+    tz.TZDateTime scheduledDueDate =
+        maxDueDate.subtract(const Duration(days: 1));
 
     tz.TZDateTime currentDate = tz.TZDateTime.now(tz.local);
 
-
     if (currentDate.isAfter(scheduledDueDate)) {
-      String description = "$taskName with id $taskId finishes in less than 1 day!";
+      String description =
+          "$taskName with id $taskId finishes in less than 1 day!";
 
-      if(currentDate.isAfter(maxDueDate)){
+      if (currentDate.isAfter(maxDueDate)) {
         description = "$taskName with id $taskId has expired!";
       }
 
       await flutterLocalNotificationsPlugin.show(
-          taskId,
-          "Tasksweeper",
-          description,
-          platformChannelSpecifics,
-          );
-
+        taskId,
+        "Tasksweeper",
+        description,
+        platformChannelSpecifics,
+      );
     } else
       await flutterLocalNotificationsPlugin.zonedSchedule(
           taskId,
@@ -98,7 +88,8 @@ class NotificationService {
 
     return pendingNotificationRequests
             .where((notification) => notification.id == taskId)
-            .length == 1;
+            .length ==
+        1;
   }
 
   void removeNotification(int taskId) async {
