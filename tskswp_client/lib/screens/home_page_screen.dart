@@ -1,13 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tskswp_client/components/account_status_table.dart';
 import 'package:tskswp_client/components/app_bottom_bar.dart';
+import 'package:tskswp_client/components/error_alert_window.dart';
 import 'package:tskswp_client/components/task_row.dart';
 import 'package:tskswp_client/screens/task_creation_screen.dart';
 import 'package:tskswp_client/services/http_requests/account_requests/account_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/account_status_requests/account_status_request_handler.dart';
 import 'package:tskswp_client/services/http_requests/task_requests/task_request_handler.dart';
+import 'package:tskswp_client/services/notifications/notification_service.dart';
 import 'package:tskswp_client/services/status_of_the_account/Status.dart';
 
 import '../constants.dart';
@@ -26,7 +30,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
-  _HomeScreen({required this.jwt, required this.status}){
+  _HomeScreen({required this.jwt, required this.status}) {
     fillTaskRowList();
   }
 
@@ -45,35 +49,41 @@ class _HomeScreen extends State<HomeScreen> {
     List userOpenTasks =
         jsonDecode(await TaskHandler.getAccountTasks(jwt, openTaskStateQuery));
     setState(() {
-      userOpenTasks.forEach(
-        (task) => listOfTaskRow.add(
+      for (int i = 0; i < userOpenTasks.length; ++i) {
+        dynamic task = userOpenTasks[i];
+
+        listOfTaskRow.add(
           TaskRow(
             jwt: jwt,
             taskId: task['id'],
             taskTitle: task[taskName],
             afterRequest: afterRequest,
           ),
-        ),
-      );
+        );
+
+        String? dueDate = task['dueDate'];
+
+        if (!kIsWeb && dueDate != null)
+          registerNotification(task['id'], task[taskName], dueDate);
+      }
     });
   }
 
-  void afterRequest(String? error) async {
-    if (error != null) {
-      showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                title: const Text('An error occurred.'),
-                content: Text('$error'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'OK'),
-                    child: const Text('OK'),
-                  ),
-                ],
-              ));
-      return;
-    }
+  void registerNotification(int taskId, String taskName, String dueDate) async {
+    NotificationService notificationService = NotificationService();
+
+    if (!(await notificationService.hasScheduledNotification(taskId)))
+      notificationService.createScheduledNotification(
+          taskId, taskName, dueDate);
+  }
+
+  void afterRequest(String? error, int taskId) async {
+    if (error != null) ErrorAlertWindow.showErrorWindow(context, error);
+
+    NotificationService notificationService = NotificationService();
+
+    if (!kIsWeb && await notificationService.hasScheduledNotification(taskId))
+      notificationService.removeNotification(taskId);
 
     await status.updateStatusValues();
 
@@ -81,8 +91,6 @@ class _HomeScreen extends State<HomeScreen> {
       listOfTaskRow.removeRange(0, listOfTaskRow.length);
       fillTaskRowList();
     });
-
-
   }
 
   @override
@@ -110,9 +118,9 @@ class _HomeScreen extends State<HomeScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => InventoryScreen(
-                          jwt: jwt,
-                          status: status,
-                        )));
+                              jwt: jwt,
+                              status: status,
+                            )));
               })
         ],
       ),

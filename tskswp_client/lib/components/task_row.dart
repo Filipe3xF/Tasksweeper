@@ -14,15 +14,15 @@ class TaskRow extends StatelessWidget {
   final int taskId;
   final String taskTitle;
   final String jwt;
-  final Function(String?) afterRequest;
+  final Function(String?, int) afterRequest;
 
 
-  void _processResult(dynamic response) {
+  void _processResult(dynamic response, int taskId) {
     if(response.contains('error')){
-      afterRequest(jsonDecode(response)['error']);
+      afterRequest(jsonDecode(response)['error'], taskId);
       return;
     }
-    afterRequest(null);
+    afterRequest(null, taskId);
   }
 
   @override
@@ -64,7 +64,7 @@ class TaskRow extends StatelessWidget {
                 icon: const Icon(Icons.done),
                 onPressed: () async {
                   var response = await TaskHandler.closeTaskSuccessfully(jwt, taskId);
-                  _processResult(response);
+                  _processResult(response, taskId);
                 },
               ),
             ),
@@ -74,7 +74,7 @@ class TaskRow extends StatelessWidget {
                 icon: const Icon(Icons.close),
                 onPressed: () async {
                   var response = await TaskHandler.closeTaskUnsuccessfully(jwt, taskId);
-                  _processResult(response);
+                  _processResult(response, taskId);
                 },
               ),
             ),
@@ -88,7 +88,7 @@ class TaskRow extends StatelessWidget {
                 icon: const Icon(Icons.delete_outline_outlined),
                 onPressed: () async {
                   var response = await TaskHandler.deleteTask(jwt, taskId);
-                  _processResult(response);
+                  _processResult(response, taskId);
                   },
               ),
             )

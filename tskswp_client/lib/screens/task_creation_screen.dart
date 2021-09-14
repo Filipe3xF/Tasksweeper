@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:select_form_field/select_form_field.dart';
 import 'package:tskswp_client/components/regular_button.dart';
 import 'package:tskswp_client/components/standard_text_field.dart';
-import 'package:select_form_field/select_form_field.dart';
-import 'package:intl/intl.dart';
 import 'package:tskswp_client/services/http_requests/task_requests/task_request_handler.dart';
 
 import '../constants.dart';
@@ -48,10 +48,9 @@ class _TaskCreationScreen extends State<TaskCreationScreen> {
   ];
 
   void createTask() async {
-    Map<String,dynamic> body = {};
+    Map<String, dynamic> body = {};
 
-
-    if(name == null || name == '' || difficulty == null){
+    if (name == null || name == '' || difficulty == null) {
       setState(() {
         error = 'Both name and difficulty must be filled!';
       });
@@ -64,32 +63,32 @@ class _TaskCreationScreen extends State<TaskCreationScreen> {
     if (dueDate != null && dueTime != null) {
       List<String> date = dateFormatter.format(dueDate!).split('-');
 
-      DateTime dueTimeDate = DateTime(0,0,0, dueTime!.hour, dueTime!.minute);
+      DateTime dueTimeDate = DateTime(0, 0, 0, dueTime!.hour, dueTime!.minute);
       List<String> time = timeFormatter.format(dueTimeDate).split('-');
 
       body['dueDate'] = {'day': date[0], 'month': date[1], 'year': date[2]};
       body['dueTime'] = {'hour': time[0], 'minute': time[1], 'second': '00'};
-    }
-    else{
-      if(dueDate != null || dueTime != null){
+    } else {
+      if (dueDate != null || dueTime != null) {
         setState(() {
-          error = 'Both DueDate and DueTime forms must be filled in order to establish a valid DueDate!';
+          error =
+              'Both DueDate and DueTime forms must be filled in order to establish a valid DueDate!';
         });
         return;
       }
     }
 
-    if(repetition != null){
+    if (repetition != null) {
       body['repetition'] = repetition;
     }
 
-    if(description != null){
+    if (description != null) {
       body['description'] = description;
     }
 
     var response = await TaskHandler.createNewTask(jwt, body);
 
-    if(response.contains('error')){
+    if (response.contains('error')) {
       setState(() {
         error = jsonDecode(response)['error'];
       });
@@ -186,48 +185,44 @@ class _TaskCreationScreen extends State<TaskCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(backgroundColor: kAppBarColor, title: Center(child: kTitle)),
+      appBar: AppBar(backgroundColor: kAppBarColor, title: kTitle),
       body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(error),
-            _createSelectForm(EdgeInsets.all(5), 'Select the difficulty *',
-                difficultySelectionOptions, (val) => difficulty = val),
-            _createSelectForm(
-                EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 30),
-                'Select The Repetition',
-                repetitionSelectionOptions,
-                (val) => repetition = val),
-            _createRow(
-              StandardTextField(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(error),
+          _createSelectForm(EdgeInsets.all(5), 'Select the difficulty *',
+              difficultySelectionOptions, (val) => difficulty = val),
+          _createSelectForm(
+              EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 30),
+              'Select The Repetition',
+              repetitionSelectionOptions,
+              (val) => repetition = val),
+          _createRow(
+            StandardTextField(
+              onChange: (value) {
+                name = value;
+              },
+              fieldName: 'Name *',
+            ),
+          ),
+          _createRow(
+            StandardTextField(
                 onChange: (value) {
-                  name = value;
+                  description = value;
                 },
-                fieldName: 'Name *',
-              ),
-            ),
-            _createRow(
-              StandardTextField(
-                  onChange: (value) {
-                    description = value;
-                  },
-                  fieldName: 'Description'),
-            ),
-            _createPickerTextField(
-                _defineDueDate, _defineDueDateMainText, 'Due Date'),
-            _createPickerTextField(
-                _defineDueTime, _defineDueTimeMainText, 'Due Time')
-          ],
-        ),
+                fieldName: 'Description'),
+          ),
+          _createPickerTextField(
+              _defineDueDate, _defineDueDateMainText, 'Due Date'),
+          _createPickerTextField(
+              _defineDueTime, _defineDueTimeMainText, 'Due Time'),
+          Expanded(
+            child: Container(),
+          ),
+          RegularButton(onTap: createTask, buttonTitle: 'Create Task')
+        ],
       )),
-      bottomNavigationBar: RegularButton(
-          onTap: createTask,
-          buttonTitle: 'Create Task'),
     );
   }
 }
-
-
